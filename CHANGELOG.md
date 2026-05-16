@@ -1,3 +1,10 @@
+# [1.5.0](https://github.com/MerzoukeMansouri/sith/compare/v1.4.2...v1.5.0) (2026-05-16)
+
+
+### Features
+
+* switch back to OIDC Trusted Publisher after npm config update ([53cf7b1](https://github.com/MerzoukeMansouri/sith/commit/53cf7b15a8c59d05cf69ab1a7f76aa353c9d6ca4))
+
 ## [1.4.2](https://github.com/MerzoukeMansouri/sith/compare/v1.4.1...v1.4.2) (2026-05-16)
 
 
