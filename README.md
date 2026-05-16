@@ -49,6 +49,35 @@ This will:
 - Make OpenCode CLI available
 - Pass your `GITHUB_TOKEN` environment variable
 
+## Authentication
+
+To use GitHub Copilot models, set the `GITHUB_TOKEN` environment variable:
+
+**Quick start (using GitHub CLI):**
+```bash
+export GITHUB_TOKEN=$(gh auth token)
+npx @m14i/sith shell
+```
+
+**Or inline:**
+```bash
+GITHUB_TOKEN=$(gh auth token) npx @m14i/sith shell
+```
+
+**Manual token:**
+1. Create a token at https://github.com/settings/tokens
+2. Required scopes: `copilot`, `repo`, `read:org`
+3. Export it:
+```bash
+export GITHUB_TOKEN=gho_your_token_here
+npx @m14i/sith shell
+```
+
+**Make it persistent (add to ~/.zshrc or ~/.bashrc):**
+```bash
+export GITHUB_TOKEN=$(gh auth token)
+```
+
 ## Commands
 
 ### `npx @m14i/sith` (default)
