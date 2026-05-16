@@ -5,9 +5,6 @@ on:
     branches:
       - main
 
-env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
-
 jobs:
   release:
     runs-on: ubuntu-latest
@@ -31,7 +28,7 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: '22'
+          node-version: '25'
           cache: 'pnpm'
 
       - name: Install dependencies
@@ -88,7 +85,7 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: '22'
+          node-version: '25'
           cache: 'pnpm'
           registry-url: 'https://registry.npmjs.org'
 
@@ -97,12 +94,6 @@ jobs:
 
       - name: Build
         run: pnpm build
-
-      - name: Setup npm 11+ for Trusted Publishers
-        uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-          registry-url: 'https://registry.npmjs.org'
 
       - name: Publish to npm
         run: npx --yes npm@latest publish --provenance --access public
