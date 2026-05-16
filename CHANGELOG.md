@@ -1,3 +1,10 @@
+## [1.5.1](https://github.com/MerzoukeMansouri/sith/compare/v1.5.0...v1.5.1) (2026-05-16)
+
+
+### Bug Fixes
+
+* upgrade npm to support Trusted Publishers (requires v11.5.1+) ([3e6dd82](https://github.com/MerzoukeMansouri/sith/commit/3e6dd82ac53e09d4a22c7cd7bc3bc04a26d53df2))
+
 # [1.5.0](https://github.com/MerzoukeMansouri/sith/compare/v1.4.2...v1.5.0) (2026-05-16)
 
 
