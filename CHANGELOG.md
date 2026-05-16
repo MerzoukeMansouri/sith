@@ -1,3 +1,10 @@
+## [1.4.2](https://github.com/MerzoukeMansouri/sith/compare/v1.4.1...v1.4.2) (2026-05-16)
+
+
+### Bug Fixes
+
+* temporarily restore NPM_TOKEN for publishing ([c0733c5](https://github.com/MerzoukeMansouri/sith/commit/c0733c5d0a92ce06b37b3fdf5caf73d525e482f0))
+
 ## [1.4.1](https://github.com/MerzoukeMansouri/sith/compare/v1.4.0...v1.4.1) (2026-05-16)
 
 
