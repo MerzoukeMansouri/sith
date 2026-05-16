@@ -12,8 +12,13 @@
     "dev:build": "pnpm build && node dist/index.js",
     "dev:shell": "pnpm build && node dist/index.js shell",
     "typecheck": "tsc --noEmit",
-    "clean": "rm -rf dist"
+    "clean": "rm -rf dist",
+    "prepublishOnly": "pnpm build"
   },
+  "files": [
+    "dist",
+    "assets"
+  ],
   "keywords": [
     "opencode",
     "docker",

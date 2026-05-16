@@ -1,0 +1,17 @@
+# Source files
+src/
+*.ts
+!*.d.ts
+
+# Config files
+tsconfig.json
+.cspell.json
+
+# Development
+node_modules/
+.github/
+.git/
+*.log
+
+# Build artifacts
+.DS_Store

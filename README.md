@@ -8,21 +8,14 @@
 
 Standardize and share your OpenCode setup with a fully dockerized environment, designed for seamless collaboration and CI integration.
 
-## Installation
-
-```bash
-pnpm install
-pnpm build
-```
-
 ## Usage
+
+No installation required! Run with npx:
 
 ### Interactive Menu (Default)
 
-Simply run `sith` to launch the interactive menu:
-
 ```bash
-sith
+npx sith
 ```
 
 This will present you with options to:
@@ -33,9 +26,9 @@ This will present you with options to:
 Build the Docker image directly:
 
 ```bash
-sith docker --build
+npx sith docker --build
 # or
-sith --build
+npx sith --build
 ```
 
 ### Interactive Shell
@@ -43,7 +36,7 @@ sith --build
 Run an interactive shell in the Docker container:
 
 ```bash
-sith shell
+npx sith shell
 ```
 
 This will:
@@ -54,13 +47,13 @@ This will:
 
 ## Commands
 
-### `sith` (default)
+### `npx sith` (default)
 Launches the interactive menu.
 
-### `sith docker --build`
+### `npx sith docker --build`
 Build the Docker image.
 
-### `sith shell`
+### `npx sith shell`
 Run interactive shell in the Docker container.
 
 ## Features
@@ -73,13 +66,18 @@ Run interactive shell in the Docker container.
 
 ## Development
 
+For contributors working on the CLI:
+
 ```bash
-# Build and test in development
+# Install dependencies
+pnpm install
+
+# Run in development mode (no build)
+pnpm dev
+
+# Build and test
 pnpm dev:build     # Build and run CLI
 pnpm dev:shell     # Build and launch shell
-
-# Production build
-pnpm build
 
 # Type checking
 pnpm typecheck
@@ -87,3 +85,17 @@ pnpm typecheck
 # Clean build artifacts
 pnpm clean
 ```
+
+## Publishing
+
+For maintainers:
+
+1. Update version in `package.json`
+2. Create and push a version tag:
+   ```bash
+   git tag v1.0.0
+   git push origin v1.0.0
+   ```
+3. GitHub Action automatically builds and publishes to npm
+
+**Requirements:** `NPM_TOKEN` secret must be configured in GitHub repository settings.
