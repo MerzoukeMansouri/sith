@@ -13,13 +13,13 @@ Standardize and share your OpenCode setup with a fully dockerized environment, d
 No installation required! Run with npx:
 
 ```bash
-npx @aldera4n/sith
+npx @m14i/sith
 ```
 
 ### Interactive Menu (Default)
 
 ```bash
-npx @aldera4n/sith
+npx @m14i/sith
 ```
 
 This will present you with options to:
@@ -30,9 +30,9 @@ This will present you with options to:
 Build the Docker image directly:
 
 ```bash
-npx @aldera4n/sith docker --build
+npx @m14i/sith docker --build
 # or
-npx @aldera4n/sith --build
+npx @m14i/sith --build
 ```
 
 ### Interactive Shell
@@ -40,7 +40,7 @@ npx @aldera4n/sith --build
 Run an interactive shell in the Docker container:
 
 ```bash
-npx @aldera4n/sith shell
+npx @m14i/sith shell
 ```
 
 This will:
@@ -51,13 +51,13 @@ This will:
 
 ## Commands
 
-### `npx @aldera4n/sith` (default)
+### `npx @m14i/sith` (default)
 Launches the interactive menu.
 
-### `npx @aldera4n/sith docker --build`
+### `npx @m14i/sith docker --build`
 Build the Docker image.
 
-### `npx @aldera4n/sith shell`
+### `npx @m14i/sith shell`
 Run interactive shell in the Docker container.
 
 ## Features
