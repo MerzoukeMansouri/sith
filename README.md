@@ -13,7 +13,7 @@ Standardize and share your OpenCode setup with a fully dockerized environment, d
 No installation required! Run with npx:
 
 ```bash
-npx @merzouke-mansouri/sith
+npx @m14i/sith
 ```
 
 Available from both npm and GitHub Packages.
@@ -21,7 +21,7 @@ Available from both npm and GitHub Packages.
 ### Interactive Menu (Default)
 
 ```bash
-npx @merzouke-mansouri/sith
+npx @m14i/sith
 ```
 
 This will present you with options to:
@@ -32,9 +32,9 @@ This will present you with options to:
 Build the Docker image directly:
 
 ```bash
-npx @merzouke-mansouri/sith docker --build
+npx @m14i/sith docker --build
 # or
-npx @merzouke-mansouri/sith --build
+npx @m14i/sith --build
 ```
 
 ### Interactive Shell
@@ -42,7 +42,7 @@ npx @merzouke-mansouri/sith --build
 Run an interactive shell in the Docker container:
 
 ```bash
-npx @merzouke-mansouri/sith shell
+npx @m14i/sith shell
 ```
 
 This will:
@@ -53,13 +53,13 @@ This will:
 
 ## Commands
 
-### `npx @merzouke-mansouri/sith` (default)
+### `npx @m14i/sith` (default)
 Launches the interactive menu.
 
-### `npx @merzouke-mansouri/sith docker --build`
+### `npx @m14i/sith docker --build`
 Build the Docker image.
 
-### `npx @merzouke-mansouri/sith shell`
+### `npx @m14i/sith shell`
 Run interactive shell in the Docker container.
 
 ## Features
