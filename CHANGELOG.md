@@ -1,3 +1,10 @@
+# [1.4.0](https://github.com/MerzoukeMansouri/sith/compare/v1.3.2...v1.4.0) (2026-05-16)
+
+
+### Features
+
+* enable OIDC Trusted Publisher for secure npm publishing ([7c6f1bd](https://github.com/MerzoukeMansouri/sith/commit/7c6f1bdc58fea94325341b9e108bd91347cfdd5f))
+
 ## [1.3.2](https://github.com/MerzoukeMansouri/sith/compare/v1.3.1...v1.3.2) (2026-05-16)
 
 
