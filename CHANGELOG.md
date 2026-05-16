@@ -1,3 +1,10 @@
+## [1.4.1](https://github.com/MerzoukeMansouri/sith/compare/v1.4.0...v1.4.1) (2026-05-16)
+
+
+### Bug Fixes
+
+* correct release detection logic in workflow ([fdff493](https://github.com/MerzoukeMansouri/sith/commit/fdff493dbf92e1affd118149ad56a37809b070ed))
+
 # [1.4.0](https://github.com/MerzoukeMansouri/sith/compare/v1.3.2...v1.4.0) (2026-05-16)
 
 
