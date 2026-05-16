@@ -11,7 +11,7 @@
     "sith": "./dist/index.js"
   },
   "scripts": {
-    "build": "ncc build src/index.ts -o dist --minify && rm -rf dist/assets && cp -r assets dist/",
+    "build": "ncc build src/index.ts -o dist && rm -rf dist/assets && cp -r assets dist/",
     "dev": "tsx src/index.ts",
     "dev:build": "pnpm build && node dist/index.js",
     "dev:shell": "pnpm build && node dist/index.js shell",
@@ -21,7 +21,8 @@
   },
   "files": [
     "dist",
-    "assets"
+    "assets",
+    "docker"
   ],
   "keywords": [
     "opencode",
