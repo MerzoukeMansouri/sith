@@ -6,6 +6,7 @@ src/
 # Config files
 tsconfig.json
 .cspell.json
+.releaserc.json
 
 # Development
 node_modules/

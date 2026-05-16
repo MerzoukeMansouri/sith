@@ -12,10 +12,16 @@ Standardize and share your OpenCode setup with a fully dockerized environment, d
 
 No installation required! Run with npx:
 
+```bash
+npx @merzouke-mansouri/sith
+```
+
+Available from both npm and GitHub Packages.
+
 ### Interactive Menu (Default)
 
 ```bash
-npx sith
+npx @merzouke-mansouri/sith
 ```
 
 This will present you with options to:
@@ -26,9 +32,9 @@ This will present you with options to:
 Build the Docker image directly:
 
 ```bash
-npx sith docker --build
+npx @merzouke-mansouri/sith docker --build
 # or
-npx sith --build
+npx @merzouke-mansouri/sith --build
 ```
 
 ### Interactive Shell
@@ -36,7 +42,7 @@ npx sith --build
 Run an interactive shell in the Docker container:
 
 ```bash
-npx sith shell
+npx @merzouke-mansouri/sith shell
 ```
 
 This will:
@@ -47,13 +53,13 @@ This will:
 
 ## Commands
 
-### `npx sith` (default)
+### `npx @merzouke-mansouri/sith` (default)
 Launches the interactive menu.
 
-### `npx sith docker --build`
+### `npx @merzouke-mansouri/sith docker --build`
 Build the Docker image.
 
-### `npx sith shell`
+### `npx @merzouke-mansouri/sith shell`
 Run interactive shell in the Docker container.
 
 ## Features
@@ -88,14 +94,32 @@ pnpm clean
 
 ## Publishing
 
-For maintainers:
+Automated releases using semantic-release and conventional commits.
 
-1. Update version in `package.json`
-2. Create and push a version tag:
-   ```bash
-   git tag v1.0.0
-   git push origin v1.0.0
-   ```
-3. GitHub Action automatically builds and publishes to npm
+### For Maintainers
 
-**Requirements:** `NPM_TOKEN` secret must be configured in GitHub repository settings.
+**Commit Format:**
+- `feat:` - New feature (triggers minor version bump)
+- `fix:` - Bug fix (triggers patch version bump)
+- `BREAKING CHANGE:` - Breaking change (triggers major version bump)
+- `chore:`, `docs:`, `style:` - No release
+
+**Release Process:**
+1. Commit changes following conventional commit format
+2. Push to `main` branch
+3. GitHub Action automatically:
+   - Analyzes commits and determines version bump
+   - Generates CHANGELOG.md
+   - Creates GitHub release
+   - Publishes to npm and GitHub Packages in parallel
+
+**Example:**
+```bash
+git commit -m "feat: add new interactive menu option"
+git push origin main
+# Automatic release triggered!
+```
+
+**Requirements:**
+- `NPM_TOKEN` secret configured in GitHub repository settings
+- Commits must follow conventional commit format
