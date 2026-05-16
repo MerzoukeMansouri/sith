@@ -1,3 +1,10 @@
+## [1.3.1](https://github.com/MerzoukeMansouri/sith/compare/v1.3.0...v1.3.1) (2026-05-16)
+
+
+### Bug Fixes
+
+* correct package scope to @m14i/sith for npm publishing ([ea072a7](https://github.com/MerzoukeMansouri/sith/commit/ea072a755216b0fa82616547d1e13916e802935a))
+
 # [1.3.0](https://github.com/MerzoukeMansouri/sith/compare/v1.2.0...v1.3.0) (2026-05-16)
 
 
