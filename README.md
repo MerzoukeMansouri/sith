@@ -1,5 +1,9 @@
 # Sith
 
+<p align="center">
+  <img src="assets/images/logo.png" alt="Sith Logo" width="400">
+</p>
+
 > Turn your context to the dark side.
 
 Standardize and share your OpenCode setup with a fully dockerized environment, designed for seamless collaboration and CI integration.
@@ -59,15 +63,27 @@ Build the Docker image.
 ### `sith shell`
 Run interactive shell in the Docker container.
 
+## Features
+
+- **Interactive Menu**: Navigate with arrow keys, select with Enter
+- **Direct Commands**: Build or shell access without menu
+- **Dockerized Environment**: Consistent setup across machines
+- **Nix Integration**: Full development environment with all tools
+- **CI-Ready**: Standardize builds across local and CI pipelines
+
 ## Development
 
 ```bash
-# Run in development mode
-pnpm dev
+# Build and test in development
+pnpm dev:build     # Build and run CLI
+pnpm dev:shell     # Build and launch shell
 
-# Build for production
+# Production build
 pnpm build
 
-# Type check
+# Type checking
 pnpm typecheck
+
+# Clean build artifacts
+pnpm clean
 ```

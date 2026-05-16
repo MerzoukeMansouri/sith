@@ -7,11 +7,12 @@
     "sith": "./dist/index.js"
   },
   "scripts": {
-    "build": "ncc build src/index.ts -o dist --minify",
+    "build": "ncc build src/index.ts -o dist --minify && rm -rf dist/assets && cp -r assets dist/",
     "dev": "tsx src/index.ts",
-    "run:dev": "pnpm build && node dist/index.js",
-    "shell": "pnpm build && node dist/index.js shell",
-    "typecheck": "tsc --noEmit"
+    "dev:build": "pnpm build && node dist/index.js",
+    "dev:shell": "pnpm build && node dist/index.js shell",
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist"
   },
   "keywords": [
     "opencode",
@@ -23,13 +24,16 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
+    "@inquirer/prompts": "^5.0.0",
+    "chalk": "^5.3.0",
     "commander": "^12.1.0",
     "execa": "^9.0.0",
-    "chalk": "^5.3.0",
-    "@inquirer/prompts": "^5.0.0"
+    "ink": "^7.0.3",
+    "react": "^19.2.6"
   },
   "devDependencies": {
     "@types/node": "^20.12.7",
+    "@types/react": "^19.2.14",
     "@vercel/ncc": "^0.38.1",
     "tsx": "^4.7.2",
     "typescript": "^5.4.5"

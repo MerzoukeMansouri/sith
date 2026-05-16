@@ -3,35 +3,45 @@
 import { Command } from 'commander';
 import { dockerCommand, runShellDirect } from './commands/docker.js';
 
-const program = new Command();
+const PROGRAM_NAME = 'sith';
+const PROGRAM_VERSION = '1.0.0';
+const PROGRAM_DESCRIPTION = 'Turn your context to the dark side. Standardize and share your OpenCode setup with a fully dockerized environment, designed for seamless collaboration and CI integration.';
 
-program
-  .name('sith')
-  .description('Turn your context to the dark side. Standardize and share your OpenCode setup with a fully dockerized environment, designed for seamless collaboration and CI integration.')
-  .version('1.0.0')
-  .option('--build', 'Build the Docker image');
+function createProgram(): Command {
+  const program = new Command();
 
-// Default action - show interactive menu
-program
-  .action(async (options) => {
-    await dockerCommand(options);
-  });
+  program
+    .name(PROGRAM_NAME)
+    .description(PROGRAM_DESCRIPTION)
+    .version(PROGRAM_VERSION)
+    .option('--build', 'Build the Docker image');
 
-// Docker command
-program
-  .command('docker')
-  .description('Manage Docker environment')
-  .option('--build', 'Build the Docker image')
-  .action(async (options) => {
-    await dockerCommand(options);
-  });
+  // Default action - show interactive menu
+  program
+    .action(async (options) => {
+      await dockerCommand(options);
+    });
 
-// Shell command - direct interactive shell (not via menu)
-program
-  .command('shell')
-  .description('Run interactive shell in Docker container')
-  .action(async () => {
-    await runShellDirect();
-  });
+  // Docker command - explicit Docker management
+  program
+    .command('docker')
+    .description('Manage Docker environment')
+    .option('--build', 'Build the Docker image')
+    .action(async (options) => {
+      await dockerCommand(options);
+    });
 
+  // Shell command - direct interactive shell (bypasses menu)
+  program
+    .command('shell')
+    .description('Run interactive shell in Docker container')
+    .action(async () => {
+      await runShellDirect();
+    });
+
+  return program;
+}
+
+// Main execution
+const program = createProgram();
 program.parse();
