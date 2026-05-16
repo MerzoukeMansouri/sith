@@ -24,8 +24,8 @@ COPY docker/skills/opencode-skills-config.json /opt/sith/skills/opencode-skills-
 # Copier les fichiers Nix (scripts, config, shell.nix)
 COPY docker/nix/ /opt/sith/nix/
 
-# Copier la configuration npm (force registry public)
-COPY .npmrc /root/.npmrc
+# Configurer npm pour utiliser le registry public
+RUN echo "registry=https://registry.npmjs.org/" > /root/.npmrc
 
 # Pré-charger l'environnement Nix (installe tous les packages)
 # Cela cache les dépendances dans le layer Docker
