@@ -28,7 +28,8 @@
     "docker",
     "ci",
     "automation",
-    "cli"
+    "cli",
+    "nix"
   ],
   "author": "",
   "license": "MIT",
