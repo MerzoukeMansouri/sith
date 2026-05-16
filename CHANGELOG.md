@@ -1,3 +1,10 @@
+## [1.3.2](https://github.com/MerzoukeMansouri/sith/compare/v1.3.1...v1.3.2) (2026-05-16)
+
+
+### Bug Fixes
+
+* only publish when semantic-release creates new version ([7edd3f7](https://github.com/MerzoukeMansouri/sith/commit/7edd3f7ab041b4ca7abbb2e9079f789f767c2e02))
+
 ## [1.3.1](https://github.com/MerzoukeMansouri/sith/compare/v1.3.0...v1.3.1) (2026-05-16)
 
 
