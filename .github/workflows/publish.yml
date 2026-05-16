@@ -14,8 +14,8 @@ jobs:
       pull-requests: write
       id-token: write
     outputs:
-      new-release-published: ${{ steps.semantic.outputs.new-release-published }}
-      new-release-version: ${{ steps.semantic.outputs.new-release-version }}
+      new-release-published: ${{ steps.release-info.outputs.new-release-published }}
+      new-release-version: ${{ steps.release-info.outputs.new-release-version }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -46,6 +46,22 @@ jobs:
           GIT_COMMITTER_NAME: semantic-release-bot
           GIT_COMMITTER_EMAIL: semantic-release-bot@users.noreply.github.com
         run: npx semantic-release
+
+      - name: Get release info
+        id: release-info
+        run: |
+          # Get the latest tag created by semantic-release
+          git fetch --tags
+          LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
+
+          if [ -n "$LATEST_TAG" ]; then
+            echo "new-release-published=true" >> $GITHUB_OUTPUT
+            echo "new-release-version=${LATEST_TAG#v}" >> $GITHUB_OUTPUT
+            echo "Released version: $LATEST_TAG"
+          else
+            echo "new-release-published=false" >> $GITHUB_OUTPUT
+            echo "No new release created"
+          fi
 
   publish-npm:
     needs: release
