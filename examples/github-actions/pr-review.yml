@@ -1,0 +1,43 @@
+name: OpenCode - PR Review
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  review:
+    name: Review Pull Request with OpenCode
+    runs-on: ubuntu-latest
+    
+    permissions:
+      contents: read
+      pull-requests: write
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: Fetch base branch
+        run: |
+          git fetch origin ${{ github.base_ref }}:${{ github.base_ref }}
+      
+      - name: Run OpenCode PR Review
+        uses: docker://opencode-ci:latest
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          OPENCODE_MODEL: github-copilot/claude-sonnet-4.5
+          PROJECT_PATH: /github/workspace
+          OPENCODE_OUTPUT: /github/workspace/opencode-output
+          POST_TO_GITHUB: "true"
+        with:
+          args: review-pr --pr-number=${{ github.event.pull_request.number }}
+      
+      - name: Upload Review Report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: opencode-pr-review-${{ github.event.pull_request.number }}
+          path: opencode-output/pr-review-*.md
+          retention-days: 30

@@ -1,0 +1,52 @@
+version: '3.8'
+
+services:
+  opencode-ci:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    image: opencode-ci:latest
+    container_name: opencode-ci
+    environment:
+      - GITHUB_TOKEN=${GITHUB_TOKEN}
+      - OPENCODE_MODEL=${OPENCODE_MODEL:-github-copilot/claude-sonnet-4.5}
+      - PROJECT_PATH=/workspace
+      - OPENCODE_OUTPUT=/workspace/opencode-output
+      - OPENCODE_LOG_LEVEL=${OPENCODE_LOG_LEVEL:-INFO}
+    volumes:
+      - ./:/workspace
+      - opencode-output:/workspace/opencode-output
+      # Monte automatiquement votre auth.json local (si disponible)
+      - ${HOME}/.local/share/opencode/auth.json:/config/auth.json:ro
+    command: help
+
+  # Service pour analyse continue
+  opencode-analyzer:
+    extends: opencode-ci
+    container_name: opencode-analyzer
+    command: analyze
+    profiles:
+      - analyze
+
+  # Service pour génération de documentation
+  opencode-documenter:
+    extends: opencode-ci
+    container_name: opencode-documenter
+    command: document --output=docs
+    profiles:
+      - document
+
+  # Service pour revue de PR
+  opencode-reviewer:
+    extends: opencode-ci
+    container_name: opencode-reviewer
+    environment:
+      - GITHUB_TOKEN=${GITHUB_TOKEN}
+      - OPENCODE_MODEL=${OPENCODE_MODEL:-github-copilot/claude-sonnet-4.5}
+      - POST_TO_GITHUB=${POST_TO_GITHUB:-false}
+    command: review-pr --pr-number=${PR_NUMBER}
+    profiles:
+      - review
+
+volumes:
+  opencode-output:

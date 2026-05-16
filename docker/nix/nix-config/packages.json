@@ -1,0 +1,67 @@
+{
+  "description": "OpenCode CI/CD Environment Packages",
+  "version": "2.2.0",
+  "categories": {
+    "shell": {
+      "description": "Shell et outils de base",
+      "packages": [
+        "bash",
+        "coreutils",
+        "gnugrep",
+        "gnused",
+        "findutils",
+        "which"
+      ]
+    },
+    "vcs": {
+      "description": "Version control systems",
+      "packages": [
+        "git"
+      ]
+    },
+    "network": {
+      "description": "Outils réseau",
+      "packages": [
+        "curl",
+        "wget",
+        "cacert"
+      ]
+    },
+    "data": {
+      "description": "Parsing et manipulation de données",
+      "packages": [
+        "jq",
+        "ripgrep"
+      ]
+    },
+    "runtime": {
+      "description": "Runtimes et langages",
+      "packages": [
+        "nodejs_20",
+        "python3",
+        "python3Packages.pip"
+      ]
+    },
+    "build": {
+      "description": "Build tools",
+      "packages": [
+        "gcc",
+        "gnumake"
+      ]
+    },
+  "system": {
+    "description": "Outils système",
+    "packages": [
+      "procps",
+      "util-linux",
+      "glibcLocales"
+    ]
+  },
+    "skills": {
+      "description": "Token optimization skills",
+      "packages": [
+        "unzip"
+      ]
+    }
+  }
+}

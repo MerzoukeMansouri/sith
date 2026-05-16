@@ -1,0 +1,49 @@
+name: OpenCode - Documentation
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'src/**'
+      - 'lib/**'
+      - 'docs/**'
+  workflow_dispatch:
+
+jobs:
+  document:
+    name: Generate Documentation with OpenCode
+    runs-on: ubuntu-latest
+    
+    permissions:
+      contents: write
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Generate Documentation
+        uses: docker://opencode-ci:latest
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          OPENCODE_MODEL: github-copilot/claude-sonnet-4.5
+          PROJECT_PATH: /github/workspace
+          OPENCODE_OUTPUT: /github/workspace/opencode-output
+          DOC_TYPE: all
+        with:
+          args: document --output=docs
+      
+      - name: Commit Documentation
+        run: |
+          git config --local user.email "opencode-bot@github.com"
+          git config --local user.name "OpenCode Bot"
+          git add docs/
+          git diff --quiet && git diff --staged --quiet || git commit -m "docs: update documentation [skip ci]"
+          git push
+      
+      - name: Upload Documentation
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: documentation
+          path: docs/
+          retention-days: 90

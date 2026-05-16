@@ -1,0 +1,78 @@
+stages:
+  - analyze
+  - review
+  - document
+
+variables:
+  DOCKER_IMAGE: opencode-ci:latest
+  OPENCODE_OUTPUT: opencode-output
+  OPENCODE_MODEL: github-copilot/claude-sonnet-4.5
+
+# Analyse du code sur chaque commit
+analyze-code:
+  stage: analyze
+  image: $DOCKER_IMAGE
+  variables:
+    PROJECT_PATH: $CI_PROJECT_DIR
+    GITHUB_TOKEN: $GITHUB_COPILOT_TOKEN
+  script:
+    - /usr/local/bin/entrypoint.sh analyze
+  artifacts:
+    paths:
+      - opencode-output/
+    reports:
+      dotenv: opencode-output/analysis-metadata.json
+    expire_in: 30 days
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+    - if: '$CI_COMMIT_BRANCH == "main" || $CI_COMMIT_BRANCH == "develop"'
+
+# Revue des merge requests
+review-mr:
+  stage: review
+  image: $DOCKER_IMAGE
+  variables:
+    PROJECT_PATH: $CI_PROJECT_DIR
+    GITHUB_TOKEN: $GITHUB_COPILOT_TOKEN
+    POST_TO_GITHUB: "false"
+  script:
+    - git fetch origin $CI_MERGE_REQUEST_TARGET_BRANCH_NAME
+    - |
+      /usr/local/bin/entrypoint.sh review-pr \
+        --pr-number=$CI_MERGE_REQUEST_IID \
+        --base=$CI_MERGE_REQUEST_TARGET_BRANCH_NAME \
+        --head=$CI_MERGE_REQUEST_SOURCE_BRANCH_NAME
+  artifacts:
+    paths:
+      - opencode-output/pr-review-*.md
+    expire_in: 30 days
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+
+# Génération de documentation
+generate-docs:
+  stage: document
+  image: $DOCKER_IMAGE
+  variables:
+    PROJECT_PATH: $CI_PROJECT_DIR
+    GITHUB_TOKEN: $GITHUB_COPILOT_TOKEN
+    DOC_TYPE: all
+  script:
+    - /usr/local/bin/entrypoint.sh document --output=docs
+    - |
+      if [ -n "$(git status --porcelain docs/)" ]; then
+        git config user.name "OpenCode Bot"
+        git config user.email "opencode-bot@gitlab.com"
+        git add docs/
+        git commit -m "docs: update documentation [skip ci]"
+        git push https://oauth2:${CI_JOB_TOKEN}@${CI_SERVER_HOST}/${CI_PROJECT_PATH}.git HEAD:${CI_COMMIT_BRANCH}
+      fi
+  artifacts:
+    paths:
+      - docs/
+    expire_in: 90 days
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
+      changes:
+        - src/**/*
+        - lib/**/*

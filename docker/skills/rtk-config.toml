@@ -1,0 +1,48 @@
+# RTK (Rust Token Killer) Configuration
+# Optimizes CLI output for LLM consumption - reduces tokens by 60-90%
+# Used in OpenCode Docker for CI/CD token optimization
+
+[hooks]
+# Commands to exclude from RTK interception
+# These commands shouldn't be filtered as they return critical raw data
+exclude_commands = ["curl", "wget", "docker logs", "cat"]
+
+[tee]
+# Save full command output to disk when commands fail
+# Useful for debugging while still getting compact output by default
+enabled = true
+mode = "failures"  # Options: "failures", "always", "never"
+
+[filters]
+# Enable built-in filters for common dev tools
+# Each filter reduces verbose output to essential information only
+
+[filters.git]
+enabled = true
+level = "compact"  # Options: "compact", "minimal", "full"
+
+[filters.cargo]
+enabled = true
+level = "compact"
+
+[filters.npm]
+enabled = true
+level = "compact"
+
+[filters.docker]
+enabled = true
+level = "compact"
+
+[filters.pytest]
+enabled = true
+level = "compact"
+
+[filters.jest]
+enabled = true
+level = "compact"
+
+# General output limits
+[output]
+max_lines = 500           # Maximum lines per command output
+truncate_long_lines = true
+max_line_length = 200     # Truncate lines longer than this
