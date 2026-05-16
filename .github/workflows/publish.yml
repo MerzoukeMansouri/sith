@@ -1,4 +1,4 @@
-name: Release and Publish
+name: Release and Publish to npm
 
 on:
   push:
@@ -95,37 +95,4 @@ jobs:
         run: npm publish --provenance --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-
-  publish-github:
-    needs: release
-    if: needs.release.outputs.new-release-published == 'true'
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: write
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          ref: v${{ needs.release.outputs.new-release-version }}
-
-      - uses: pnpm/action-setup@v4
-        with:
-          version: 9
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-          cache: 'pnpm'
-          registry-url: 'https://npm.pkg.github.com'
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: Build
-        run: pnpm build
-
-      - name: Publish to GitHub Packages
-        run: npm publish --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
