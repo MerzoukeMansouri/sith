@@ -50,11 +50,14 @@ jobs:
       - name: Get release info
         id: release-info
         run: |
-          # Get the latest tag created by semantic-release
+          # Check if semantic-release created a new tag by comparing before/after
+          BEFORE_SHA=$(git rev-parse HEAD)
           git fetch --tags
-          LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
+          AFTER_SHA=$(git rev-parse HEAD)
 
-          if [ -n "$LATEST_TAG" ]; then
+          # If HEAD moved, semantic-release created a new commit
+          if [ "$BEFORE_SHA" != "$AFTER_SHA" ]; then
+            LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
             echo "new-release-published=true" >> $GITHUB_OUTPUT
             echo "new-release-version=${LATEST_TAG#v}" >> $GITHUB_OUTPUT
             echo "Released version: $LATEST_TAG"
