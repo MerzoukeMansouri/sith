@@ -1,3 +1,10 @@
+# [1.2.0](https://github.com/MerzoukeMansouri/sith/compare/v1.1.0...v1.2.0) (2026-05-16)
+
+
+### Features
+
+* remove GitHub Packages publishing and update metadata ([6b11d64](https://github.com/MerzoukeMansouri/sith/commit/6b11d64d99dcd995923c5d77e8d55001706d2107))
+
 # [1.1.0](https://github.com/MerzoukeMansouri/sith/compare/v1.0.0...v1.1.0) (2026-05-16)
 
 
