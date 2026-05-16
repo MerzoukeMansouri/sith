@@ -1,3 +1,10 @@
+# [1.1.0](https://github.com/MerzoukeMansouri/sith/compare/v1.0.0...v1.1.0) (2026-05-16)
+
+
+### Features
+
+* update release workflow to use explicit release info step ([3bd150c](https://github.com/MerzoukeMansouri/sith/commit/3bd150c70d2dc209008d2330d32238fdd3370bd8))
+
 # 1.0.0 (2026-05-16)
 
 

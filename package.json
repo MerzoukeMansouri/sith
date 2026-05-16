@@ -1,6 +1,6 @@
 {
   "name": "@merzouke-mansouri/sith",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Turn your context to the dark side. Standardize and share your OpenCode setup with a fully dockerized environment, designed for seamless collaboration and CI integration.",
   "type": "module",
   "repository": {
