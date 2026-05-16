@@ -1,3 +1,10 @@
+# [1.3.0](https://github.com/MerzoukeMansouri/sith/compare/v1.2.0...v1.3.0) (2026-05-16)
+
+
+### Features
+
+* add GitHub Packages publishing and update package name ([f9ca39b](https://github.com/MerzoukeMansouri/sith/commit/f9ca39bb7f592a0c9bb4476385554f786dc1cc9d))
+
 # [1.2.0](https://github.com/MerzoukeMansouri/sith/compare/v1.1.0...v1.2.0) (2026-05-16)
 
 
