@@ -1,3 +1,10 @@
+## [1.5.4](https://github.com/MerzoukeMansouri/sith/compare/v1.5.3...v1.5.4) (2026-05-16)
+
+
+### Bug Fixes
+
+* update npm config to use public registry via RUN command ([2439108](https://github.com/MerzoukeMansouri/sith/commit/243910880b16f4ae8a5918176996e814307f123d))
+
 ## [1.5.3](https://github.com/MerzoukeMansouri/sith/compare/v1.5.2...v1.5.3) (2026-05-16)
 
 
