@@ -16,7 +16,6 @@ No installation required! Run with npx:
 npx @m14i/sith
 ```
 
-Available from both npm and GitHub Packages.
 
 ### Interactive Menu (Default)
 
@@ -111,7 +110,7 @@ Automated releases using semantic-release and conventional commits.
    - Analyzes commits and determines version bump
    - Generates CHANGELOG.md
    - Creates GitHub release
-   - Publishes to npm and GitHub Packages in parallel
+   - Publishes to npm
 
 **Example:**
 ```bash
