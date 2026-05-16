@@ -13,14 +13,15 @@ Standardize and share your OpenCode setup with a fully dockerized environment, d
 No installation required! Run with npx:
 
 ```bash
-npx @m14i/sith
+npx sith
 ```
 
+Available from both npm and GitHub Packages.
 
 ### Interactive Menu (Default)
 
 ```bash
-npx @m14i/sith
+npx sith
 ```
 
 This will present you with options to:
@@ -31,9 +32,9 @@ This will present you with options to:
 Build the Docker image directly:
 
 ```bash
-npx @m14i/sith docker --build
+npx sith docker --build
 # or
-npx @m14i/sith --build
+npx sith --build
 ```
 
 ### Interactive Shell
@@ -41,7 +42,7 @@ npx @m14i/sith --build
 Run an interactive shell in the Docker container:
 
 ```bash
-npx @m14i/sith shell
+npx sith shell
 ```
 
 This will:
@@ -52,13 +53,13 @@ This will:
 
 ## Commands
 
-### `npx @m14i/sith` (default)
+### `npx sith` (default)
 Launches the interactive menu.
 
-### `npx @m14i/sith docker --build`
+### `npx sith docker --build`
 Build the Docker image.
 
-### `npx @m14i/sith shell`
+### `npx sith shell`
 Run interactive shell in the Docker container.
 
 ## Features
@@ -110,7 +111,7 @@ Automated releases using semantic-release and conventional commits.
    - Analyzes commits and determines version bump
    - Generates CHANGELOG.md
    - Creates GitHub release
-   - Publishes to npm
+   - Publishes to npm and GitHub Packages in parallel
 
 **Example:**
 ```bash
