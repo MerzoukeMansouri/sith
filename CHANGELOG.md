@@ -1,3 +1,10 @@
+## [1.5.3](https://github.com/MerzoukeMansouri/sith/compare/v1.5.2...v1.5.3) (2026-05-16)
+
+
+### Bug Fixes
+
+* pdate build script and add docker to files ([530e6d6](https://github.com/MerzoukeMansouri/sith/commit/530e6d65e14072ca5905424cf8c2e73728938ae8))
+
 ## [1.5.2](https://github.com/MerzoukeMansouri/sith/compare/v1.5.1...v1.5.2) (2026-05-16)
 
 
