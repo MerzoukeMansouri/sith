@@ -32,7 +32,7 @@
       in
       {
         devShells.default = pkgs.mkShell {
-          name = "opencode-ci-environment";
+          name = "sith-environment";
 
           buildInputs = packages;
 

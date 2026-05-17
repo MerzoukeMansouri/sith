@@ -28,7 +28,7 @@ docker --version  # Devrait afficher 20.10 ou plus
 ```bash
 git clone <votre-repo>
 cd opencode-docker
-docker build -f docker/Dockerfile -t opencode-ci:latest .
+docker build -f docker/Dockerfile -t sith:latest .
 ```
 
 ### 3. Authentification
@@ -59,7 +59,7 @@ nano .env  # Ajoutez: GITHUB_TOKEN=ghp_votre_token_ici
 
 **Méthode 1 - Docker Compose** :
 ```bash
-docker-compose run opencode-ci analyze
+docker-compose run sith analyze
 ```
 
 **Méthode 2 - Docker run manuel** :
@@ -68,13 +68,13 @@ docker-compose run opencode-ci analyze
 docker run --rm \
   -v $(pwd):/workspace \
   -v ~/.local/share/opencode/auth.json:/config/auth.json:ro \
-  opencode-ci:latest analyze
+  sith:latest analyze
 
 # Ou avec GITHUB_TOKEN
 docker run --rm \
   -v $(pwd):/workspace \
   -e GITHUB_TOKEN=$GITHUB_TOKEN \
-  opencode-ci:latest analyze
+  sith:latest analyze
 ```
 
 Le rapport sera dans `./opencode-output/analysis-report.md`
@@ -122,12 +122,12 @@ PR_NUMBER=42 docker-compose --profile review up
 1. **Publier l'image Docker** (une fois):
 ```bash
 # Option A: GitHub Container Registry (gratuit)
-docker tag opencode-ci:latest ghcr.io/votre-user/opencode-ci:latest
-docker push ghcr.io/votre-user/opencode-ci:latest
+docker tag sith:latest ghcr.io/votre-user/opencode-ci:latest
+docker push ghcr.io/votre-user/sith:latest
 
 # Option B: Docker Hub
-docker tag opencode-ci:latest votre-user/opencode-ci:latest
-docker push votre-user/opencode-ci:latest
+docker tag sith:latest votre-user/opencode-ci:latest
+docker push votre-user/sith:latest
 ```
 
 2. **Copier les workflows**:
@@ -139,9 +139,9 @@ cp examples/github-actions/*.yml .github/workflows/
 3. **Modifier les workflows** pour utiliser votre image:
 ```bash
 # Remplacer dans les fichiers .yml:
-# uses: docker://opencode-ci:latest
+# uses: docker://sith:latest
 # par
-# uses: docker://ghcr.io/votre-user/opencode-ci:latest
+# uses: docker://ghcr.io/votre-user/sith:latest
 ```
 
 4. **Commit et push**:
@@ -170,14 +170,14 @@ cp examples/gitlab-ci/.gitlab-ci.yml .gitlab-ci.yml
 3. **Publier l'image** dans le registry GitLab:
 ```bash
 docker login registry.gitlab.com
-docker tag opencode-ci:latest registry.gitlab.com/votre-groupe/votre-projet/opencode-ci:latest
-docker push registry.gitlab.com/votre-groupe/votre-projet/opencode-ci:latest
+docker tag sith:latest registry.gitlab.com/votre-groupe/votre-projet/sith:latest
+docker push registry.gitlab.com/votre-groupe/votre-projet/sith:latest
 ```
 
 4. **Mettre à jour `.gitlab-ci.yml`**:
 ```yaml
 variables:
-  DOCKER_IMAGE: registry.gitlab.com/votre-groupe/votre-projet/opencode-ci:latest
+  DOCKER_IMAGE: registry.gitlab.com/votre-groupe/votre-projet/sith:latest
 ```
 
 5. **Commit et push**:
@@ -191,19 +191,19 @@ git push
 
 ### Analyser rapidement un projet
 ```bash
-docker run --rm -v $(pwd):/workspace -e GITHUB_TOKEN=$GITHUB_TOKEN opencode-ci analyze
+docker run --rm -v $(pwd):/workspace -e GITHUB_TOKEN=$GITHUB_TOKEN sith analyze
 ```
 
 ### Générer la documentation
 ```bash
-docker run --rm -v $(pwd):/workspace -e GITHUB_TOKEN=$GITHUB_TOKEN opencode-ci document
+docker run --rm -v $(pwd):/workspace -e GITHUB_TOKEN=$GITHUB_TOKEN sith document
 ```
 
 ### Reviewer une PR locale
 ```bash
 # Depuis votre branche
 docker run --rm -v $(pwd):/workspace -e GITHUB_TOKEN=$GITHUB_TOKEN \
-  opencode-ci review-pr --base=main --head=$(git branch --show-current)
+  sith review-pr --base=main --head=$(git branch --show-current)
 ```
 
 ### Utiliser un modèle différent
@@ -212,12 +212,12 @@ docker run --rm -v $(pwd):/workspace -e GITHUB_TOKEN=$GITHUB_TOKEN \
 docker run --rm -v $(pwd):/workspace \
   -e GITHUB_TOKEN=$GITHUB_TOKEN \
   -e OPENCODE_MODEL=github-copilot/gpt-5.5 \
-  opencode-ci analyze
+  sith analyze
 ```
 
 ### Corriger automatiquement le linting
 ```bash
-docker run --rm -v $(pwd):/workspace -e GITHUB_TOKEN=$GITHUB_TOKEN opencode-ci fix-lint
+docker run --rm -v $(pwd):/workspace -e GITHUB_TOKEN=$GITHUB_TOKEN sith fix-lint
 ```
 
 ## Dépannage rapide
@@ -231,7 +231,7 @@ echo $GITHUB_TOKEN
 export GITHUB_TOKEN=ghp_your_token_here
 
 # Puis relancez
-docker run --rm -v $(pwd):/workspace -e GITHUB_TOKEN=$GITHUB_TOKEN opencode-ci analyze
+docker run --rm -v $(pwd):/workspace -e GITHUB_TOKEN=$GITHUB_TOKEN sith analyze
 ```
 
 ### Erreur: "GitHub Copilot oauth"
@@ -240,14 +240,14 @@ docker run --rm -v $(pwd):/workspace -e GITHUB_TOKEN=$GITHUB_TOKEN opencode-ci a
 # Le token doit avoir: repo, read:org, copilot
 
 # Testez l'authentification
-docker run --rm -e GITHUB_TOKEN=$GITHUB_TOKEN opencode-ci \
+docker run --rm -e GITHUB_TOKEN=$GITHUB_TOKEN sith \
   sh -c "opencode providers list"
 ```
 
 ### Erreur: "Permission denied"
 ```bash
 # Reconstruisez l'image
-docker build --no-cache -f docker/Dockerfile -t opencode-ci:latest .
+docker build --no-cache -f docker/Dockerfile -t sith:latest .
 ```
 
 ### L'image ne se construit pas
@@ -257,7 +257,7 @@ docker info
 
 # Nettoyez et reconstruisez
 docker system prune -f
-docker build --no-cache -f docker/Dockerfile -t opencode-ci:latest .
+docker build --no-cache -f docker/Dockerfile -t sith:latest .
 ```
 
 ### OpenCode ne trouve pas les fichiers
@@ -280,17 +280,17 @@ docker run --rm -v /incorrect/path:/workspace ...
 docker run --rm -v $(pwd):/workspace \
   -e GITHUB_TOKEN=$GITHUB_TOKEN \
   -e OPENCODE_LOG_LEVEL=DEBUG \
-  opencode-ci analyze
+  sith analyze
 
 # Lister les modèles disponibles
-docker run --rm -e GITHUB_TOKEN=$GITHUB_TOKEN opencode-ci \
+docker run --rm -e GITHUB_TOKEN=$GITHUB_TOKEN sith \
   sh -c "opencode models github-copilot"
 
 # Entrer dans le container pour debug
 docker run --rm -it -v $(pwd):/workspace \
   -e GITHUB_TOKEN=$GITHUB_TOKEN \
   --entrypoint /bin/bash \
-  opencode-ci
+  sith
 
 # Nettoyer les anciens résultats
 rm -rf opencode-output/
@@ -302,11 +302,11 @@ Ajoutez à votre `~/.bashrc` ou `~/.zshrc` :
 
 ```bash
 # Alias OpenCode
-alias oc-analyze='docker run --rm -v $(pwd):/workspace -e GITHUB_TOKEN=$GITHUB_TOKEN opencode-ci analyze'
-alias oc-document='docker run --rm -v $(pwd):/workspace -e GITHUB_TOKEN=$GITHUB_TOKEN opencode-ci document'
-alias oc-review='docker run --rm -v $(pwd):/workspace -e GITHUB_TOKEN=$GITHUB_TOKEN opencode-ci review-pr'
-alias oc-lint='docker run --rm -v $(pwd):/workspace -e GITHUB_TOKEN=$GITHUB_TOKEN opencode-ci fix-lint'
-alias oc-test='docker run --rm -v $(pwd):/workspace -e GITHUB_TOKEN=$GITHUB_TOKEN opencode-ci test'
+alias oc-analyze='docker run --rm -v $(pwd):/workspace -e GITHUB_TOKEN=$GITHUB_TOKEN sith analyze'
+alias oc-document='docker run --rm -v $(pwd):/workspace -e GITHUB_TOKEN=$GITHUB_TOKEN sith document'
+alias oc-review='docker run --rm -v $(pwd):/workspace -e GITHUB_TOKEN=$GITHUB_TOKEN sith review-pr'
+alias oc-lint='docker run --rm -v $(pwd):/workspace -e GITHUB_TOKEN=$GITHUB_TOKEN sith fix-lint'
+alias oc-test='docker run --rm -v $(pwd):/workspace -e GITHUB_TOKEN=$GITHUB_TOKEN sith test'
 
 # Utilisation:
 # oc-analyze

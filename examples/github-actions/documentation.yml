@@ -22,7 +22,7 @@ jobs:
         uses: actions/checkout@v4
       
       - name: Generate Documentation
-        uses: docker://opencode-ci:latest
+        uses: docker://sith:latest
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           OPENCODE_MODEL: github-copilot/claude-sonnet-4.5

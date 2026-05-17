@@ -4,7 +4,7 @@ stages:
   - document
 
 variables:
-  DOCKER_IMAGE: opencode-ci:latest
+  DOCKER_IMAGE: sith:latest
   OPENCODE_OUTPUT: opencode-output
   OPENCODE_MODEL: github-copilot/claude-sonnet-4.5
 

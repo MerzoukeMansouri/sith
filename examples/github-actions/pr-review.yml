@@ -24,7 +24,7 @@ jobs:
           git fetch origin ${{ github.base_ref }}:${{ github.base_ref }}
       
       - name: Run OpenCode PR Review
-        uses: docker://opencode-ci:latest
+        uses: docker://sith:latest
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           OPENCODE_MODEL: github-copilot/claude-sonnet-4.5

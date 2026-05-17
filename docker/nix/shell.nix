@@ -18,7 +18,7 @@ let
 in
 
 pkgs.mkShell {
-  name = "opencode-ci-environment";
+  name = "sith-environment";
   
   # Packages loaded from nix-config/packages.json
   buildInputs = packages;

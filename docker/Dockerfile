@@ -1,8 +1,8 @@
 # OpenCode Docker - Nix-based Image with Token Optimization Skills
 # Version 2.3.0 - Multi-stage build with non-root user and improved security
 #
-# Build: docker build -t opencode-ci:latest .
-# Run:   docker run -v $(pwd):/workspace -e GITHUB_TOKEN=$GITHUB_TOKEN opencode-ci:latest analyze
+# Build: docker build -t sith:latest .
+# Run:   docker run -v $(pwd):/workspace -e GITHUB_TOKEN=$GITHUB_TOKEN sith:latest analyze
 
 # ============================================================================
 # Stage 1: Builder - Setup environment and install dependencies
