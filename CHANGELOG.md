@@ -1,3 +1,10 @@
+## [1.7.6](https://github.com/MerzoukeMansouri/sith/compare/v1.7.5...v1.7.6) (2026-05-17)
+
+
+### Bug Fixes
+
+* update Dockerfile paths and user to root for Nix compatibility ([21ccb82](https://github.com/MerzoukeMansouri/sith/commit/21ccb82c2fe7d0431433509434f7917deaf06c1d))
+
 ## [1.7.5](https://github.com/MerzoukeMansouri/sith/compare/v1.7.4...v1.7.5) (2026-05-17)
 
 
