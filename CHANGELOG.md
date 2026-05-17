@@ -1,3 +1,10 @@
+# [1.7.0](https://github.com/MerzoukeMansouri/sith/compare/v1.6.1...v1.7.0) (2026-05-17)
+
+
+### Features
+
+* add docker image signing and sbom generation ([cd6cc99](https://github.com/MerzoukeMansouri/sith/commit/cd6cc991cbdff03c56ee1a8d061af19994d3fd66))
+
 ## [1.6.1](https://github.com/MerzoukeMansouri/sith/compare/v1.6.0...v1.6.1) (2026-05-17)
 
 
