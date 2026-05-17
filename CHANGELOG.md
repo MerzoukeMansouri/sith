@@ -1,3 +1,10 @@
+## [1.7.3](https://github.com/MerzoukeMansouri/sith/compare/v1.7.2...v1.7.3) (2026-05-17)
+
+
+### Bug Fixes
+
+* correct typo in prebuiltImage URL ([e5317a5](https://github.com/MerzoukeMansouri/sith/commit/e5317a50000211d4e847cb372ab31672d3cd8160))
+
 ## [1.7.2](https://github.com/MerzoukeMansouri/sith/compare/v1.7.1...v1.7.2) (2026-05-17)
 
 
