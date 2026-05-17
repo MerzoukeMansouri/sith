@@ -65,7 +65,9 @@ RUN mkdir -p /home/sith && \
     echo "sith:x:1000:" >> /etc/group && \
     mkdir -p /home/sith/.opencode /home/sith/.npm-global /workspace && \
     cp -r /root/.opencode/* /home/sith/.opencode/ 2>/dev/null || true && \
-    chown -R 1000:1000 /home/sith /workspace /opt/sith
+    mkdir -p /nix/var/nix/profiles/per-user/sith && \
+    chown -R 1000:1000 /home/sith /workspace /opt/sith /nix/var/nix/profiles/per-user/sith && \
+    chmod 755 /nix/var/nix/profiles/per-user
 
 # Copier la configuration npm pour l'utilisateur sith
 RUN echo "registry=https://registry.npmjs.org/" > /home/sith/.npmrc && \
