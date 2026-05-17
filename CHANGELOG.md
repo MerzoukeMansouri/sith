@@ -1,3 +1,10 @@
+# [1.6.0](https://github.com/MerzoukeMansouri/sith/compare/v1.5.4...v1.6.0) (2026-05-17)
+
+
+### Features
+
+* add docker build and push job to workflow ([aa329e0](https://github.com/MerzoukeMansouri/sith/commit/aa329e0eb94d5eb06077ff88bfac881822a450f0))
+
 ## [1.5.4](https://github.com/MerzoukeMansouri/sith/compare/v1.5.3...v1.5.4) (2026-05-16)
 
 
