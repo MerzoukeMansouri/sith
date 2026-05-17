@@ -1,3 +1,10 @@
+# [1.10.0](https://github.com/MerzoukeMansouri/sith/compare/v1.9.1...v1.10.0) (2026-05-17)
+
+
+### Features
+
+* add --update flag for manual version checking ([49a193a](https://github.com/MerzoukeMansouri/sith/commit/49a193a50bf68e78609290400c31166227c558f3))
+
 ## [1.9.1](https://github.com/MerzoukeMansouri/sith/compare/v1.9.0...v1.9.1) (2026-05-17)
 
 
