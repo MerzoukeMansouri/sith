@@ -1,3 +1,10 @@
+## [1.7.1](https://github.com/MerzoukeMansouri/sith/compare/v1.7.0...v1.7.1) (2026-05-17)
+
+
+### Bug Fixes
+
+* correct user creation and permissions in Dockerfile ([e187149](https://github.com/MerzoukeMansouri/sith/commit/e1871499529150f66a555f8f745ab3d25266a019))
+
 # [1.7.0](https://github.com/MerzoukeMansouri/sith/compare/v1.6.1...v1.7.0) (2026-05-17)
 
 
