@@ -25,10 +25,11 @@ COPY docker/nix/ /opt/sith/nix/
 # Configurer npm pour utiliser le registry public
 RUN echo "registry=https://registry.npmjs.org/" > /root/.npmrc
 
-# Generate flake.lock and pre-build environment
+# Generate flake.lock and pre-build environment with profile
 RUN cd /opt/sith/nix && \
     nix flake lock && \
-    nix develop --command echo '✅ Flake environment cached'
+    nix develop --profile /opt/sith/nix-profile --command echo '✅ Flake environment cached' && \
+    nix-store --gc --print-dead
 
 # Installer OpenCode CLI via script officiel
 RUN nix-shell /opt/sith/nix/shell.nix --run " \
@@ -107,8 +108,8 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
 # Répertoire de travail pour les projets
 WORKDIR /workspace
 
-# Point d'entrée via nix develop (flakes)
-ENTRYPOINT ["sh", "-c", "cd /opt/sith/nix && nix develop --command"]
+# Point d'entrée via nix develop (flakes) with cached profile
+ENTRYPOINT ["sh", "-c", "cd /opt/sith/nix && nix develop --offline --command"]
 
 # Commande par défaut
 CMD ["opencode --help"]

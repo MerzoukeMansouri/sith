@@ -1,11 +1,23 @@
 #!/usr/bin/env node
 
 import { Command } from 'commander';
+import { readFileSync } from 'fs';
+import { fileURLToPath } from 'url';
+import { dirname, join } from 'path';
+import updateNotifier from 'update-notifier';
 import { dockerCommand, runShellDirect } from './commands/docker.js';
 
+// Import package.json for version and update checks
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+const pkg = JSON.parse(readFileSync(join(__dirname, '../package.json'), 'utf-8'));
+
 const PROGRAM_NAME = 'sith';
-const PROGRAM_VERSION = '1.0.0';
+const PROGRAM_VERSION = pkg.version;
 const PROGRAM_DESCRIPTION = 'Turn your context to the dark side. Standardize and share your OpenCode setup with a fully dockerized environment, designed for seamless collaboration and CI integration.';
+
+// Check for updates
+updateNotifier({ pkg }).notify();
 
 function createProgram(): Command {
   const program = new Command();

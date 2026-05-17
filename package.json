@@ -40,7 +40,8 @@
     "commander": "^12.1.0",
     "execa": "^9.0.0",
     "ink": "^7.0.3",
-    "react": "^19.2.6"
+    "react": "^19.2.6",
+    "update-notifier": "^7.3.1"
   },
   "devDependencies": {
     "@semantic-release/changelog": "^6.0.3",
@@ -49,6 +50,7 @@
     "@semantic-release/npm": "^12.0.1",
     "@types/node": "^20.12.7",
     "@types/react": "^19.2.14",
+    "@types/update-notifier": "^6.0.8",
     "@vercel/ncc": "^0.38.1",
     "semantic-release": "^24.2.0",
     "tsx": "^4.7.2",
