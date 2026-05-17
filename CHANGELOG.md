@@ -1,3 +1,10 @@
+## [1.7.2](https://github.com/MerzoukeMansouri/sith/compare/v1.7.1...v1.7.2) (2026-05-17)
+
+
+### Bug Fixes
+
+* ensure lowercase repository name in docker image references ([e482c8a](https://github.com/MerzoukeMansouri/sith/commit/e482c8a596c7ead8b9acde9e1ffa89387aa509e1))
+
 ## [1.7.1](https://github.com/MerzoukeMansouri/sith/compare/v1.7.0...v1.7.1) (2026-05-17)
 
 
