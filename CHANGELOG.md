@@ -1,3 +1,10 @@
+# [1.13.0](https://github.com/MerzoukeMansouri/sith/compare/v1.12.0...v1.13.0) (2026-05-17)
+
+
+### Features
+
+* new TUI style ([6324086](https://github.com/MerzoukeMansouri/sith/commit/6324086bd305dc780c01f69feaf13fca74b97d56))
+
 # [1.12.0](https://github.com/MerzoukeMansouri/sith/compare/v1.11.0...v1.12.0) (2026-05-17)
 
 
