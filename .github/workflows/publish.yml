@@ -17,16 +17,16 @@ jobs:
       new-release-published: ${{ steps.release-info.outputs.new-release-published }}
       new-release-version: ${{ steps.release-info.outputs.new-release-version }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           fetch-depth: 0
           persist-credentials: false
 
-      - uses: pnpm/action-setup@v4
+      - uses: pnpm/action-setup@v5
         with:
           version: 9
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version: '25'
           cache: 'pnpm'
@@ -77,15 +77,15 @@ jobs:
     outputs:
       new-release-version: ${{ needs.release.outputs.new-release-version }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           ref: v${{ needs.release.outputs.new-release-version }}
 
-      - uses: pnpm/action-setup@v4
+      - uses: pnpm/action-setup@v5
         with:
           version: 9
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version: '25'
           cache: 'pnpm'
@@ -108,7 +108,7 @@ jobs:
       packages: write
       id-token: write  # Required for cosign
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           ref: v${{ needs.publish-npm.outputs.new-release-version }}
 

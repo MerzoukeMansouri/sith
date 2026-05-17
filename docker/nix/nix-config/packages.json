@@ -62,6 +62,12 @@
       "packages": [
         "unzip"
       ]
+    },
+    "media": {
+      "description": "Media tools",
+      "packages": [
+        "catimg"
+      ]
     }
   }
 }
