@@ -19,6 +19,9 @@ RUN echo "sandbox = false" >> /etc/nix/nix.conf && \
 COPY docker/skills/rtk-config.toml /opt/sith/skills/rtk-config.toml
 COPY docker/skills/opencode-skills-config.json /opt/sith/skills/opencode-skills-config.json
 
+# Copier les assets (logo, etc.)
+COPY assets/ /opt/sith/assets/
+
 # Copier les fichiers Nix (scripts, config, shell.nix)
 COPY docker/nix/ /opt/sith/nix/
 
