@@ -1,3 +1,10 @@
+## [1.14.1](https://github.com/MerzoukeMansouri/sith/compare/v1.14.0...v1.14.1) (2026-05-17)
+
+
+### Bug Fixes
+
+* update Docker image name from opencode-ci to sith in documentation ([3267146](https://github.com/MerzoukeMansouri/sith/commit/3267146b5d0f9c1160f058cbfaeee73399f875ab))
+
 # [1.14.0](https://github.com/MerzoukeMansouri/sith/compare/v1.13.1...v1.14.0) (2026-05-17)
 
 
