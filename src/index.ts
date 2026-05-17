@@ -5,6 +5,7 @@ import { readFileSync } from 'fs';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 import updateNotifier from 'update-notifier';
+import chalk from 'chalk';
 import { dockerCommand, runShellDirect } from './commands/docker.js';
 
 // Import package.json for version and update checks
@@ -16,8 +17,33 @@ const PROGRAM_NAME = 'sith';
 const PROGRAM_VERSION = pkg.version;
 const PROGRAM_DESCRIPTION = 'Turn your context to the dark side. Standardize and share your OpenCode setup with a fully dockerized environment, designed for seamless collaboration and CI integration.';
 
-// Check for updates
-updateNotifier({ pkg }).notify();
+// Check for updates (automatic background check)
+const notifier = updateNotifier({ pkg });
+notifier.notify();
+
+async function checkForUpdates() {
+  console.log(chalk.cyan('Checking for updates...'));
+
+  // Force update check by setting updateCheckInterval to 0
+  const notifier = updateNotifier({
+    pkg,
+    updateCheckInterval: 0
+  });
+
+  // Fetch the latest version
+  await notifier.fetchInfo();
+
+  const update = notifier.update;
+
+  if (update && update.latest !== pkg.version) {
+    console.log();
+    console.log(chalk.green(`Update available: ${chalk.dim(pkg.version)} → ${chalk.bold(update.latest)}`));
+    console.log(chalk.cyan(`Run ${chalk.bold(`npm install -g ${pkg.name}`)} to update`));
+    console.log();
+  } else {
+    console.log(chalk.green(`✓ You're on the latest version (${pkg.version})`));
+  }
+}
 
 function createProgram(): Command {
   const program = new Command();
@@ -28,12 +54,15 @@ function createProgram(): Command {
     .version(PROGRAM_VERSION)
     .option('--pull', 'Pull prebuilt Docker image (recommended)')
     .option('--build', 'Build the Docker image from scratch')
-    .option('--it', 'Launch interactive shell in Docker container');
+    .option('--it', 'Launch interactive shell in Docker container')
+    .option('--update', 'Check for updates');
 
   // Default action - show interactive menu or run shell with --it
   program
     .action(async (options) => {
-      if (options.it) {
+      if (options.update) {
+        await checkForUpdates();
+      } else if (options.it) {
         await runShellDirect();
       } else {
         await dockerCommand(options);
