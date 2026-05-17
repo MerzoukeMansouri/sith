@@ -9,10 +9,11 @@
 # ============================================================================
 FROM nixos/nix:2.19.2 AS builder
 
-# Configuration Nix pour permettre les builds
+# Configuration Nix pour permettre les builds et activer flakes
 # Note: sandbox=false required for Docker-in-Docker compatibility
 RUN echo "sandbox = false" >> /etc/nix/nix.conf && \
-    echo "filter-syscalls = false" >> /etc/nix/nix.conf
+    echo "filter-syscalls = false" >> /etc/nix/nix.conf && \
+    echo "experimental-features = nix-command flakes" >> /etc/nix/nix.conf
 
 # Copier les fichiers de configuration des skills
 COPY docker/skills/rtk-config.toml /opt/sith/skills/rtk-config.toml
@@ -24,9 +25,10 @@ COPY docker/nix/ /opt/sith/nix/
 # Configurer npm pour utiliser le registry public
 RUN echo "registry=https://registry.npmjs.org/" > /root/.npmrc
 
-# Pré-charger l'environnement Nix (installe tous les packages)
-# Cela cache les dépendances dans le layer Docker
-RUN nix-shell /opt/sith/nix/shell.nix --run "echo '✅ Environment cached'"
+# Generate flake.lock and pre-build environment
+RUN cd /opt/sith/nix && \
+    nix flake lock && \
+    nix develop --command echo '✅ Flake environment cached'
 
 # Installer OpenCode CLI via script officiel
 RUN nix-shell /opt/sith/nix/shell.nix --run " \
@@ -46,10 +48,11 @@ LABEL description="OpenCode CI/CD avec Nix, GitHub Copilot et skills d'optimisat
 LABEL version="2.3.0"
 LABEL org.opencontainers.image.source="https://github.com/MerzoukeMansouri/sith"
 
-# Configuration Nix pour permettre les builds
+# Configuration Nix pour permettre les builds et activer flakes
 # Note: sandbox=false required for Docker-in-Docker compatibility
 RUN echo "sandbox = false" >> /etc/nix/nix.conf && \
-    echo "filter-syscalls = false" >> /etc/nix/nix.conf
+    echo "filter-syscalls = false" >> /etc/nix/nix.conf && \
+    echo "experimental-features = nix-command flakes" >> /etc/nix/nix.conf
 
 # Copier les fichiers de configuration des skills depuis builder
 COPY --from=builder /opt/sith/ /opt/sith/
@@ -99,13 +102,13 @@ ENV CAVEMAN_AUTO=true
 # Healthcheck pour vérifier que l'environnement est prêt
 # Note: RTK check is conditional on RTK_ENABLED to avoid false failures
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-    CMD nix-shell /opt/sith/nix/shell.nix --run "opencode --version && ([ \"\$RTK_ENABLED\" = \"false\" ] || command -v rtk)" || exit 1
+    CMD cd /opt/sith/nix && nix develop --command sh -c "opencode --version && ([ \"\$RTK_ENABLED\" = \"false\" ] || command -v rtk)" || exit 1
 
 # Répertoire de travail pour les projets
 WORKDIR /workspace
 
-# Point d'entrée via nix-shell
-ENTRYPOINT ["nix-shell", "/opt/sith/nix/shell.nix", "--run"]
+# Point d'entrée via nix develop (flakes)
+ENTRYPOINT ["sh", "-c", "cd /opt/sith/nix && nix develop --command"]
 
 # Commande par défaut
 CMD ["opencode --help"]

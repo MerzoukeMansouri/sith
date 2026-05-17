@@ -398,10 +398,8 @@ async function runShell(): Promise<void> {
     `${process.cwd()}:${DOCKER_CONFIG.workspaceMount}`,
     "-e",
     `GITHUB_TOKEN=${process.env.GITHUB_TOKEN || ""}`,
-    "--entrypoint",
-    "nix-shell",
     DOCKER_CONFIG.imageName,
-    DOCKER_CONFIG.shellEntrypoint,
+    "bash",
   ];
 
   try {
