@@ -1,3 +1,10 @@
+# [1.8.0](https://github.com/MerzoukeMansouri/sith/compare/v1.7.6...v1.8.0) (2026-05-17)
+
+
+### Features
+
+* update README and commands to use global sith CLI instead of npx ([c49c700](https://github.com/MerzoukeMansouri/sith/commit/c49c700827f240982b1b320087155fb375890cb5))
+
 ## [1.7.6](https://github.com/MerzoukeMansouri/sith/compare/v1.7.5...v1.7.6) (2026-05-17)
 
 
