@@ -7,6 +7,7 @@ import { dirname, join } from 'path';
 import updateNotifier from 'update-notifier';
 import chalk from 'chalk';
 import { dockerCommand, runShellDirect } from './commands/docker.js';
+import { renderTerminalUI } from './components/TerminalUI.js';
 
 // Import package.json for version and update checks
 const __filename = fileURLToPath(import.meta.url);
@@ -55,17 +56,22 @@ function createProgram(): Command {
     .option('--pull', 'Pull prebuilt Docker image (recommended)')
     .option('--build', 'Build the Docker image from scratch')
     .option('--it', 'Launch interactive shell in Docker container')
-    .option('--update', 'Check for updates');
+    .option('--update', 'Check for updates')
+    .option('--legacy', 'Use legacy menu interface');
 
-  // Default action - show interactive menu or run shell with --it
+  // Default action - show terminal UI or legacy menu
   program
     .action(async (options) => {
       if (options.update) {
         await checkForUpdates();
       } else if (options.it) {
         await runShellDirect();
-      } else {
+      } else if (options.legacy || options.pull || options.build) {
+        // Use legacy menu for explicit pull/build or --legacy flag
         await dockerCommand(options);
+      } else {
+        // Default: show new terminal UI
+        renderTerminalUI();
       }
     });
 
