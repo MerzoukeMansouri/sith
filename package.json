@@ -1,6 +1,6 @@
 {
   "name": "@m14i/sith",
-  "version": "1.7.3",
+  "version": "1.7.4",
   "description": "Turn your context to the dark side. Standardize and share your OpenCode setup with a fully dockerized environment, designed for seamless collaboration and CI integration.",
   "type": "module",
   "repository": {

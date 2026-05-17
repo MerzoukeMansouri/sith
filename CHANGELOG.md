@@ -1,3 +1,10 @@
+## [1.7.4](https://github.com/MerzoukeMansouri/sith/compare/v1.7.3...v1.7.4) (2026-05-17)
+
+
+### Bug Fixes
+
+* add nix profile directory and permissions for sith user ([b7da4ef](https://github.com/MerzoukeMansouri/sith/commit/b7da4ef3994c79d4a4fc27bfe24ceac6a9c59815))
+
 ## [1.7.3](https://github.com/MerzoukeMansouri/sith/compare/v1.7.2...v1.7.3) (2026-05-17)
 
 
