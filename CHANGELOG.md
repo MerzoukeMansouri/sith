@@ -1,3 +1,10 @@
+# [1.11.0](https://github.com/MerzoukeMansouri/sith/compare/v1.10.0...v1.11.0) (2026-05-17)
+
+
+### Features
+
+* update README and auto-detect GitHub token via gh CLI ([042bf01](https://github.com/MerzoukeMansouri/sith/commit/042bf01807f47df1f8b5f7310bf1b12cb51fef65))
+
 # [1.10.0](https://github.com/MerzoukeMansouri/sith/compare/v1.9.1...v1.10.0) (2026-05-17)
 
 
