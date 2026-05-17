@@ -10,4 +10,5 @@ export interface BuildingSpinnerProps {
 
 export interface DockerCommandOptions {
   build?: boolean;
+  pull?: boolean;
 }

@@ -10,44 +10,59 @@ Standardize and share your OpenCode setup with a fully dockerized environment, d
 
 ## Usage
 
-No installation required! Run with npx:
+### Quick Start
 
 ```bash
+# Interactive menu (recommended)
 npx @m14i/sith
-```
 
-### Interactive Menu (Default)
+# Pull prebuilt image directly
+npx @m14i/sith --pull
 
-```bash
-npx @m14i/sith
-```
-
-This will present you with options to:
-- 🔨 Build Docker image
-
-### Quick Build
-
-Build the Docker image directly:
-
-```bash
-npx @m14i/sith docker --build
-# or
-npx @m14i/sith --build
-```
-
-### Interactive Shell
-
-Run an interactive shell in the Docker container:
-
-```bash
+# Run shell
 npx @m14i/sith shell
 ```
 
-This will:
-- Mount current directory to `/workspace`
-- Load full Nix environment with all tools
-- Make OpenCode CLI available
-- Pass your `GITHUB_TOKEN` environment variable
+### Distribution Options
+
+| Method | Command | Speed | Trust Model | Use Case |
+|--------|---------|-------|-------------|----------|
+| **Prebuilt (Recommended)** | `npx @m14i/sith --pull` | ⚡ Fast | GitHub Actions + Cosign | Production, CI/CD |
+| **Local Build** | `npx @m14i/sith --build` | 🐌 Slow | Your machine | Air-gapped, custom builds |
+
+### Commands
+
+| Command | Description |
+|---------|-------------|
+| `npx @m14i/sith` | Interactive menu with options |
+| `npx @m14i/sith --pull` | Pull prebuilt image from GHCR |
+| `npx @m14i/sith --build` | Build Docker image from scratch |
+| `npx @m14i/sith shell` | Launch interactive shell in container |
+| `npx @m14i/sith --help` | Show all available commands |
+
+### Prebuilt Image Details
+
+**Pull and verify:**
+```bash
+# Pull (supports linux/amd64 and linux/arm64)
+npx @m14i/sith --pull
+
+# Or use Docker directly
+docker pull ghcr.io/merzoukemanouri/sith:latest
+
+# Verify signature (optional)
+cosign verify \
+  --certificate-identity-regexp="https://github.com/MerzoukeMansouri/sith" \
+  --certificate-oidc-issuer="https://token.actions.githubusercontent.com" \
+  ghcr.io/merzoukemanouri/sith:latest
+```
+
+**Benefits:**
+- ✅ Fast - no build time
+- ✅ Multi-platform - amd64 and arm64
+- ✅ Signed - cosign verification
+- ✅ SBOM - supply chain transparency
+- ✅ Auto-updated - tracks releases
 
 ## Authentication
 
@@ -78,24 +93,44 @@ npx @m14i/sith shell
 export GITHUB_TOKEN=$(gh auth token)
 ```
 
-## Commands
-
-### `npx @m14i/sith` (default)
-Launches the interactive menu.
-
-### `npx @m14i/sith docker --build`
-Build the Docker image.
-
-### `npx @m14i/sith shell`
-Run interactive shell in the Docker container.
-
 ## Features
 
+- **Prebuilt Images**: Pull verified images from GitHub Container Registry
+- **Image Signing**: All images signed with cosign for supply chain security
+- **SBOM Attestation**: Software Bill of Materials included with every image
 - **Interactive Menu**: Navigate with arrow keys, select with Enter
 - **Direct Commands**: Build or shell access without menu
 - **Dockerized Environment**: Consistent setup across machines
 - **Nix Integration**: Full development environment with all tools
 - **CI-Ready**: Standardize builds across local and CI pipelines
+- **Non-root User**: Images run as non-root user (UID 1000) for better security
+
+## Security
+
+### Image Verification
+
+All Docker images published to `ghcr.io/merzoukemanouri/sith` are:
+- **Signed with cosign** using keyless signing (OIDC)
+- **Include SBOM** (Software Bill of Materials) for transparency
+- **Built automatically** via GitHub Actions with provenance
+
+See [SECURITY.md](./SECURITY.md) for detailed security practices and considerations.
+
+### Trust Model
+
+**Prebuilt Images:**
+- Built by GitHub Actions on public infrastructure
+- Signed with Sigstore keyless signing
+- Verifiable provenance chain from source to image
+- Trade-off: Trust GitHub's build infrastructure
+
+**Local Builds:**
+- Full control over build environment
+- Can inspect Dockerfile before building
+- No dependency on external registries
+- Trade-off: Slower, manual security updates
+
+For more details, see the [Docker Distribution Guide](./doc/QUICKSTART.md#docker-distribution).
 
 ## Development
 

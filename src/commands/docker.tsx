@@ -28,7 +28,8 @@ function findProjectRoot(startDir: string): string {
 const rootDir = findProjectRoot(__dirname);
 
 const menuItems: readonly MenuItem[] = [
-  { label: "Build Docker image", value: "build", icon: "🔨" },
+  { label: "Pull prebuilt image (recommended)", value: "pull", icon: "📦" },
+  { label: "Build Docker image from scratch", value: "build", icon: "🔨" },
   { label: "Exit", value: "exit", icon: "❌" },
 ] as const;
 
@@ -73,18 +74,18 @@ function BuildingSpinner({ step }: BuildingSpinnerProps): React.ReactElement {
 function Menu(): React.ReactElement {
   const { exit } = useApp();
   const [selectedIndex, setSelectedIndex] = useState(0);
-  const [isBuilding, setIsBuilding] = useState(false);
-  const [buildStep, setBuildStep] = useState("");
-  const [buildComplete, setBuildComplete] = useState(false);
-  const [buildError, setBuildError] = useState<string | null>(null);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [processStep, setProcessStep] = useState("");
+  const [processComplete, setProcessComplete] = useState(false);
+  const [processError, setProcessError] = useState<string | null>(null);
 
   useInput((_input, key) => {
-    if (isBuilding) {
+    if (isProcessing) {
       return;
     }
 
-    // Exit on any key press when build is complete or errored
-    if (buildComplete || buildError) {
+    // Exit on any key press when process is complete or errored
+    if (processComplete || processError) {
       exit();
       return;
     }
@@ -104,6 +105,10 @@ function Menu(): React.ReactElement {
         exit();
         return;
 
+      case "pull":
+        await handlePullCommand();
+        break;
+
       case "build":
         await handleBuildCommand();
         break;
@@ -113,9 +118,42 @@ function Menu(): React.ReactElement {
     }
   }
 
+  async function handlePullCommand(): Promise<void> {
+    setIsProcessing(true);
+    setProcessStep("Pulling prebuilt Docker image...");
+
+    try {
+      await execa(
+        "docker",
+        ["pull", DOCKER_CONFIG.prebuiltImage],
+        {
+          stdio: "inherit",
+        },
+      );
+
+      // Tag the pulled image with local name for compatibility
+      await execa(
+        "docker",
+        ["tag", DOCKER_CONFIG.prebuiltImage, DOCKER_CONFIG.imageName],
+        {
+          stdio: "inherit",
+        },
+      );
+
+      setIsProcessing(false);
+      setProcessComplete(true);
+      setProcessStep("");
+    } catch (error) {
+      setIsProcessing(false);
+      setProcessError(
+        error instanceof Error ? error.message : "Pull failed",
+      );
+    }
+  }
+
   async function handleBuildCommand(): Promise<void> {
-    setIsBuilding(true);
-    setBuildStep("Building Docker image...");
+    setIsProcessing(true);
+    setProcessStep("Building Docker image from scratch...");
 
     try {
       const dockerfilePath = path.join(rootDir, DOCKER_CONFIG.folderName, DOCKER_CONFIG.dockerfileName);
@@ -132,24 +170,24 @@ function Menu(): React.ReactElement {
         },
       );
 
-      setIsBuilding(false);
-      setBuildComplete(true);
-      setBuildStep("");
+      setIsProcessing(false);
+      setProcessComplete(true);
+      setProcessStep("");
     } catch (error) {
-      setIsBuilding(false);
-      setBuildError(
-        error instanceof Error ? error.message : "Build failed",
+      setIsProcessing(false);
+      setProcessError(
+        error instanceof Error ? error.message : "Operation failed",
       );
     }
   }
 
   // Render error state
-  if (buildError) {
+  if (processError) {
     return (
       <Box flexDirection="column">
         <Logo />
         <Box marginTop={1}>
-          <Text color="red">❌ Build failed: {buildError}</Text>
+          <Text color="red">❌ Operation failed: {processError}</Text>
         </Box>
         <Box marginTop={1}>
           <Text dimColor>Press any key to exit...</Text>
@@ -159,15 +197,18 @@ function Menu(): React.ReactElement {
   }
 
   // Render success state
-  if (buildComplete) {
+  if (processComplete) {
     return (
       <Box flexDirection="column">
         <Logo />
         <Box marginTop={1}>
-          <Text color="green">✅ Docker image built successfully!</Text>
+          <Text color="green">✅ Docker image ready!</Text>
         </Box>
         <Box marginTop={1}>
           <Text dimColor>Image: {DOCKER_CONFIG.imageName}</Text>
+        </Box>
+        <Box marginTop={1}>
+          <Text dimColor>Run: npx @m14i/sith shell</Text>
         </Box>
         <Box marginTop={1}>
           <Text dimColor>Press any key to exit...</Text>
@@ -176,12 +217,12 @@ function Menu(): React.ReactElement {
     );
   }
 
-  // Render building state
-  if (isBuilding) {
+  // Render processing state
+  if (isProcessing) {
     return (
       <Box flexDirection="column">
         <Logo />
-        <BuildingSpinner step={buildStep} />
+        <BuildingSpinner step={processStep} />
         <Box marginTop={1}>
           <Text dimColor>Root: {rootDir}</Text>
         </Box>
@@ -222,10 +263,15 @@ export async function dockerCommand(options: DockerCommandOptions): Promise<void
     return;
   }
 
+  if (options.pull) {
+    await pullDocker();
+    return;
+  }
+
   // Check if stdin supports raw mode (interactive terminal)
   if (!process.stdin.isTTY) {
     console.error("Error: Interactive mode requires a TTY terminal");
-    console.error("Use --build flag for non-interactive mode");
+    console.error("Use --build or --pull flag for non-interactive mode");
     process.exit(1);
   }
 
@@ -237,8 +283,50 @@ export async function runShellDirect(): Promise<void> {
   await runShell();
 }
 
+async function pullDocker(): Promise<void> {
+  console.log("📦 Pulling prebuilt Docker image...");
+  console.log();
+
+  try {
+    console.log(`Source: ${DOCKER_CONFIG.prebuiltImage}`);
+    console.log(`Target: ${DOCKER_CONFIG.imageName}`);
+    console.log();
+
+    await execa(
+      "docker",
+      ["pull", DOCKER_CONFIG.prebuiltImage],
+      {
+        stdio: "inherit",
+      },
+    );
+
+    console.log();
+    console.log("🏷️  Tagging image for local use...");
+
+    await execa(
+      "docker",
+      ["tag", DOCKER_CONFIG.prebuiltImage, DOCKER_CONFIG.imageName],
+      {
+        stdio: "inherit",
+      },
+    );
+
+    console.log();
+    console.log("✅ Docker image ready!");
+    console.log(`Image: ${DOCKER_CONFIG.imageName}`);
+    console.log();
+    console.log("Run: npx @m14i/sith shell");
+  } catch (error) {
+    console.error("❌ Pull failed");
+    if (error instanceof Error) {
+      console.error(error.message);
+    }
+    process.exit(1);
+  }
+}
+
 async function buildDocker(): Promise<void> {
-  console.log("🔨 Building Docker image...");
+  console.log("🔨 Building Docker image from scratch...");
   console.log();
 
   try {
@@ -263,6 +351,8 @@ async function buildDocker(): Promise<void> {
     console.log();
     console.log("✅ Docker image built successfully!");
     console.log(`Image: ${DOCKER_CONFIG.imageName}`);
+    console.log();
+    console.log("Run: npx @m14i/sith shell");
   } catch (error) {
     console.error("❌ Build failed");
     if (error instanceof Error) {

@@ -14,7 +14,8 @@ function createProgram(): Command {
     .name(PROGRAM_NAME)
     .description(PROGRAM_DESCRIPTION)
     .version(PROGRAM_VERSION)
-    .option('--build', 'Build the Docker image');
+    .option('--pull', 'Pull prebuilt Docker image (recommended)')
+    .option('--build', 'Build the Docker image from scratch');
 
   // Default action - show interactive menu
   program
@@ -26,7 +27,8 @@ function createProgram(): Command {
   program
     .command('docker')
     .description('Manage Docker environment')
-    .option('--build', 'Build the Docker image')
+    .option('--pull', 'Pull prebuilt Docker image (recommended)')
+    .option('--build', 'Build the Docker image from scratch')
     .action(async (options) => {
       await dockerCommand(options);
     });
