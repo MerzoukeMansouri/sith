@@ -1,3 +1,10 @@
+## [1.8.1](https://github.com/MerzoukeMansouri/sith/compare/v1.8.0...v1.8.1) (2026-05-17)
+
+
+### Bug Fixes
+
+* enable Nix flakes support in Docker environment ([fb860f8](https://github.com/MerzoukeMansouri/sith/commit/fb860f8211639e8c4ab5b83eb7dcb429e88f2f46))
+
 # [1.8.0](https://github.com/MerzoukeMansouri/sith/compare/v1.7.6...v1.8.0) (2026-05-17)
 
 
