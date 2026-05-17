@@ -60,10 +60,12 @@ COPY --from=builder /root/.opencode /root/.opencode
 COPY --from=builder /root/.npmrc /root/.npmrc
 
 # Créer un utilisateur non-root pour l'exécution
-RUN adduser -D -u 1000 -s /bin/sh sith && \
+RUN mkdir -p /home/sith && \
+    echo "sith:x:1000:1000:Sith User:/home/sith:/bin/sh" >> /etc/passwd && \
+    echo "sith:x:1000:" >> /etc/group && \
     mkdir -p /home/sith/.opencode /home/sith/.npm-global /workspace && \
     cp -r /root/.opencode/* /home/sith/.opencode/ 2>/dev/null || true && \
-    chown -R sith:sith /home/sith /workspace /opt/sith
+    chown -R 1000:1000 /home/sith /workspace /opt/sith
 
 # Copier la configuration npm pour l'utilisateur sith
 RUN echo "registry=https://registry.npmjs.org/" > /home/sith/.npmrc && \
