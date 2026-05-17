@@ -10,42 +10,54 @@ Standardize and share your OpenCode setup with a fully dockerized environment, d
 
 ## Usage
 
+### Installation
+
+**Install globally (recommended):**
+```bash
+npm install -g @m14i/sith
+```
+
+**Or use npx (slower, pulls image every time):**
+```bash
+npx @m14i/sith@latest
+```
+
 ### Quick Start
 
 ```bash
 # Interactive menu (recommended)
-npx @m14i/sith
+sith
+# Options: Enter Shell | Configuration (Pull/Build)
 
-# Pull prebuilt image directly
-npx @m14i/sith --pull
-
-# Run shell
-npx @m14i/sith shell
+# Direct commands (skip menu)
+sith --it          # Launch shell immediately
+sith --pull        # Pull prebuilt image
+sith --build       # Build from scratch
 ```
 
 ### Distribution Options
 
 | Method | Command | Speed | Trust Model | Use Case |
 |--------|---------|-------|-------------|----------|
-| **Prebuilt (Recommended)** | `npx @m14i/sith --pull` | ⚡ Fast | GitHub Actions + Cosign | Production, CI/CD |
-| **Local Build** | `npx @m14i/sith --build` | 🐌 Slow | Your machine | Air-gapped, custom builds |
+| **Prebuilt (Recommended)** | `sith --pull` | ⚡ Fast | GitHub Actions + Cosign | Production, CI/CD |
+| **Local Build** | `sith --build` | 🐌 Slow | Your machine | Air-gapped, custom builds |
 
 ### Commands
 
 | Command | Description |
 |---------|-------------|
-| `npx @m14i/sith` | Interactive menu with options |
-| `npx @m14i/sith --pull` | Pull prebuilt image from GHCR |
-| `npx @m14i/sith --build` | Build Docker image from scratch |
-| `npx @m14i/sith shell` | Launch interactive shell in container |
-| `npx @m14i/sith --help` | Show all available commands |
+| `sith` | Interactive menu with options |
+| `sith --it` | Launch interactive shell in container |
+| `sith --pull` | Pull prebuilt image from GHCR |
+| `sith --build` | Build Docker image from scratch |
+| `sith --help` | Show all available commands |
 
 ### Prebuilt Image Details
 
 **Pull and verify:**
 ```bash
 # Pull (supports linux/amd64 and linux/arm64)
-npx @m14i/sith --pull
+sith --pull
 
 # Or use Docker directly
 docker pull ghcr.io/merzoukemanouri/sith:latest
@@ -71,12 +83,12 @@ To use GitHub Copilot models, set the `GITHUB_TOKEN` environment variable:
 **Quick start (using GitHub CLI):**
 ```bash
 export GITHUB_TOKEN=$(gh auth token)
-npx @m14i/sith shell
+sith --it
 ```
 
 **Or inline:**
 ```bash
-GITHUB_TOKEN=$(gh auth token) npx @m14i/sith shell
+GITHUB_TOKEN=$(gh auth token) sith --it
 ```
 
 **Manual token:**
@@ -85,7 +97,7 @@ GITHUB_TOKEN=$(gh auth token) npx @m14i/sith shell
 3. Export it:
 ```bash
 export GITHUB_TOKEN=gho_your_token_here
-npx @m14i/sith shell
+sith --it
 ```
 
 **Make it persistent (add to ~/.zshrc or ~/.bashrc):**

@@ -15,12 +15,17 @@ function createProgram(): Command {
     .description(PROGRAM_DESCRIPTION)
     .version(PROGRAM_VERSION)
     .option('--pull', 'Pull prebuilt Docker image (recommended)')
-    .option('--build', 'Build the Docker image from scratch');
+    .option('--build', 'Build the Docker image from scratch')
+    .option('--it', 'Launch interactive shell in Docker container');
 
-  // Default action - show interactive menu
+  // Default action - show interactive menu or run shell with --it
   program
     .action(async (options) => {
-      await dockerCommand(options);
+      if (options.it) {
+        await runShellDirect();
+      } else {
+        await dockerCommand(options);
+      }
     });
 
   // Docker command - explicit Docker management

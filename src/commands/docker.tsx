@@ -28,9 +28,14 @@ function findProjectRoot(startDir: string): string {
 const rootDir = findProjectRoot(__dirname);
 
 const menuItems: readonly MenuItem[] = [
+  { label: "Enter Shell", value: "shell", icon: "🚀" },
+  { label: "Configuration", value: "config", icon: "⚙️" },
+] as const;
+
+const configMenuItems: readonly MenuItem[] = [
   { label: "Pull prebuilt image (recommended)", value: "pull", icon: "📦" },
   { label: "Build Docker image from scratch", value: "build", icon: "🔨" },
-  { label: "Exit", value: "exit", icon: "❌" },
+  { label: "Back", value: "back", icon: "◀️" },
 ] as const;
 
 function Logo(): React.ReactElement {
@@ -78,6 +83,7 @@ function Menu(): React.ReactElement {
   const [processStep, setProcessStep] = useState("");
   const [processComplete, setProcessComplete] = useState(false);
   const [processError, setProcessError] = useState<string | null>(null);
+  const [currentMenu, setCurrentMenu] = useState<"main" | "config">("main");
 
   useInput((_input, key) => {
     if (isProcessing) {
@@ -90,19 +96,32 @@ function Menu(): React.ReactElement {
       return;
     }
 
+    const items = currentMenu === "main" ? menuItems : configMenuItems;
+
     if (key.upArrow) {
-      setSelectedIndex((prev) => (prev > 0 ? prev - 1 : menuItems.length - 1));
+      setSelectedIndex((prev) => (prev > 0 ? prev - 1 : items.length - 1));
     } else if (key.downArrow) {
-      setSelectedIndex((prev) => (prev < menuItems.length - 1 ? prev + 1 : 0));
+      setSelectedIndex((prev) => (prev < items.length - 1 ? prev + 1 : 0));
     } else if (key.return) {
-      handleSelection(menuItems[selectedIndex].value);
+      handleSelection(items[selectedIndex].value);
     }
   });
 
   async function handleSelection(value: string): Promise<void> {
     switch (value) {
-      case "exit":
+      case "shell":
         exit();
+        await runShell();
+        return;
+
+      case "config":
+        setCurrentMenu("config");
+        setSelectedIndex(0);
+        return;
+
+      case "back":
+        setCurrentMenu("main");
+        setSelectedIndex(0);
         return;
 
       case "pull":
@@ -208,7 +227,7 @@ function Menu(): React.ReactElement {
           <Text dimColor>Image: {DOCKER_CONFIG.imageName}</Text>
         </Box>
         <Box marginTop={1}>
-          <Text dimColor>Run: npx @m14i/sith shell</Text>
+          <Text dimColor>Run: sith --it</Text>
         </Box>
         <Box marginTop={1}>
           <Text dimColor>Press any key to exit...</Text>
@@ -231,13 +250,16 @@ function Menu(): React.ReactElement {
   }
 
   // Render menu state
+  const items = currentMenu === "main" ? menuItems : configMenuItems;
+  const menuTitle = currentMenu === "main" ? "What would you like to do?" : "Configuration";
+
   return (
     <Box flexDirection="column">
       <Logo />
       <Box flexDirection="column" marginTop={1}>
-        <Text bold>What would you like to do?</Text>
+        <Text bold>{menuTitle}</Text>
         <Box flexDirection="column" marginTop={1}>
-          {menuItems.map((item, index) => {
+          {items.map((item, index) => {
             const isSelected = index === selectedIndex;
             return (
               <Box key={item.value} marginY={0}>
@@ -315,7 +337,7 @@ async function pullDocker(): Promise<void> {
     console.log("✅ Docker image ready!");
     console.log(`Image: ${DOCKER_CONFIG.imageName}`);
     console.log();
-    console.log("Run: npx @m14i/sith shell");
+    console.log("Run: sith --it");
   } catch (error) {
     console.error("❌ Pull failed");
     if (error instanceof Error) {
@@ -352,7 +374,7 @@ async function buildDocker(): Promise<void> {
     console.log("✅ Docker image built successfully!");
     console.log(`Image: ${DOCKER_CONFIG.imageName}`);
     console.log();
-    console.log("Run: npx @m14i/sith shell");
+    console.log("Run: sith --it");
   } catch (error) {
     console.error("❌ Build failed");
     if (error instanceof Error) {
