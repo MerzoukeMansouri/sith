@@ -1,7 +1,7 @@
 // Docker configuration
 export const DOCKER_CONFIG = {
   imageName: "opencode-ci:latest",
-  prebuiltImage: "ghcr.io/merzoukemanouri/sith:latest",
+  prebuiltImage: "ghcr.io/merzoukemansouri/sith:latest",
   folderName: "docker",
   dockerfileName: "Dockerfile",
   workspaceMount: "/workspace",
