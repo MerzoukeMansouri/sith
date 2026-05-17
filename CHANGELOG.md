@@ -1,3 +1,10 @@
+# [1.12.0](https://github.com/MerzoukeMansouri/sith/compare/v1.11.0...v1.12.0) (2026-05-17)
+
+
+### Features
+
+* add config modal and terminal UI components ([e17669e](https://github.com/MerzoukeMansouri/sith/commit/e17669e8a165d35cf115036cbc569489ee7962ca))
+
 # [1.11.0](https://github.com/MerzoukeMansouri/sith/compare/v1.10.0...v1.11.0) (2026-05-17)
 
 
