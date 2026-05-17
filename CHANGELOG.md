@@ -1,3 +1,10 @@
+## [1.6.1](https://github.com/MerzoukeMansouri/sith/compare/v1.6.0...v1.6.1) (2026-05-17)
+
+
+### Bug Fixes
+
+* update publish workflow to use correct job output reference ([e6c1d7d](https://github.com/MerzoukeMansouri/sith/commit/e6c1d7d4c1fc97bc9c96bd0d308ff938be136a99))
+
 # [1.6.0](https://github.com/MerzoukeMansouri/sith/compare/v1.5.4...v1.6.0) (2026-05-17)
 
 
