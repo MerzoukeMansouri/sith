@@ -41,7 +41,7 @@ function WelcomeScreen(): React.ReactElement {
         <Text dimColor>or use slash commands:</Text>
       </Box>
       <Box flexDirection="column" marginTop={1} marginLeft={2}>
-        <Text dimColor>  /shell   - Start OpenCode shell</Text>
+        <Text dimColor>  /shell   - Start Docker shell</Text>
         <Text dimColor>  /config  - Configuration</Text>
         <Text dimColor>  /help    - Show help</Text>
       </Box>
@@ -108,7 +108,23 @@ async function getGitHubToken(): Promise<string> {
   }
 }
 
-function buildDockerCommand(githubToken: string, prompt?: string): string[] {
+function buildDockerShellCommand(githubToken: string): string[] {
+  return [
+    "run",
+    "--rm",
+    "-it",
+    "-v",
+    `${process.cwd()}:${DOCKER_CONFIG.workspaceMount}`,
+    "-e",
+    `GITHUB_TOKEN=${githubToken}`,
+    "--entrypoint",
+    "nix-shell",
+    DOCKER_CONFIG.imageName,
+    DOCKER_CONFIG.shellEntrypoint,
+  ];
+}
+
+function buildDockerOpencodeCommand(githubToken: string, prompt?: string): string[] {
   const dockerArgs = [
     "run",
     "--rm",
@@ -155,8 +171,29 @@ export function TerminalUI(): React.ReactElement {
     setNextMessageId((previousId) => previousId + 1);
   }, [nextMessageId]);
 
-  const handleShellCommand = useCallback(async (prompt?: string): Promise<void> => {
-    // Exit Ink UI before launching shell (it takes over stdio)
+  const handleDockerShell = useCallback(async (): Promise<void> => {
+    exit();
+
+    console.log("🚀 Starting Docker shell...");
+    console.log(`Mounting current directory to ${DOCKER_CONFIG.workspaceMount}`);
+    console.log('Press Ctrl+D or type "exit" to leave');
+    console.log();
+
+    const githubToken = await getGitHubToken();
+    const dockerArgs = buildDockerShellCommand(githubToken);
+
+    try {
+      await execa("docker", dockerArgs, { stdio: "inherit" });
+      console.log();
+      console.log("✅ Exited shell");
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : "Failed to start shell";
+      console.error(`❌ ${errorMessage}`);
+      process.exit(1);
+    }
+  }, [exit]);
+
+  const handleOpenCode = useCallback(async (prompt?: string): Promise<void> => {
     exit();
 
     console.log("🚀 Starting OpenCode...");
@@ -169,7 +206,7 @@ export function TerminalUI(): React.ReactElement {
     console.log();
 
     const githubToken = await getGitHubToken();
-    const dockerArgs = buildDockerCommand(githubToken, prompt);
+    const dockerArgs = buildDockerOpencodeCommand(githubToken, prompt);
 
     try {
       await execa("docker", dockerArgs, { stdio: "inherit" });
@@ -191,7 +228,7 @@ export function TerminalUI(): React.ReactElement {
 
     switch (command.type) {
       case "shell":
-        await handleShellCommand();
+        await handleDockerShell();
         break;
 
       case "config":
@@ -206,7 +243,7 @@ export function TerminalUI(): React.ReactElement {
         }
         break;
     }
-  }, [addMessage, handleShellCommand]);
+  }, [addMessage, handleDockerShell]);
 
   const handleSubmit = useCallback(async (value: string): Promise<void> => {
     const trimmedValue = value.trim();
@@ -226,9 +263,9 @@ export function TerminalUI(): React.ReactElement {
       addMessage(`Unknown command: ${trimmedValue}. Type /help for available commands.`, "error");
     } else {
       // Regular text input - start OpenCode with this prompt
-      await handleShellCommand(trimmedValue);
+      await handleOpenCode(trimmedValue);
     }
-  }, [addMessage, handleShellCommand, handleSlashCommand]);
+  }, [addMessage, handleOpenCode, handleSlashCommand]);
 
   const handleConfigModalClose = useCallback((): void => {
     setShowConfigModal(false);

@@ -28,7 +28,7 @@ export function parseSlashCommand(input: string): SlashCommand | null {
 
 export function getAvailableCommands(): Array<{ command: string; description: string }> {
   return [
-    { command: "/shell", description: "Enter interactive shell in Docker container" },
+    { command: "/shell", description: "Start Docker shell (no OpenCode)" },
     { command: "/config", description: "Open configuration menu" },
     { command: "/help", description: "Show available commands" },
   ];

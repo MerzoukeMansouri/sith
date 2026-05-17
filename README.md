@@ -25,14 +25,16 @@ npx @m14i/sith@latest
 ### Quick Start
 
 ```bash
-# Interactive menu (recommended)
+# Interactive terminal UI (default)
 sith
-# Options: Enter Shell | Configuration (Pull/Build)
+# Type your prompt to start OpenCode with that task
+# Or use slash commands: /shell, /config, /help
 
-# Direct commands (skip menu)
-sith --it          # Launch shell immediately
+# Direct commands
+sith --it          # Launch Docker shell immediately
 sith --pull        # Pull prebuilt image
 sith --build       # Build from scratch
+sith --legacy      # Use legacy menu interface
 ```
 
 ### Distribution Options
@@ -46,11 +48,28 @@ sith --build       # Build from scratch
 
 | Command | Description |
 |---------|-------------|
-| `sith` | Interactive menu with options |
-| `sith --it` | Launch interactive shell in container |
+| `sith` | Interactive terminal UI (Claude Code style) |
+| `sith --it` | Launch Docker shell immediately |
 | `sith --pull` | Pull prebuilt image from GHCR |
 | `sith --build` | Build Docker image from scratch |
+| `sith --legacy` | Use legacy menu interface |
 | `sith --help` | Show all available commands |
+
+### Terminal UI Usage
+
+When you run `sith`, you get an interactive terminal interface:
+
+**Prompt input:**
+- Type any text → Starts OpenCode with that prompt using Claude Sonnet 4.6
+- Example: `Fix authentication bug` → OpenCode launches with this task
+
+**Slash commands:**
+- `/shell` → Start Docker shell only (no OpenCode)
+- `/config` → Open configuration menu (pull/build options)
+- `/help` → Show available commands
+
+**Navigation:**
+- `Ctrl+C` or `Esc` → Exit terminal UI
 
 ### Prebuilt Image Details
 
@@ -78,23 +97,24 @@ cosign verify \
 
 ## Authentication
 
-Sith uses **GitHub Copilot models by default**. Authentication requires a GitHub token.
+Sith uses **Claude Sonnet 4.6 via GitHub Copilot** by default. Authentication requires a GitHub token with Copilot access.
 
 **Automatic (recommended):**
 If you have GitHub CLI (`gh`) installed and authenticated, Sith automatically fetches your token:
 ```bash
-sith --it  # Auto-detects token via gh auth token
+sith  # Auto-detects token via gh auth token
 ```
 
 **Manual token:**
 If you don't have `gh` CLI or prefer manual setup:
 
-1. Create a token at https://github.com/settings/tokens
-2. Required scopes: `copilot`, `repo`, `read:org`
-3. Export it:
+1. Ensure you have GitHub Copilot access
+2. Create a token at https://github.com/settings/tokens
+3. Required scopes: `copilot`, `repo`, `read:org`
+4. Export it:
 ```bash
 export GITHUB_TOKEN=gho_your_token_here
-sith --it
+sith
 ```
 
 **Make it persistent (add to ~/.zshrc or ~/.bashrc):**
@@ -102,13 +122,21 @@ sith --it
 export GITHUB_TOKEN=$(gh auth token)
 ```
 
+**Inside container:**
+Once OpenCode starts, authenticate with GitHub Copilot:
+```bash
+opencode providers login
+# Follow prompts to authenticate with GitHub
+```
+
 ## Features
 
+- **Claude Code-style UI**: Interactive terminal interface with prompt input and slash commands
+- **OpenCode Integration**: Start coding with a simple text prompt
+- **Model Selection**: Uses Claude Sonnet 4.6 via GitHub Copilot by default
 - **Prebuilt Images**: Pull verified images from GitHub Container Registry
 - **Image Signing**: All images signed with cosign for supply chain security
 - **SBOM Attestation**: Software Bill of Materials included with every image
-- **Interactive Menu**: Navigate with arrow keys, select with Enter
-- **Direct Commands**: Build or shell access without menu
 - **Dockerized Environment**: Consistent setup across machines
 - **Nix Integration**: Full development environment with all tools
 - **CI-Ready**: Standardize builds across local and CI pipelines
