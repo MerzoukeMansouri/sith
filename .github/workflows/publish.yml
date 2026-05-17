@@ -125,11 +125,15 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Set lowercase repository name
+        id: repo
+        run: echo "lowercase=$(echo ${{ github.repository }} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_OUTPUT
+
       - name: Extract metadata
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ghcr.io/${{ github.repository }}
+          images: ghcr.io/${{ steps.repo.outputs.lowercase }}
           tags: |
             type=semver,pattern={{version}},value=${{ needs.publish-npm.outputs.new-release-version }}
             type=raw,value=latest
@@ -153,12 +157,12 @@ jobs:
         run: |
           echo "Signing image with digest: ${{ steps.build-push.outputs.digest }}"
           cosign sign --yes \
-            ghcr.io/${{ github.repository }}@${{ steps.build-push.outputs.digest }}
+            ghcr.io/${{ steps.repo.outputs.lowercase }}@${{ steps.build-push.outputs.digest }}
 
       - name: Generate SBOM
         uses: anchore/sbom-action@v0
         with:
-          image: ghcr.io/${{ github.repository }}@${{ steps.build-push.outputs.digest }}
+          image: ghcr.io/${{ steps.repo.outputs.lowercase }}@${{ steps.build-push.outputs.digest }}
           format: spdx-json
           output-file: sbom.spdx.json
 
@@ -167,12 +171,12 @@ jobs:
           COSIGN_EXPERIMENTAL: "true"
         run: |
           cosign attach sbom --sbom sbom.spdx.json \
-            ghcr.io/${{ github.repository }}@${{ steps.build-push.outputs.digest }}
+            ghcr.io/${{ steps.repo.outputs.lowercase }}@${{ steps.build-push.outputs.digest }}
 
       - name: Sign SBOM
         env:
           COSIGN_EXPERIMENTAL: "true"
         run: |
           cosign sign --yes \
-            ghcr.io/${{ github.repository }}@${{ steps.build-push.outputs.digest }}.sbom
+            ghcr.io/${{ steps.repo.outputs.lowercase }}@${{ steps.build-push.outputs.digest }}.sbom
 
