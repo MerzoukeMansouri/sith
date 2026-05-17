@@ -1,3 +1,10 @@
+## [1.7.5](https://github.com/MerzoukeMansouri/sith/compare/v1.7.4...v1.7.5) (2026-05-17)
+
+
+### Bug Fixes
+
+* update SBOM attestation to use cosign attest command ([fe04d78](https://github.com/MerzoukeMansouri/sith/commit/fe04d782b74de4bd297da5a1a46e1aa9cdb04ee6))
+
 ## [1.7.4](https://github.com/MerzoukeMansouri/sith/compare/v1.7.3...v1.7.4) (2026-05-17)
 
 
