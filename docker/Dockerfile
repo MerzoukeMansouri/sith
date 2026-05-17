@@ -77,9 +77,9 @@ RUN echo "registry=https://registry.npmjs.org/" > /home/sith/.npmrc && \
 ENV OPENCODE_MODEL=github-copilot/claude-sonnet-4.5
 ENV OPENCODE_LOG_LEVEL=INFO
 ENV NODE_ENV=production
-ENV PATH="/home/sith/.opencode/bin:/home/sith/.local/bin:/home/sith/.npm-global/bin:${PATH}"
-ENV NPM_CONFIG_PREFIX=/home/sith/.npm-global
-ENV HOME=/home/sith
+ENV PATH="/root/.opencode/bin:/root/.local/bin:/root/.npm-global/bin:${PATH}"
+ENV NPM_CONFIG_PREFIX=/root/.npm-global
+ENV HOME=/root
 
 # === Token Optimization Skills Configuration ===
 # RTK (Rust Token Killer) - Désactivé par défaut (binaire non disponible publiquement)
@@ -92,8 +92,9 @@ ENV CAVEMAN_AUTO=true
 
 # Réduction totale estimée: 85-95% de tokens par session CI/CD
 
-# Basculer vers l'utilisateur non-root
-USER sith
+# Note: Keep running as root due to Nix permission requirements
+# Nix-shell needs to modify /nix/var/nix/profiles/per-user at runtime
+# USER sith
 
 # Healthcheck pour vérifier que l'environnement est prêt
 # Note: RTK check is conditional on RTK_ENABLED to avoid false failures
