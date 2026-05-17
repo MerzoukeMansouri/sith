@@ -390,6 +390,17 @@ async function runShell(): Promise<void> {
   console.log('Press Ctrl+D or type "exit" to leave');
   console.log();
 
+  // Try to get GitHub token from gh CLI if not in env
+  let githubToken = process.env.GITHUB_TOKEN || "";
+  if (!githubToken) {
+    try {
+      const { stdout } = await execa("gh", ["auth", "token"]);
+      githubToken = stdout.trim();
+    } catch {
+      // Ignore if gh CLI not available or not authenticated
+    }
+  }
+
   const dockerArgs = [
     "run",
     "--rm",
@@ -397,7 +408,7 @@ async function runShell(): Promise<void> {
     "-v",
     `${process.cwd()}:${DOCKER_CONFIG.workspaceMount}`,
     "-e",
-    `GITHUB_TOKEN=${process.env.GITHUB_TOKEN || ""}`,
+    `GITHUB_TOKEN=${githubToken}`,
     "--entrypoint",
     "nix-shell",
     DOCKER_CONFIG.imageName,

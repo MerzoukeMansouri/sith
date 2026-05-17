@@ -78,20 +78,17 @@ cosign verify \
 
 ## Authentication
 
-To use GitHub Copilot models, set the `GITHUB_TOKEN` environment variable:
+Sith uses **GitHub Copilot models by default**. Authentication requires a GitHub token.
 
-**Quick start (using GitHub CLI):**
+**Automatic (recommended):**
+If you have GitHub CLI (`gh`) installed and authenticated, Sith automatically fetches your token:
 ```bash
-export GITHUB_TOKEN=$(gh auth token)
-sith --it
-```
-
-**Or inline:**
-```bash
-GITHUB_TOKEN=$(gh auth token) sith --it
+sith --it  # Auto-detects token via gh auth token
 ```
 
 **Manual token:**
+If you don't have `gh` CLI or prefer manual setup:
+
 1. Create a token at https://github.com/settings/tokens
 2. Required scopes: `copilot`, `repo`, `read:org`
 3. Export it:
