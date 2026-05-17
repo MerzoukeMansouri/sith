@@ -1,3 +1,10 @@
+## [1.13.1](https://github.com/MerzoukeMansouri/sith/compare/v1.13.0...v1.13.1) (2026-05-17)
+
+
+### Bug Fixes
+
+* update GitHub Actions versions and add catimg to packages ([ce01b13](https://github.com/MerzoukeMansouri/sith/commit/ce01b1341cdb7b3561b1a09a97882232585615d1))
+
 # [1.13.0](https://github.com/MerzoukeMansouri/sith/compare/v1.12.0...v1.13.0) (2026-05-17)
 
 
