@@ -1,3 +1,10 @@
+# [1.9.0](https://github.com/MerzoukeMansouri/sith/compare/v1.8.1...v1.9.0) (2026-05-17)
+
+
+### Features
+
+* add update notifier and optimize nix environment caching ([372052e](https://github.com/MerzoukeMansouri/sith/commit/372052eb85eb7332116834ca36011a1085e9a1d2))
+
 ## [1.8.1](https://github.com/MerzoukeMansouri/sith/compare/v1.8.0...v1.8.1) (2026-05-17)
 
 
