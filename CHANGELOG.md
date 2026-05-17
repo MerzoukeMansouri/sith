@@ -1,3 +1,10 @@
+# [1.14.0](https://github.com/MerzoukeMansouri/sith/compare/v1.13.1...v1.14.0) (2026-05-17)
+
+
+### Features
+
+* add assets support and update logo path handling ([9e198ea](https://github.com/MerzoukeMansouri/sith/commit/9e198ead646434ec8727f00c4a434973109690ab))
+
 ## [1.13.1](https://github.com/MerzoukeMansouri/sith/compare/v1.13.0...v1.13.1) (2026-05-17)
 
 
