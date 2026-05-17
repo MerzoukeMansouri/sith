@@ -1,3 +1,10 @@
+## [1.9.1](https://github.com/MerzoukeMansouri/sith/compare/v1.9.0...v1.9.1) (2026-05-17)
+
+
+### Bug Fixes
+
+* simplify Dockerfile Nix environment setup ([cc9db2c](https://github.com/MerzoukeMansouri/sith/commit/cc9db2c48d822a3399728d7d09dd16dccaabac44))
+
 # [1.9.0](https://github.com/MerzoukeMansouri/sith/compare/v1.8.1...v1.9.0) (2026-05-17)
 
 
