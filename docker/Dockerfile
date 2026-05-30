@@ -84,10 +84,8 @@ ENV NPM_CONFIG_PREFIX=/root/.npm-global
 ENV HOME=/root
 
 # === Skills Configuration ===
-# Skills are loaded at runtime from the host via volume mount:
-#   docker run -v ~/.sith/skills:/opt/sith/external-skills ...
-# Each skill must have a skill.json in its directory.
-ENV SITH_EXTERNAL_SKILLS=/opt/sith/external-skills
+# Skills loaded at runtime via volume mount:
+#   docker run -v ~/.sith/skills:/root/.opencode/skills ...
 
 # Note: Keep running as root due to Nix permission requirements
 # Nix-shell needs to modify /nix/var/nix/profiles/per-user at runtime

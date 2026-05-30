@@ -21,6 +21,7 @@ export interface NixCommandOptions {
 export interface SkillEntry {
   name: string;
   description: string;
-  source: string;
+  source?: string;
   homepage: string;
+  builtinInstructions?: string;
 }

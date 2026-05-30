@@ -5,7 +5,7 @@ import { execa } from "execa";
 import { ConfigModal } from "./ConfigModal.js";
 import { parseSlashCommand, getAvailableCommands } from "../utils/slashCommands.js";
 import { DOCKER_CONFIG, ASCII_LOGO } from "../config.js";
-import { getSkillsDir } from "../utils/skills.js";
+import { getSkillsDir, getOpenCodeConfigPath } from "../utils/skills.js";
 import { skillsCommand } from "../commands/skills.js";
 
 interface Message {
@@ -120,6 +120,8 @@ function buildDockerShellCommand(githubToken: string): string[] {
     `${process.cwd()}:${DOCKER_CONFIG.workspaceMount}`,
     "-v",
     `${getSkillsDir()}:${DOCKER_CONFIG.skillsMount}`,
+    "-v",
+    `${getOpenCodeConfigPath()}:${DOCKER_CONFIG.opencodeConfigMount}`,
     "-e",
     `GITHUB_TOKEN=${githubToken}`,
     "--entrypoint",
@@ -138,6 +140,8 @@ function buildDockerOpencodeCommand(githubToken: string, prompt?: string): strin
     `${process.cwd()}:${DOCKER_CONFIG.workspaceMount}`,
     "-v",
     `${getSkillsDir()}:${DOCKER_CONFIG.skillsMount}`,
+    "-v",
+    `${getOpenCodeConfigPath()}:${DOCKER_CONFIG.opencodeConfigMount}`,
     "-e",
     `GITHUB_TOKEN=${githubToken}`,
     "--entrypoint",

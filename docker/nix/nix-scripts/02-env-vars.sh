@@ -8,7 +8,6 @@ export NODE_ENV="${NODE_ENV:-production}"
 # Chemins personnalisés
 export PATH="/root/.opencode/bin:$PATH"
 export PATH="/root/.local/bin:$PATH"
-export PATH="/root/.agents/skills/rtk/bin:$PATH"
 export PATH="/root/.npm-global/bin:$PATH"
 
 # Configuration npm
