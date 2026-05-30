@@ -1,3 +1,10 @@
+# [1.16.0](https://github.com/MerzoukeMansouri/sith/compare/v1.15.0...v1.16.0) (2026-05-30)
+
+
+### Features
+
+* TUI manage opencode config and skills through volumes ([a9fbfa0](https://github.com/MerzoukeMansouri/sith/commit/a9fbfa0d3b335fb2220b81120358498e0c057851))
+
 # [1.15.0](https://github.com/MerzoukeMansouri/sith/compare/v1.14.1...v1.15.0) (2026-05-30)
 
 
