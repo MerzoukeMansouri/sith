@@ -6,7 +6,31 @@ on:
       - main
 
 jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: pnpm/action-setup@v5
+        with:
+          version: 9
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: "25"
+          cache: "pnpm"
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Typecheck
+        run: pnpm typecheck
+
+      - name: Test
+        run: pnpm test
+
   release:
+    needs: test
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -28,8 +52,8 @@ jobs:
 
       - uses: actions/setup-node@v5
         with:
-          node-version: '25'
-          cache: 'pnpm'
+          node-version: "25"
+          cache: "pnpm"
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -87,9 +111,9 @@ jobs:
 
       - uses: actions/setup-node@v5
         with:
-          node-version: '25'
-          cache: 'pnpm'
-          registry-url: 'https://registry.npmjs.org'
+          node-version: "25"
+          cache: "pnpm"
+          registry-url: "https://registry.npmjs.org"
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -106,7 +130,9 @@ jobs:
     permissions:
       contents: read
       packages: write
-      id-token: write  # Required for cosign
+      id-token: write # Required for cosign
+    outputs:
+      image: ${{ steps.image.outputs.ref }}
     steps:
       - uses: actions/checkout@v5
         with:
@@ -128,6 +154,10 @@ jobs:
       - name: Set lowercase repository name
         id: repo
         run: echo "lowercase=$(echo ${{ github.repository }} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_OUTPUT
+
+      - name: Set image ref output
+        id: image
+        run: echo "ref=ghcr.io/${{ steps.repo.outputs.lowercase }}:latest" >> $GITHUB_OUTPUT
 
       - name: Extract metadata
         id: meta
@@ -174,3 +204,21 @@ jobs:
             --predicate sbom.spdx.json \
             ghcr.io/${{ steps.repo.outputs.lowercase }}@${{ steps.build-push.outputs.digest }}
 
+  test-image:
+    needs: docker-build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: read
+    steps:
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Smoke test image
+        run: |
+          docker pull ${{ needs.docker-build.outputs.image }}
+          docker run --rm ${{ needs.docker-build.outputs.image }} --help

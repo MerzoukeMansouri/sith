@@ -5,8 +5,10 @@ import { execa } from "execa";
 import { ConfigModal } from "./ConfigModal.js";
 import { parseSlashCommand, getAvailableCommands } from "../utils/slashCommands.js";
 import { DOCKER_CONFIG, ASCII_LOGO } from "../config.js";
-import { getSkillsDir, getOpenCodeConfigPath } from "../utils/skills.js";
 import { skillsCommand } from "../commands/skills.js";
+import { getMessageColor, getMessagePrefix } from "../utils/messageUtils.js";
+import { buildDockerShellCommand, buildDockerOpencodeCommand } from "../utils/dockerArgs.js";
+import { getGitHubToken } from "../utils/githubToken.js";
 
 interface Message {
   id: number;
@@ -52,34 +54,6 @@ function WelcomeScreen(): React.ReactElement {
   );
 }
 
-function getMessageColor(messageType: Message["type"]): string | undefined {
-  switch (messageType) {
-    case "success":
-      return "green";
-    case "error":
-      return "red";
-    case "info":
-      return "cyan";
-    case "user":
-      return "white";
-    case "system":
-      return "gray";
-    default:
-      return undefined;
-  }
-}
-
-function getMessagePrefix(messageType: Message["type"]): string {
-  switch (messageType) {
-    case "user":
-      return "› ";
-    case "system":
-      return "⚡ ";
-    default:
-      return "";
-  }
-}
-
 function MessageItem({ message }: MessageItemProps): React.ReactElement {
   const color = getMessageColor(message.type);
   const prefix = getMessagePrefix(message.type);
@@ -94,74 +68,6 @@ function MessageItem({ message }: MessageItemProps): React.ReactElement {
   );
 }
 
-async function getGitHubToken(): Promise<string> {
-  // Check environment variable first
-  const envToken = process.env.GITHUB_TOKEN;
-  if (envToken) {
-    return envToken;
-  }
-
-  // Try to get token from gh CLI
-  try {
-    const { stdout } = await execa("gh", ["auth", "token"]);
-    return stdout.trim();
-  } catch {
-    // Return empty string if gh CLI is not available
-    return "";
-  }
-}
-
-function buildDockerShellCommand(githubToken: string): string[] {
-  return [
-    "run",
-    "--rm",
-    "-it",
-    "-v",
-    `${process.cwd()}:${DOCKER_CONFIG.workspaceMount}`,
-    "-v",
-    `${getSkillsDir()}:${DOCKER_CONFIG.skillsMount}`,
-    "-v",
-    `${getOpenCodeConfigPath()}:${DOCKER_CONFIG.opencodeConfigMount}`,
-    "-e",
-    `GITHUB_TOKEN=${githubToken}`,
-    "--entrypoint",
-    "nix-shell",
-    DOCKER_CONFIG.imageName,
-    DOCKER_CONFIG.shellEntrypoint,
-  ];
-}
-
-function buildDockerOpencodeCommand(githubToken: string, prompt?: string): string[] {
-  const dockerArgs = [
-    "run",
-    "--rm",
-    "-it",
-    "-v",
-    `${process.cwd()}:${DOCKER_CONFIG.workspaceMount}`,
-    "-v",
-    `${getSkillsDir()}:${DOCKER_CONFIG.skillsMount}`,
-    "-v",
-    `${getOpenCodeConfigPath()}:${DOCKER_CONFIG.opencodeConfigMount}`,
-    "-e",
-    `GITHUB_TOKEN=${githubToken}`,
-    "--entrypoint",
-    "bash",
-    DOCKER_CONFIG.imageName,
-    "-c",
-  ];
-
-  // Build opencode command - always interactive, use Sonnet 4.6
-  let opencodeCommand = "source /opt/sith/nix/nix-scripts/setup.sh && cd /workspace && opencode -m github-copilot/claude-sonnet-4.6";
-
-  if (prompt) {
-    // Escape single quotes in prompt and use --prompt flag for interactive mode
-    const escapedPrompt = prompt.replace(/'/g, "'\\''");
-    opencodeCommand += ` --prompt '${escapedPrompt}'`;
-  }
-
-  dockerArgs.push(opencodeCommand);
-  return dockerArgs;
-}
 
 export function TerminalUI(): React.ReactElement {
   const { exit } = useApp();

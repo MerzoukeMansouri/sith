@@ -59,7 +59,7 @@ function removeInstructionsUnder(skillContainerDir: string): void {
   writeConfig(config);
 }
 
-function findInstructionsFile(skillDir: string): string | null {
+export function findInstructionsFile(skillDir: string): string | null {
   const skillName = path.basename(skillDir);
   const candidates = [
     "SKILL.md",

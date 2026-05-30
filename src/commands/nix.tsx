@@ -26,17 +26,18 @@ function findProjectRoot(startDir: string): string {
 
 const rootDir = findProjectRoot(__dirname);
 
+export function parseNixVersionOutput(stdout: string): boolean {
+  const match = stdout.match(/nix \(Nix\) (\d+\.\d+)/);
+  if (!match) return false;
+  const [major, minor] = match[1].split(".").map(Number);
+  const [reqMajor, reqMinor] = NIX_CONFIG.requiredVersion.split(".").map(Number);
+  return major > reqMajor || (major === reqMajor && minor >= reqMinor);
+}
+
 export async function checkNixInstalled(): Promise<boolean> {
   try {
     const { stdout } = await execa("nix", ["--version"]);
-    const versionMatch = stdout.match(/nix \(Nix\) (\d+\.\d+)/);
-    if (versionMatch) {
-      const version = versionMatch[1];
-      const [major, minor] = version.split(".").map(Number);
-      const [reqMajor, reqMinor] = NIX_CONFIG.requiredVersion.split(".").map(Number);
-      return major > reqMajor || (major === reqMajor && minor >= reqMinor);
-    }
-    return false;
+    return parseNixVersionOutput(stdout);
   } catch {
     return false;
   }
