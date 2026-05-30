@@ -7,6 +7,8 @@ import { fileURLToPath } from "url";
 import type { MenuItem, BuildingSpinnerProps, DockerCommandOptions } from "../types.js";
 import { DOCKER_CONFIG, SPINNER_CONFIG, ASCII_LOGO } from "../config.js";
 import { installNix, copyNixFiles, runNixShell } from "./nix.js";
+import { getSkillsDir } from "../utils/skills.js";
+import { skillsCommand } from "./skills.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -30,6 +32,7 @@ const rootDir = findProjectRoot(__dirname);
 
 const menuItems: readonly MenuItem[] = [
   { label: "Enter Shell", value: "shell", icon: "🚀" },
+  { label: "Manage Skills", value: "skills", icon: "🧠" },
   { label: "Configuration", value: "config", icon: "⚙️" },
 ] as const;
 
@@ -114,6 +117,11 @@ function Menu(): React.ReactElement {
       case "shell":
         exit();
         await runShell();
+        return;
+
+      case "skills":
+        exit();
+        skillsCommand();
         return;
 
       case "config":
@@ -411,7 +419,8 @@ async function buildDocker(): Promise<void> {
 
 async function runShell(): Promise<void> {
   console.log("🚀 Starting interactive shell...");
-  console.log(`Mounting current directory to ${DOCKER_CONFIG.workspaceMount}`);
+  console.log(`Mounting workspace to ${DOCKER_CONFIG.workspaceMount}`);
+  console.log(`Mounting skills from ${getSkillsDir()} to ${DOCKER_CONFIG.skillsMount}`);
   console.log('Press Ctrl+D or type "exit" to leave');
   console.log();
 
@@ -432,6 +441,8 @@ async function runShell(): Promise<void> {
     "-it",
     "-v",
     `${process.cwd()}:${DOCKER_CONFIG.workspaceMount}`,
+    "-v",
+    `${getSkillsDir()}:${DOCKER_CONFIG.skillsMount}`,
     "-e",
     `GITHUB_TOKEN=${githubToken}`,
     "--entrypoint",

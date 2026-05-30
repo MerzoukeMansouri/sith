@@ -9,6 +9,7 @@ import chalk from 'chalk';
 import { dockerCommand, runShellDirect } from './commands/docker.js';
 import { nixCommand, runNixShell } from './commands/nix.js';
 import { renderTerminalUI } from './components/TerminalUI.js';
+import { skillsCommand } from './commands/skills.js';
 
 // Import package.json for version and update checks
 const __filename = fileURLToPath(import.meta.url);
@@ -98,6 +99,14 @@ function createProgram(): Command {
     .description('Run interactive shell in Docker container')
     .action(async () => {
       await runShellDirect();
+    });
+
+  // Skills command - install/uninstall skills from catalog
+  program
+    .command('skills')
+    .description('Manage skills (~/.sith/skills/)')
+    .action(() => {
+      skillsCommand();
     });
 
   // Nix command - native Nix environment

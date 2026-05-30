@@ -17,3 +17,10 @@ export interface NixCommandOptions {
   install?: boolean;
   shell?: boolean;
 }
+
+export interface SkillEntry {
+  name: string;
+  description: string;
+  source: string;
+  homepage: string;
+}

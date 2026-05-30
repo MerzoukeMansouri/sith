@@ -1,3 +1,15 @@
+import type { SkillEntry } from "./types.js";
+
+// Predefined skill catalog — skills are installed to ~/.sith/skills/<name>/
+export const SKILLS_CATALOG: SkillEntry[] = [
+  {
+    name: "caveman",
+    description: "Ultra-compressed communication (~75% token reduction)",
+    source: "https://github.com/JuliusBrussee/caveman/archive/refs/heads/main.zip",
+    homepage: "https://github.com/JuliusBrussee/caveman",
+  },
+];
+
 // Docker configuration
 export const DOCKER_CONFIG = {
   imageName: "sith:latest",
@@ -5,6 +17,7 @@ export const DOCKER_CONFIG = {
   folderName: "docker",
   dockerfileName: "Dockerfile",
   workspaceMount: "/workspace",
+  skillsMount: "/opt/sith/external-skills",
   shellEntrypoint: "/opt/sith/nix/shell.nix",
 } as const;
 

@@ -15,10 +15,6 @@ RUN echo "sandbox = false" >> /etc/nix/nix.conf && \
     echo "filter-syscalls = false" >> /etc/nix/nix.conf && \
     echo "experimental-features = nix-command flakes" >> /etc/nix/nix.conf
 
-# Copier les fichiers de configuration des skills
-COPY docker/skills/rtk-config.toml /opt/sith/skills/rtk-config.toml
-COPY docker/skills/opencode-skills-config.json /opt/sith/skills/opencode-skills-config.json
-
 # Copier les assets (logo, etc.)
 COPY assets/ /opt/sith/assets/
 
@@ -87,16 +83,11 @@ ENV PATH="/root/.opencode/bin:/root/.local/bin:/root/.npm-global/bin:${PATH}"
 ENV NPM_CONFIG_PREFIX=/root/.npm-global
 ENV HOME=/root
 
-# === Token Optimization Skills Configuration ===
-# RTK (Rust Token Killer) - Désactivé par défaut (binaire non disponible publiquement)
-# Activez avec: docker run -e RTK_ENABLED=true ... si vous avez le binaire
-ENV RTK_ENABLED=false
-
-# Caveman - Compression de langage en mode ultra (75%+ de réduction)
-ENV CAVEMAN_MODE=ultra
-ENV CAVEMAN_AUTO=true
-
-# Réduction totale estimée: 85-95% de tokens par session CI/CD
+# === Skills Configuration ===
+# Skills are loaded at runtime from the host via volume mount:
+#   docker run -v ~/.sith/skills:/opt/sith/external-skills ...
+# Each skill must have a skill.json in its directory.
+ENV SITH_EXTERNAL_SKILLS=/opt/sith/external-skills
 
 # Note: Keep running as root due to Nix permission requirements
 # Nix-shell needs to modify /nix/var/nix/profiles/per-user at runtime
