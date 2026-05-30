@@ -5,6 +5,8 @@ import { execa } from "execa";
 import { ConfigModal } from "./ConfigModal.js";
 import { parseSlashCommand, getAvailableCommands } from "../utils/slashCommands.js";
 import { DOCKER_CONFIG, ASCII_LOGO } from "../config.js";
+import { getSkillsDir } from "../utils/skills.js";
+import { skillsCommand } from "../commands/skills.js";
 
 interface Message {
   id: number;
@@ -42,6 +44,7 @@ function WelcomeScreen(): React.ReactElement {
       </Box>
       <Box flexDirection="column" marginTop={1} marginLeft={2}>
         <Text dimColor>  /shell   - Start Docker shell</Text>
+        <Text dimColor>  /skills  - Install/uninstall skills</Text>
         <Text dimColor>  /config  - Configuration</Text>
         <Text dimColor>  /help    - Show help</Text>
       </Box>
@@ -115,6 +118,8 @@ function buildDockerShellCommand(githubToken: string): string[] {
     "-it",
     "-v",
     `${process.cwd()}:${DOCKER_CONFIG.workspaceMount}`,
+    "-v",
+    `${getSkillsDir()}:${DOCKER_CONFIG.skillsMount}`,
     "-e",
     `GITHUB_TOKEN=${githubToken}`,
     "--entrypoint",
@@ -131,6 +136,8 @@ function buildDockerOpencodeCommand(githubToken: string, prompt?: string): strin
     "-it",
     "-v",
     `${process.cwd()}:${DOCKER_CONFIG.workspaceMount}`,
+    "-v",
+    `${getSkillsDir()}:${DOCKER_CONFIG.skillsMount}`,
     "-e",
     `GITHUB_TOKEN=${githubToken}`,
     "--entrypoint",
@@ -229,6 +236,11 @@ export function TerminalUI(): React.ReactElement {
     switch (command.type) {
       case "shell":
         await handleDockerShell();
+        break;
+
+      case "skills":
+        exit();
+        skillsCommand();
         break;
 
       case "config":
