@@ -1,3 +1,10 @@
+# [1.15.0](https://github.com/MerzoukeMansouri/sith/compare/v1.14.1...v1.15.0) (2026-05-30)
+
+
+### Features
+
+* add /skills command for skill management ([32b1369](https://github.com/MerzoukeMansouri/sith/commit/32b13698ce2681135fdc64a69b9f3dfff0a6281e))
+
 ## [1.14.1](https://github.com/MerzoukeMansouri/sith/compare/v1.14.0...v1.14.1) (2026-05-17)
 
 
