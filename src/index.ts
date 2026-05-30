@@ -7,6 +7,7 @@ import { dirname, join } from 'path';
 import updateNotifier from 'update-notifier';
 import chalk from 'chalk';
 import { dockerCommand, runShellDirect } from './commands/docker.js';
+import { nixCommand, runNixShell } from './commands/nix.js';
 import { renderTerminalUI } from './components/TerminalUI.js';
 
 // Import package.json for version and update checks
@@ -56,6 +57,8 @@ function createProgram(): Command {
     .option('--pull', 'Pull prebuilt Docker image (recommended)')
     .option('--build', 'Build the Docker image from scratch')
     .option('--it', 'Launch interactive shell in Docker container')
+    .option('--nix', 'Use native Nix shell (no Docker)')
+    .option('--nix-install', 'Install Nix package manager locally')
     .option('--update', 'Check for updates')
     .option('--legacy', 'Use legacy menu interface');
 
@@ -64,6 +67,10 @@ function createProgram(): Command {
     .action(async (options) => {
       if (options.update) {
         await checkForUpdates();
+      } else if (options.nix) {
+        await runNixShell();
+      } else if (options.nixInstall) {
+        await nixCommand({ install: true });
       } else if (options.it) {
         await runShellDirect();
       } else if (options.legacy || options.pull || options.build) {
@@ -91,6 +98,16 @@ function createProgram(): Command {
     .description('Run interactive shell in Docker container')
     .action(async () => {
       await runShellDirect();
+    });
+
+  // Nix command - native Nix environment
+  program
+    .command('nix')
+    .description('Manage native Nix environment')
+    .option('--install', 'Install Nix package manager')
+    .option('--shell', 'Run Nix shell')
+    .action(async (options) => {
+      await nixCommand(options);
     });
 
   return program;

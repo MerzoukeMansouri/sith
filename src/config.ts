@@ -8,6 +8,15 @@ export const DOCKER_CONFIG = {
   shellEntrypoint: "/opt/sith/nix/shell.nix",
 } as const;
 
+// Nix configuration
+export const NIX_CONFIG = {
+  shellPath: "docker/nix/shell.nix",
+  flakePath: "docker/nix/flake.nix",
+  installerUrl: "https://nixos.org/nix/install",
+  requiredVersion: "2.19",
+  localConfigDir: ".sith/nix",
+} as const;
+
 // Spinner animation configuration
 export const SPINNER_CONFIG = {
   frames: ["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"],

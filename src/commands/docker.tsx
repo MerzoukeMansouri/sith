@@ -6,6 +6,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 import type { MenuItem, BuildingSpinnerProps, DockerCommandOptions } from "../types.js";
 import { DOCKER_CONFIG, SPINNER_CONFIG, ASCII_LOGO } from "../config.js";
+import { installNix, copyNixFiles, runNixShell } from "./nix.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -35,6 +36,7 @@ const menuItems: readonly MenuItem[] = [
 const configMenuItems: readonly MenuItem[] = [
   { label: "Pull prebuilt image (recommended)", value: "pull", icon: "📦" },
   { label: "Build Docker image from scratch", value: "build", icon: "🔨" },
+  { label: "Install Nix locally (no Docker)", value: "nix", icon: "❄️" },
   { label: "Back", value: "back", icon: "◀️" },
 ] as const;
 
@@ -132,6 +134,10 @@ function Menu(): React.ReactElement {
         await handleBuildCommand();
         break;
 
+      case "nix":
+        await handleNixCommand();
+        break;
+
       default:
         break;
     }
@@ -166,6 +172,25 @@ function Menu(): React.ReactElement {
       setIsProcessing(false);
       setProcessError(
         error instanceof Error ? error.message : "Pull failed",
+      );
+    }
+  }
+
+  async function handleNixCommand(): Promise<void> {
+    setIsProcessing(true);
+    setProcessStep("Installing Nix locally...");
+
+    try {
+      await installNix();
+      await copyNixFiles();
+
+      setIsProcessing(false);
+      setProcessComplete(true);
+      setProcessStep("");
+    } catch (error) {
+      setIsProcessing(false);
+      setProcessError(
+        error instanceof Error ? error.message : "Nix installation failed",
       );
     }
   }

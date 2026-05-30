@@ -12,3 +12,8 @@ export interface DockerCommandOptions {
   build?: boolean;
   pull?: boolean;
 }
+
+export interface NixCommandOptions {
+  install?: boolean;
+  shell?: boolean;
+}
