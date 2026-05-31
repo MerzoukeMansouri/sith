@@ -1,3 +1,10 @@
+## [1.17.1](https://github.com/MerzoukeMansouri/sith/compare/v1.17.0...v1.17.1) (2026-05-31)
+
+
+### Bug Fixes
+
+* **ci:** pass valid command string to docker smoke test ([d2b2bce](https://github.com/MerzoukeMansouri/sith/commit/d2b2bce445b3408c17c3384bd2f947064fa95427))
+
 # [1.17.0](https://github.com/MerzoukeMansouri/sith/compare/v1.16.0...v1.17.0) (2026-05-31)
 
 
