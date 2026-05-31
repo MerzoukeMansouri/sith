@@ -22,7 +22,7 @@ jobs:
       - name: Lint shell scripts
         run: |
           sudo apt-get install -y --no-install-recommends shellcheck
-          shellcheck -x docker/nix/nix-scripts/*.sh
+          cd docker/nix/nix-scripts && shellcheck -x *.sh
 
       - uses: pnpm/action-setup@v5
         with:
