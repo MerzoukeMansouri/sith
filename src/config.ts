@@ -2,11 +2,11 @@ import type { SkillEntry } from "./types.js";
 
 // Predefined skill catalog — skills are installed to ~/.sith/skills/<name>/
 export const SKILLS_CATALOG: SkillEntry[] = [
-  {
-    name: "caveman",
-    description: "Ultra-compressed communication (~75% token reduction)",
-    homepage: "https://github.com/JuliusBrussee/caveman",
-    builtinInstructions: `---
+	{
+		name: "caveman",
+		description: "Ultra-compressed communication (~75% token reduction)",
+		homepage: "https://github.com/JuliusBrussee/caveman",
+		builtinInstructions: `---
 name: caveman
 description: Ultra-compressed communication mode (ultra — MAX compression, always active).
 ---
@@ -45,42 +45,42 @@ Drop for: security warnings, irreversible ops, steps where order risks misread. 
 ## Boundaries
 
 Code/commits/PRs: write normal. "stop caveman" or "normal mode": revert.`,
-  },
+	},
 ];
 
 // Docker configuration
 export const DOCKER_CONFIG = {
-  imageName: "sith:latest",
-  prebuiltImage: "ghcr.io/merzoukemansouri/sith:latest",
-  folderName: "docker",
-  dockerfileName: "Dockerfile",
-  workspaceMount: "/workspace",
-  skillsMount: "/root/.opencode/skills",
-  opencodeConfigMount: "/root/.config/opencode/opencode.json",
-  shellEntrypoint: "/opt/sith/nix/shell.nix",
+	imageName: "sith:latest",
+	prebuiltImage: "ghcr.io/merzoukemansouri/sith:latest",
+	folderName: "docker",
+	dockerfileName: "Dockerfile",
+	workspaceMount: "/workspace",
+	skillsMount: "/root/.opencode/skills",
+	opencodeConfigMount: "/root/.config/opencode/opencode.json",
+	shellEntrypoint: "/opt/sith/nix/shell.nix",
 } as const;
 
 // Nix configuration
 export const NIX_CONFIG = {
-  shellPath: "docker/nix/shell.nix",
-  flakePath: "docker/nix/flake.nix",
-  installerUrl: "https://nixos.org/nix/install",
-  requiredVersion: "2.19",
-  localConfigDir: ".sith/nix",
+	shellPath: "docker/nix/shell.nix",
+	flakePath: "docker/nix/flake.nix",
+	installerUrl: "https://nixos.org/nix/install",
+	requiredVersion: "2.19",
+	localConfigDir: ".sith/nix",
 } as const;
 
 // Spinner animation configuration
 export const SPINNER_CONFIG = {
-  frames: ["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"],
-  interval: 80,
+	frames: ["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"],
+	interval: 80,
 } as const;
 
 // ASCII logo lines
 export const ASCII_LOGO = [
-  "    ███████╗██╗████████╗██╗  ██╗",
-  "    ██╔════╝██║╚══██╔══╝██║  ██║",
-  "    ███████╗██║   ██║   ███████║",
-  "    ╚════██║██║   ██║   ██╔══██║",
-  "    ███████║██║   ██║   ██║  ██║",
-  "    ╚══════╝╚═╝   ╚═╝   ╚═╝  ╚═╝",
+	"    ███████╗██╗████████╗██╗  ██╗",
+	"    ██╔════╝██║╚══██╔══╝██║  ██║",
+	"    ███████╗██║   ██║   ███████║",
+	"    ╚════██║██║   ██║   ██╔══██║",
+	"    ███████║██║   ██║   ██║  ██║",
+	"    ╚══════╝╚═╝   ╚═╝   ╚═╝  ╚═╝",
 ] as const;
