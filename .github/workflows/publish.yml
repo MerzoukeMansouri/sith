@@ -221,4 +221,4 @@ jobs:
       - name: Smoke test image
         run: |
           docker pull ${{ needs.docker-build.outputs.image }}
-          docker run --rm ${{ needs.docker-build.outputs.image }} --help
+          docker run --rm ${{ needs.docker-build.outputs.image }} "opencode --help"
