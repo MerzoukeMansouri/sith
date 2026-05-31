@@ -1,3 +1,10 @@
+# [1.17.0](https://github.com/MerzoukeMansouri/sith/compare/v1.16.0...v1.17.0) (2026-05-31)
+
+
+### Features
+
+* add biome linter and integrate into CI workflow ([7481b15](https://github.com/MerzoukeMansouri/sith/commit/7481b1562610351c00f002554e58ed17547495ee))
+
 # [1.16.0](https://github.com/MerzoukeMansouri/sith/compare/v1.15.0...v1.16.0) (2026-05-30)
 
 
