@@ -1,8 +1,7 @@
 import { execa } from "execa";
 import { Box, render, Text, useApp, useInput } from "ink";
 import TextInput from "ink-text-input";
-import type React from "react";
-import { useCallback, useState } from "react";
+import React, { useCallback, useState } from "react";
 import { skillsCommand } from "../commands/skills.js";
 import { ASCII_LOGO, DOCKER_CONFIG } from "../config.js";
 import {

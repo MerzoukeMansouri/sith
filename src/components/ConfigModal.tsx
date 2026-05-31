@@ -3,8 +3,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { execa } from "execa";
 import { Box, Text, useInput } from "ink";
-import type React from "react";
-import { useState } from "react";
+import React, { useState } from "react";
 import { DOCKER_CONFIG } from "../config.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));

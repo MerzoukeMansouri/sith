@@ -3,8 +3,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { execa } from "execa";
 import { Box, render, Text, useApp, useInput } from "ink";
-import type React from "react";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { ASCII_LOGO, DOCKER_CONFIG, SPINNER_CONFIG } from "../config.js";
 import type {
 	BuildingSpinnerProps,

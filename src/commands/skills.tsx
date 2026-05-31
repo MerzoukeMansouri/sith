@@ -1,6 +1,5 @@
 import { Box, render, Text, useApp, useInput } from "ink";
-import type React from "react";
-import { useState } from "react";
+import React, { useState } from "react";
 import { SKILLS_CATALOG } from "../config.js";
 import type { SkillEntry } from "../types.js";
 import { installSkill, isInstalled, uninstallSkill } from "../utils/skills.js";
