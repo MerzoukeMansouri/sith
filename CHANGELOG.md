@@ -1,3 +1,10 @@
+# [1.20.0](https://github.com/MerzoukeMansouri/sith/compare/v1.19.0...v1.20.0) (2026-06-13)
+
+
+### Features
+
+* add support for CLAUDE_CODE_OAUTH_TOKEN environment variable ([1277027](https://github.com/MerzoukeMansouri/sith/commit/12770273b9d8b47c5ed3f42c50e1c85279add7c3))
+
 # [1.19.0](https://github.com/MerzoukeMansouri/sith/compare/v1.18.0...v1.19.0) (2026-06-13)
 
 
