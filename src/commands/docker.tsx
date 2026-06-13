@@ -448,6 +448,8 @@ async function runShell(): Promise<void> {
 		}
 	}
 
+	const claudeOauthToken = process.env.CLAUDE_CODE_OAUTH_TOKEN || "";
+
 	const dockerArgs = [
 		"run",
 		"--rm",
@@ -460,6 +462,9 @@ async function runShell(): Promise<void> {
 		`${opencodeConfigPath}:${DOCKER_CONFIG.opencodeConfigMount}`,
 		"-e",
 		`GITHUB_TOKEN=${githubToken}`,
+		...(claudeOauthToken
+			? ["-e", `CLAUDE_CODE_OAUTH_TOKEN=${claudeOauthToken}`]
+			: []),
 		"--entrypoint",
 		"nix-shell",
 		DOCKER_CONFIG.imageName,

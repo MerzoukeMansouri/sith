@@ -7,29 +7,9 @@ import {
 	getSkillsDir,
 } from "./skills.js";
 
-export function buildDockerShellCommand(githubToken: string): string[] {
-	return [
-		"run",
-		"--rm",
-		"-it",
-		"-v",
-		`${process.cwd()}:${DOCKER_CONFIG.workspaceMount}`,
-		"-v",
-		`${getSkillsDir()}:${DOCKER_CONFIG.skillsMount}`,
-		"-v",
-		`${getOpenCodeConfigPath()}:${DOCKER_CONFIG.opencodeConfigMount}`,
-		"-e",
-		`GITHUB_TOKEN=${githubToken}`,
-		"--entrypoint",
-		"nix-shell",
-		DOCKER_CONFIG.imageName,
-		DOCKER_CONFIG.shellEntrypoint,
-	];
-}
-
-export function buildDockerOpencodeCommand(
+export function buildDockerShellCommand(
 	githubToken: string,
-	prompt?: string,
+	claudeOauthToken?: string,
 ): string[] {
 	const args = [
 		"run",
@@ -43,11 +23,41 @@ export function buildDockerOpencodeCommand(
 		`${getOpenCodeConfigPath()}:${DOCKER_CONFIG.opencodeConfigMount}`,
 		"-e",
 		`GITHUB_TOKEN=${githubToken}`,
-		"--entrypoint",
-		"bash",
-		DOCKER_CONFIG.imageName,
-		"-c",
 	];
+	if (claudeOauthToken) {
+		args.push("-e", `CLAUDE_CODE_OAUTH_TOKEN=${claudeOauthToken}`);
+	}
+	args.push(
+		"--entrypoint",
+		"nix-shell",
+		DOCKER_CONFIG.imageName,
+		DOCKER_CONFIG.shellEntrypoint,
+	);
+	return args;
+}
+
+export function buildDockerOpencodeCommand(
+	githubToken: string,
+	prompt?: string,
+	claudeOauthToken?: string,
+): string[] {
+	const args = [
+		"run",
+		"--rm",
+		"-it",
+		"-v",
+		`${process.cwd()}:${DOCKER_CONFIG.workspaceMount}`,
+		"-v",
+		`${getSkillsDir()}:${DOCKER_CONFIG.skillsMount}`,
+		"-v",
+		`${getOpenCodeConfigPath()}:${DOCKER_CONFIG.opencodeConfigMount}`,
+		"-e",
+		`GITHUB_TOKEN=${githubToken}`,
+	];
+	if (claudeOauthToken) {
+		args.push("-e", `CLAUDE_CODE_OAUTH_TOKEN=${claudeOauthToken}`);
+	}
+	args.push("--entrypoint", "bash", DOCKER_CONFIG.imageName, "-c");
 
 	let opencodeCommand =
 		"source /opt/sith/nix/nix-scripts/setup.sh && cd /workspace && opencode -m github-copilot/claude-sonnet-4.6";
@@ -64,6 +74,7 @@ export function buildDockerOpencodeCommand(
 export function buildDockerClaudeCodeCommand(
 	githubToken: string,
 	prompt?: string,
+	claudeOauthToken?: string,
 ): string[] {
 	const claudeConfigDir = getClaudeConfigDir();
 	const claudeMdPath = getClaudeMdPath();
@@ -77,6 +88,9 @@ export function buildDockerClaudeCodeCommand(
 		"-e",
 		`GITHUB_TOKEN=${githubToken}`,
 	];
+	if (claudeOauthToken) {
+		args.push("-e", `CLAUDE_CODE_OAUTH_TOKEN=${claudeOauthToken}`);
+	}
 
 	// Mount ~/.claude first so subsequent mounts can shadow entries within it
 	if (fs.existsSync(claudeConfigDir)) {

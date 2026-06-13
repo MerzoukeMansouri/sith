@@ -140,7 +140,12 @@ function createProgram(): Command {
 		.option("-p, --prompt <prompt>", "Prompt to pass to OpenCode")
 		.action(async (options) => {
 			const token = await getGitHubToken();
-			const args = buildDockerOpencodeCommand(token, options.prompt);
+			const claudeOauthToken = process.env.CLAUDE_CODE_OAUTH_TOKEN || "";
+			const args = buildDockerOpencodeCommand(
+				token,
+				options.prompt,
+				claudeOauthToken,
+			);
 			spawnSync("docker", args, { stdio: "inherit" });
 		});
 
@@ -151,7 +156,12 @@ function createProgram(): Command {
 		.option("-p, --prompt <prompt>", "Prompt to pass to Claude Code")
 		.action(async (options) => {
 			const token = await getGitHubToken();
-			const args = buildDockerClaudeCodeCommand(token, options.prompt);
+			const claudeOauthToken = process.env.CLAUDE_CODE_OAUTH_TOKEN || "";
+			const args = buildDockerClaudeCodeCommand(
+				token,
+				options.prompt,
+				claudeOauthToken,
+			);
 			spawnSync("docker", args, { stdio: "inherit" });
 		});
 

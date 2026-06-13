@@ -190,7 +190,8 @@ export function TerminalUI(): React.ReactElement {
 		console.log();
 
 		const githubToken = await getGitHubToken();
-		const dockerArgs = buildDockerShellCommand(githubToken);
+		const claudeOauthToken = process.env.CLAUDE_CODE_OAUTH_TOKEN || "";
+		const dockerArgs = buildDockerShellCommand(githubToken, claudeOauthToken);
 
 		await execa("docker", dockerArgs, { stdio: "inherit", reject: false });
 		console.log();
@@ -213,7 +214,12 @@ export function TerminalUI(): React.ReactElement {
 			console.log();
 
 			const githubToken = await getGitHubToken();
-			const dockerArgs = buildDockerOpencodeCommand(githubToken, prompt);
+			const claudeOauthToken = process.env.CLAUDE_CODE_OAUTH_TOKEN || "";
+			const dockerArgs = buildDockerOpencodeCommand(
+				githubToken,
+				prompt,
+				claudeOauthToken,
+			);
 
 			try {
 				await execa("docker", dockerArgs, { stdio: "inherit" });
@@ -245,7 +251,12 @@ export function TerminalUI(): React.ReactElement {
 			console.log();
 
 			const githubToken = await getGitHubToken();
-			const dockerArgs = buildDockerClaudeCodeCommand(githubToken, prompt);
+			const claudeOauthToken = process.env.CLAUDE_CODE_OAUTH_TOKEN || "";
+			const dockerArgs = buildDockerClaudeCodeCommand(
+				githubToken,
+				prompt,
+				claudeOauthToken,
+			);
 
 			try {
 				await execa("docker", dockerArgs, { stdio: "inherit" });
