@@ -1,3 +1,10 @@
+# [1.19.0](https://github.com/MerzoukeMansouri/sith/compare/v1.18.0...v1.19.0) (2026-06-13)
+
+
+### Features
+
+* claude code usage from claude_code_oauth_token ([ed57dec](https://github.com/MerzoukeMansouri/sith/commit/ed57decf618fb975f933a2d3a9d61e1413de5cb5))
+
 # [1.18.0](https://github.com/MerzoukeMansouri/sith/compare/v1.17.1...v1.18.0) (2026-06-13)
 
 
