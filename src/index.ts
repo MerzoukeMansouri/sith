@@ -1,21 +1,21 @@
 #!/usr/bin/env node
 
+import { spawnSync } from "node:child_process";
 import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import chalk from "chalk";
 import { Command } from "commander";
 import updateNotifier from "update-notifier";
-import { spawnSync } from "node:child_process";
 import { dockerCommand, runShellDirect } from "./commands/docker.js";
 import { nixCommand, runNixShell } from "./commands/nix.js";
 import { skillsCommand } from "./commands/skills.js";
 import { renderTerminalUI } from "./components/TerminalUI.js";
-import { getGitHubToken } from "./utils/githubToken.js";
 import {
 	buildDockerClaudeCodeCommand,
 	buildDockerOpencodeCommand,
 } from "./utils/dockerArgs.js";
+import { getGitHubToken } from "./utils/githubToken.js";
 
 // Import package.json for version and update checks
 const __filename = fileURLToPath(import.meta.url);

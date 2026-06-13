@@ -2,7 +2,7 @@
 # Version 2.3.0 - Multi-stage build with non-root user and improved security
 #
 # Build: docker build -t sith:latest .
-# Run:   docker run -v $(pwd):/workspace -e GITHUB_TOKEN=$GITHUB_TOKEN sith:latest analyze
+# Run:   docker run -v $(pwd):/workspace -e GITHUB_TOKEN=$GITHUB_TOKEN -e CLAUDE_CODE_OAUTH_TOKEN=$CLAUDE_CODE_OAUTH_TOKEN sith:latest analyze
 
 # ============================================================================
 # Stage 1: Builder - Setup environment and install dependencies
@@ -85,6 +85,7 @@ RUN echo "registry=https://registry.npmjs.org/" > /home/sith/.npmrc && \
 ENV OPENCODE_MODEL=github-copilot/claude-sonnet-4.5
 ENV OPENCODE_LOG_LEVEL=INFO
 ENV NODE_ENV=production
+ENV CLAUDE_CODE_OAUTH_TOKEN=""
 ENV PATH="/root/.opencode/bin:/root/.local/bin:/root/.npm-global/bin:${PATH}"
 ENV NPM_CONFIG_PREFIX=/root/.npm-global
 ENV HOME=/root

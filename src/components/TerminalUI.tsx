@@ -31,7 +31,11 @@ interface MessageItemProps {
 }
 
 const TOOLS: Array<{ value: AITool; label: string; description: string }> = [
-	{ value: "opencode", label: "OpenCode", description: "github-copilot/claude-sonnet-4.6" },
+	{
+		value: "opencode",
+		label: "OpenCode",
+		description: "github-copilot/claude-sonnet-4.6",
+	},
 	{ value: "claude", label: "Claude Code", description: "Anthropic Claude" },
 ];
 
@@ -55,24 +59,43 @@ function ToolPicker({ selectedIndex }: ToolPickerProps): React.ReactElement {
 					</Text>
 				))}
 			</Box>
-			<Box flexDirection="column" alignItems="center" marginTop={1} marginBottom={2}>
+			<Box
+				flexDirection="column"
+				alignItems="center"
+				marginTop={1}
+				marginBottom={2}
+			>
 				<Text dimColor>Turn your context to the dark side</Text>
 			</Box>
-			<Box flexDirection="column" borderStyle="single" borderColor="gray" paddingX={4} paddingY={1}>
+			<Box
+				flexDirection="column"
+				borderStyle="single"
+				borderColor="gray"
+				paddingX={4}
+				paddingY={1}
+			>
 				<Box marginBottom={1}>
-					<Text color="cyan" bold>Select AI Tool</Text>
+					<Text color="cyan" bold>
+						Select AI Tool
+					</Text>
 				</Box>
 				{TOOLS.map((tool, index) => (
 					<Box key={tool.value}>
-						<Text color={index === selectedIndex ? "cyan" : undefined} bold={index === selectedIndex}>
+						<Text
+							color={index === selectedIndex ? "cyan" : undefined}
+							bold={index === selectedIndex}
+						>
 							{index === selectedIndex ? "▶ " : "  "}
 							{tool.label}
 						</Text>
-						<Text dimColor>{"  "}{tool.description}</Text>
+						<Text dimColor>
+							{"  "}
+							{tool.description}
+						</Text>
 					</Box>
 				))}
 				<Box marginTop={1}>
-					<Text dimColor>↑↓ navigate  ↵ select</Text>
+					<Text dimColor>↑↓ navigate ↵ select</Text>
 				</Box>
 			</Box>
 		</Box>
@@ -98,7 +121,9 @@ function WelcomeScreen({ tool }: { tool: AITool }): React.ReactElement {
 			</Box>
 			<Box flexDirection="column" alignItems="center" marginTop={1}>
 				<Text dimColor>Turn your context to the dark side</Text>
-				<Text color="cyan">Tool: <Text bold>{toolLabel}</Text></Text>
+				<Text color="cyan">
+					Tool: <Text bold>{toolLabel}</Text>
+				</Text>
 			</Box>
 			<Box marginTop={2} flexDirection="column" alignItems="center">
 				<Text color="cyan">Type your prompt to start coding</Text>
@@ -106,11 +131,11 @@ function WelcomeScreen({ tool }: { tool: AITool }): React.ReactElement {
 			</Box>
 			<Box flexDirection="column" marginTop={1} marginLeft={2}>
 				<Text dimColor> /opencode - Switch to OpenCode</Text>
-				<Text dimColor> /claude   - Switch to Claude Code</Text>
-				<Text dimColor> /shell    - Start Docker shell</Text>
-				<Text dimColor> /skills   - Install/uninstall skills</Text>
-				<Text dimColor> /config   - Configuration</Text>
-				<Text dimColor> /help     - Show help</Text>
+				<Text dimColor> /claude - Switch to Claude Code</Text>
+				<Text dimColor> /shell - Start Docker shell</Text>
+				<Text dimColor> /skills - Install/uninstall skills</Text>
+				<Text dimColor> /config - Configuration</Text>
+				<Text dimColor> /help - Show help</Text>
 			</Box>
 		</Box>
 	);
@@ -228,7 +253,9 @@ export function TerminalUI(): React.ReactElement {
 				console.log("✅ Exited Claude Code");
 			} catch (error) {
 				const errorMessage =
-					error instanceof Error ? error.message : "Failed to start Claude Code";
+					error instanceof Error
+						? error.message
+						: "Failed to start Claude Code";
 				console.error(`❌ ${errorMessage}`);
 				process.exit(1);
 			}
@@ -313,7 +340,13 @@ export function TerminalUI(): React.ReactElement {
 				}
 			}
 		},
-		[addMessage, handleOpenCode, handleClaudeCode, handleSlashCommand, selectedTool],
+		[
+			addMessage,
+			handleOpenCode,
+			handleClaudeCode,
+			handleSlashCommand,
+			selectedTool,
+		],
 	);
 
 	const handleConfigModalClose = useCallback((): void => {

@@ -219,6 +219,11 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Smoke test image
+        env:
+          CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
         run: |
           docker pull ${{ needs.docker-build.outputs.image }}
-          docker run --rm ${{ needs.docker-build.outputs.image }} "opencode --help"
+          docker run --rm \
+            -e GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }} \
+            -e CLAUDE_CODE_OAUTH_TOKEN=$CLAUDE_CODE_OAUTH_TOKEN \
+            ${{ needs.docker-build.outputs.image }} "opencode --help"
