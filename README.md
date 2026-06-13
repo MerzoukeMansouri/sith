@@ -97,7 +97,39 @@ cosign verify \
 
 ## Authentication
 
-Sith uses **Claude Sonnet 4.6 via GitHub Copilot** by default. Authentication requires a GitHub token with Copilot access.
+Sith supports two AI providers: **Claude Code** (via Anthropic) and **OpenCode** (via GitHub Copilot).
+
+### Claude Code (claude CLI)
+
+Sith ships with the `claude` CLI. Authenticate it with your Anthropic account using a long-lived OAuth token — no API key required.
+
+**Step 1 — Generate the token (once, on your local machine):**
+```bash
+claude setup-token
+```
+Follow the browser prompt, then copy the printed token. It is valid for one year and scoped to inference only.
+
+**Step 2 — Export it:**
+```bash
+export CLAUDE_CODE_OAUTH_TOKEN=your_token_here
+```
+
+**Make it persistent (add to ~/.zshrc or ~/.bashrc):**
+```bash
+export CLAUDE_CODE_OAUTH_TOKEN=your_token_here
+```
+
+**Verify:**
+```bash
+claude auth status
+# Should show: "loggedIn": true, "authMethod": "claude.ai"
+```
+
+**Requirements:** Claude Pro, Max, Team, or Enterprise subscription.
+
+### GitHub Copilot (opencode CLI)
+
+Sith uses **Claude Sonnet 4.6 via GitHub Copilot** by default for OpenCode. Requires a GitHub token with Copilot access.
 
 **Automatic (recommended):**
 If you have GitHub CLI (`gh`) installed and authenticated, Sith automatically fetches your token:
@@ -128,6 +160,24 @@ Once OpenCode starts, authenticate with GitHub Copilot:
 opencode providers login
 # Follow prompts to authenticate with GitHub
 ```
+
+### CI / GitHub Actions
+
+Add both tokens as repository secrets, then pass them to the container:
+
+```yaml
+- name: Run sith
+  env:
+    CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  run: |
+    docker run --rm \
+      -e CLAUDE_CODE_OAUTH_TOKEN=$CLAUDE_CODE_OAUTH_TOKEN \
+      -e GITHUB_TOKEN=$GITHUB_TOKEN \
+      ghcr.io/merzoukemanouri/sith:latest "claude auth status"
+```
+
+Generate `CLAUDE_CODE_OAUTH_TOKEN` once with `claude setup-token` and store it in **Settings → Secrets → Actions** as `CLAUDE_CODE_OAUTH_TOKEN`.
 
 ## Features
 
