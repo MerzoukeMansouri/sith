@@ -1,3 +1,10 @@
+# [1.18.0](https://github.com/MerzoukeMansouri/sith/compare/v1.17.1...v1.18.0) (2026-06-13)
+
+
+### Features
+
+* add Claude Code CLI support and improve Docker setup ([26c9eff](https://github.com/MerzoukeMansouri/sith/commit/26c9effe4f4f1d33bf12b33bf39717f73ff63570))
+
 ## [1.17.1](https://github.com/MerzoukeMansouri/sith/compare/v1.17.0...v1.17.1) (2026-05-31)
 
 
