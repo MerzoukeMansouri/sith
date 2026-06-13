@@ -58,6 +58,8 @@ export const DOCKER_CONFIG = {
 	skillsMount: "/root/.opencode/skills",
 	opencodeConfigMount: "/root/.config/opencode/opencode.json",
 	shellEntrypoint: "/opt/sith/nix/shell.nix",
+	claudeConfigMount: "/root/.claude",
+	claudeSkillsMount: "/root/.claude/skills",
 } as const;
 
 // Nix configuration

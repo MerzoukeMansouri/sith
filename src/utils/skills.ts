@@ -22,6 +22,19 @@ export function getSkillsDir(): string {
 	return dir;
 }
 
+export function getClaudeConfigDir(): string {
+	return path.join(os.homedir(), ".claude");
+}
+
+export function getClaudeMdPath(): string {
+	const claudeMdPath = path.join(os.homedir(), ".sith", "CLAUDE.md");
+	if (!fs.existsSync(claudeMdPath)) {
+		fs.mkdirSync(path.dirname(claudeMdPath), { recursive: true });
+		fs.writeFileSync(claudeMdPath, "");
+	}
+	return claudeMdPath;
+}
+
 export function getOpenCodeConfigPath(): string {
 	const configPath = path.join(os.homedir(), ".sith", "opencode.json");
 	// Docker bind-mount creates a directory if the source doesn't exist; ensure it's a file.
@@ -51,6 +64,18 @@ function addInstruction(containerPath: string): void {
 		config.instructions.push(containerPath);
 		writeConfig(config);
 	}
+}
+
+function syncClaudeMd(): void {
+	const config = readConfig();
+	const lines = config.instructions.map(
+		(p) =>
+			`@${p.replace(DOCKER_CONFIG.skillsMount, DOCKER_CONFIG.claudeSkillsMount)}`,
+	);
+	fs.writeFileSync(
+		getClaudeMdPath(),
+		lines.join("\n") + (lines.length ? "\n" : ""),
+	);
 }
 
 function removeInstructionsUnder(skillContainerDir: string): void {
@@ -93,6 +118,7 @@ export async function installSkill(skill: SkillEntry): Promise<void> {
 			JSON.stringify({ name: skill.name, version: "builtin" }, null, 2),
 		);
 		addInstruction(`${DOCKER_CONFIG.skillsMount}/${skill.name}/SKILL.md`);
+		syncClaudeMd();
 		return;
 	}
 
@@ -129,6 +155,7 @@ export async function installSkill(skill: SkillEntry): Promise<void> {
 				`${DOCKER_CONFIG.skillsMount}/${skill.name}/${instructionsFile}`,
 			);
 		}
+		syncClaudeMd();
 	} finally {
 		fs.rmSync(tmpZip, { force: true });
 		fs.rmSync(tmpExtract, { recursive: true, force: true });
@@ -141,4 +168,5 @@ export function uninstallSkill(name: string): void {
 	if (fs.existsSync(targetDir)) {
 		fs.rmSync(targetDir, { recursive: true, force: true });
 	}
+	syncClaudeMd();
 }

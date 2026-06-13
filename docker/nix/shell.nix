@@ -31,6 +31,8 @@ pkgs.mkShell {
     else
       echo "⚠️  Setup scripts not found in /opt/sith/nix/nix-scripts/"
     fi
+    # setup.sh sets -e for safety; unset for interactive session
+    set +e
   '';
   
   # Variables d'environnement persistantes

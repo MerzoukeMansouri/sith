@@ -5,6 +5,7 @@ import React, { useCallback, useState } from "react";
 import { skillsCommand } from "../commands/skills.js";
 import { ASCII_LOGO, DOCKER_CONFIG } from "../config.js";
 import {
+	buildDockerClaudeCodeCommand,
 	buildDockerOpencodeCommand,
 	buildDockerShellCommand,
 } from "../utils/dockerArgs.js";
@@ -15,6 +16,8 @@ import {
 	parseSlashCommand,
 } from "../utils/slashCommands.js";
 import { ConfigModal } from "./ConfigModal.js";
+
+type AITool = "opencode" | "claude";
 
 interface Message {
 	id: number;
@@ -27,7 +30,57 @@ interface MessageItemProps {
 	message: Message;
 }
 
-function WelcomeScreen(): React.ReactElement {
+const TOOLS: Array<{ value: AITool; label: string; description: string }> = [
+	{ value: "opencode", label: "OpenCode", description: "github-copilot/claude-sonnet-4.6" },
+	{ value: "claude", label: "Claude Code", description: "Anthropic Claude" },
+];
+
+interface ToolPickerProps {
+	selectedIndex: number;
+}
+
+function ToolPicker({ selectedIndex }: ToolPickerProps): React.ReactElement {
+	return (
+		<Box
+			flexDirection="column"
+			justifyContent="center"
+			alignItems="center"
+			paddingY={2}
+		>
+			<Box flexDirection="column" marginBottom={2}>
+				{ASCII_LOGO.map((line, index) => (
+					// biome-ignore lint/suspicious/noArrayIndexKey: static array, order never changes
+					<Text key={index} color="red" bold>
+						{line}
+					</Text>
+				))}
+			</Box>
+			<Box flexDirection="column" alignItems="center" marginTop={1} marginBottom={2}>
+				<Text dimColor>Turn your context to the dark side</Text>
+			</Box>
+			<Box flexDirection="column" borderStyle="single" borderColor="gray" paddingX={4} paddingY={1}>
+				<Box marginBottom={1}>
+					<Text color="cyan" bold>Select AI Tool</Text>
+				</Box>
+				{TOOLS.map((tool, index) => (
+					<Box key={tool.value}>
+						<Text color={index === selectedIndex ? "cyan" : undefined} bold={index === selectedIndex}>
+							{index === selectedIndex ? "▶ " : "  "}
+							{tool.label}
+						</Text>
+						<Text dimColor>{"  "}{tool.description}</Text>
+					</Box>
+				))}
+				<Box marginTop={1}>
+					<Text dimColor>↑↓ navigate  ↵ select</Text>
+				</Box>
+			</Box>
+		</Box>
+	);
+}
+
+function WelcomeScreen({ tool }: { tool: AITool }): React.ReactElement {
+	const toolLabel = TOOLS.find((t) => t.value === tool)?.label ?? tool;
 	return (
 		<Box
 			flexDirection="column"
@@ -45,17 +98,19 @@ function WelcomeScreen(): React.ReactElement {
 			</Box>
 			<Box flexDirection="column" alignItems="center" marginTop={1}>
 				<Text dimColor>Turn your context to the dark side</Text>
-				<Text dimColor>Dockerized OpenCode environment</Text>
+				<Text color="cyan">Tool: <Text bold>{toolLabel}</Text></Text>
 			</Box>
 			<Box marginTop={2} flexDirection="column" alignItems="center">
 				<Text color="cyan">Type your prompt to start coding</Text>
 				<Text dimColor>or use slash commands:</Text>
 			</Box>
 			<Box flexDirection="column" marginTop={1} marginLeft={2}>
-				<Text dimColor> /shell - Start Docker shell</Text>
-				<Text dimColor> /skills - Install/uninstall skills</Text>
-				<Text dimColor> /config - Configuration</Text>
-				<Text dimColor> /help - Show help</Text>
+				<Text dimColor> /opencode - Switch to OpenCode</Text>
+				<Text dimColor> /claude   - Switch to Claude Code</Text>
+				<Text dimColor> /shell    - Start Docker shell</Text>
+				<Text dimColor> /skills   - Install/uninstall skills</Text>
+				<Text dimColor> /config   - Configuration</Text>
+				<Text dimColor> /help     - Show help</Text>
 			</Box>
 		</Box>
 	);
@@ -81,6 +136,8 @@ export function TerminalUI(): React.ReactElement {
 	const [messages, setMessages] = useState<Message[]>([]);
 	const [showConfigModal, setShowConfigModal] = useState(false);
 	const [nextMessageId, setNextMessageId] = useState(1);
+	const [selectedTool, setSelectedTool] = useState<AITool | null>(null);
+	const [toolPickerIndex, setToolPickerIndex] = useState(0);
 
 	const addMessage = useCallback(
 		(text: string, type: Message["type"] = "system"): void => {
@@ -110,16 +167,9 @@ export function TerminalUI(): React.ReactElement {
 		const githubToken = await getGitHubToken();
 		const dockerArgs = buildDockerShellCommand(githubToken);
 
-		try {
-			await execa("docker", dockerArgs, { stdio: "inherit" });
-			console.log();
-			console.log("✅ Exited shell");
-		} catch (error) {
-			const errorMessage =
-				error instanceof Error ? error.message : "Failed to start shell";
-			console.error(`❌ ${errorMessage}`);
-			process.exit(1);
-		}
+		await execa("docker", dockerArgs, { stdio: "inherit", reject: false });
+		console.log();
+		console.log("✅ Exited shell");
 	}, [exit]);
 
 	const handleOpenCode = useCallback(
@@ -147,6 +197,38 @@ export function TerminalUI(): React.ReactElement {
 			} catch (error) {
 				const errorMessage =
 					error instanceof Error ? error.message : "Failed to start OpenCode";
+				console.error(`❌ ${errorMessage}`);
+				process.exit(1);
+			}
+		},
+		[exit],
+	);
+
+	const handleClaudeCode = useCallback(
+		async (prompt?: string): Promise<void> => {
+			exit();
+
+			console.log("🤖 Starting Claude Code...");
+			console.log(
+				`Mounting current directory to ${DOCKER_CONFIG.workspaceMount}`,
+			);
+
+			if (prompt) {
+				console.log(`Prompt: ${prompt}`);
+			}
+
+			console.log();
+
+			const githubToken = await getGitHubToken();
+			const dockerArgs = buildDockerClaudeCodeCommand(githubToken, prompt);
+
+			try {
+				await execa("docker", dockerArgs, { stdio: "inherit" });
+				console.log();
+				console.log("✅ Exited Claude Code");
+			} catch (error) {
+				const errorMessage =
+					error instanceof Error ? error.message : "Failed to start Claude Code";
 				console.error(`❌ ${errorMessage}`);
 				process.exit(1);
 			}
@@ -187,6 +269,16 @@ export function TerminalUI(): React.ReactElement {
 					}
 					break;
 				}
+
+				case "opencode":
+					setSelectedTool("opencode");
+					addMessage("Switched to OpenCode", "success");
+					break;
+
+				case "claude":
+					setSelectedTool("claude");
+					addMessage("Switched to Claude Code", "success");
+					break;
 			}
 		},
 		[addMessage, handleDockerShell, exit],
@@ -213,11 +305,15 @@ export function TerminalUI(): React.ReactElement {
 					"error",
 				);
 			} else {
-				// Regular text input - start OpenCode with this prompt
-				await handleOpenCode(trimmedValue);
+				// Regular text input - route to selected tool
+				if (selectedTool === "claude") {
+					await handleClaudeCode(trimmedValue);
+				} else {
+					await handleOpenCode(trimmedValue);
+				}
 			}
 		},
-		[addMessage, handleOpenCode, handleSlashCommand],
+		[addMessage, handleOpenCode, handleClaudeCode, handleSlashCommand, selectedTool],
 	);
 
 	const handleConfigModalClose = useCallback((): void => {
@@ -233,13 +329,22 @@ export function TerminalUI(): React.ReactElement {
 
 	useInput((input, key) => {
 		if (showConfigModal) {
-			// Let modal handle input
 			return;
 		}
 
 		const shouldExit = key.escape || (key.ctrl && input === "c");
 		if (shouldExit) {
 			exit();
+		}
+
+		if (selectedTool === null) {
+			if (key.upArrow) {
+				setToolPickerIndex((i) => (i - 1 + TOOLS.length) % TOOLS.length);
+			} else if (key.downArrow) {
+				setToolPickerIndex((i) => (i + 1) % TOOLS.length);
+			} else if (key.return) {
+				setSelectedTool(TOOLS[toolPickerIndex].value);
+			}
 		}
 	});
 
@@ -254,13 +359,17 @@ export function TerminalUI(): React.ReactElement {
 		);
 	}
 
+	if (selectedTool === null) {
+		return <ToolPicker selectedIndex={toolPickerIndex} />;
+	}
+
 	const shouldShowWelcome = messages.length === 0;
 	const recentMessages = messages.slice(-10);
 
 	return (
 		<Box flexDirection="column" height="100%">
 			{shouldShowWelcome ? (
-				<WelcomeScreen />
+				<WelcomeScreen tool={selectedTool} />
 			) : (
 				<Box flexDirection="column" flexGrow={1} marginBottom={1}>
 					{recentMessages.map((message) => (

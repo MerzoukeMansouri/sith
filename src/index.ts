@@ -6,10 +6,16 @@ import { fileURLToPath } from "node:url";
 import chalk from "chalk";
 import { Command } from "commander";
 import updateNotifier from "update-notifier";
+import { spawnSync } from "node:child_process";
 import { dockerCommand, runShellDirect } from "./commands/docker.js";
 import { nixCommand, runNixShell } from "./commands/nix.js";
 import { skillsCommand } from "./commands/skills.js";
 import { renderTerminalUI } from "./components/TerminalUI.js";
+import { getGitHubToken } from "./utils/githubToken.js";
+import {
+	buildDockerClaudeCodeCommand,
+	buildDockerOpencodeCommand,
+} from "./utils/dockerArgs.js";
 
 // Import package.json for version and update checks
 const __filename = fileURLToPath(import.meta.url);
@@ -125,6 +131,28 @@ function createProgram(): Command {
 		.option("--shell", "Run Nix shell")
 		.action(async (options) => {
 			await nixCommand(options);
+		});
+
+	// OpenCode command - launch OpenCode in Docker
+	program
+		.command("opencode")
+		.description("Launch OpenCode in Docker")
+		.option("-p, --prompt <prompt>", "Prompt to pass to OpenCode")
+		.action(async (options) => {
+			const token = await getGitHubToken();
+			const args = buildDockerOpencodeCommand(token, options.prompt);
+			spawnSync("docker", args, { stdio: "inherit" });
+		});
+
+	// Claude command - launch Claude Code in Docker
+	program
+		.command("claude")
+		.description("Launch Claude Code in Docker")
+		.option("-p, --prompt <prompt>", "Prompt to pass to Claude Code")
+		.action(async (options) => {
+			const token = await getGitHubToken();
+			const args = buildDockerClaudeCodeCommand(token, options.prompt);
+			spawnSync("docker", args, { stdio: "inherit" });
 		});
 
 	return program;

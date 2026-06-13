@@ -466,15 +466,8 @@ async function runShell(): Promise<void> {
 		DOCKER_CONFIG.shellEntrypoint,
 	];
 
-	try {
-		await execa("docker", dockerArgs, {
-			stdio: "inherit",
-		});
-	} catch (error) {
-		console.error("❌ Failed to start shell");
-		if (error instanceof Error) {
-			console.error(error.message);
-		}
-		process.exit(1);
-	}
+	await execa("docker", dockerArgs, {
+		stdio: "inherit",
+		reject: false,
+	});
 }

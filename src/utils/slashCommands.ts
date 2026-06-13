@@ -1,4 +1,10 @@
-export type SlashCommandType = "shell" | "config" | "help" | "skills";
+export type SlashCommandType =
+	| "shell"
+	| "config"
+	| "help"
+	| "skills"
+	| "opencode"
+	| "claude";
 
 export interface SlashCommand {
 	type: SlashCommandType;
@@ -23,6 +29,10 @@ export function parseSlashCommand(input: string): SlashCommand | null {
 			return { type: "help", raw: trimmed };
 		case "skills":
 			return { type: "skills", raw: trimmed };
+		case "opencode":
+			return { type: "opencode", raw: trimmed };
+		case "claude":
+			return { type: "claude", raw: trimmed };
 		default:
 			return null;
 	}
@@ -33,7 +43,9 @@ export function getAvailableCommands(): Array<{
 	description: string;
 }> {
 	return [
-		{ command: "/shell", description: "Start Docker shell (no OpenCode)" },
+		{ command: "/opencode", description: "Switch to OpenCode" },
+		{ command: "/claude", description: "Switch to Claude Code" },
+		{ command: "/shell", description: "Start Docker shell" },
 		{ command: "/skills", description: "Install/uninstall skills" },
 		{ command: "/config", description: "Open configuration menu" },
 		{ command: "/help", description: "Show available commands" },

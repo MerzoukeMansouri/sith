@@ -21,13 +21,23 @@ COPY assets/ /opt/sith/assets/
 # Copier les fichiers Nix (scripts, config, shell.nix)
 COPY docker/nix/ /opt/sith/nix/
 
-# Configurer npm, pré-charger Nix et installer OpenCode CLI
-RUN echo "registry=https://registry.npmjs.org/" > /root/.npmrc && \
+# Configurer npm, pré-charger Nix, installer OpenCode CLI et Claude Code CLI
+RUN printf 'registry=https://registry.npmjs.org/\nprefix=/root/.npm-global\n' > /root/.npmrc && \
+    mkdir -p /root/.npm-global && \
     nix-shell /opt/sith/nix/shell.nix --run "echo '✅ Environment cached'" && \
     nix-shell /opt/sith/nix/shell.nix --run " \
     curl -fsSL https://opencode.ai/install | bash && \
     patchelf --set-interpreter \$(patchelf --print-interpreter \$(which bash)) /root/.opencode/bin/opencode && \
     /root/.opencode/bin/opencode --version \
+    " && \
+    nix-shell /opt/sith/nix/shell.nix --run " \
+    npm install -g --prefix /root/.npm-global @anthropic-ai/claude-code \
+    " && \
+    nix-shell /opt/sith/nix/shell.nix --run " \
+    CLAUDE_BIN=\$(readlink -f /root/.npm-global/bin/claude) && \
+    file \$CLAUDE_BIN && \
+    patchelf --set-interpreter \$(patchelf --print-interpreter \$(which bash)) \$CLAUDE_BIN && \
+    /root/.npm-global/bin/claude --version \
     "
 
 # ============================================================================
@@ -54,6 +64,7 @@ COPY --from=builder /opt/sith/ /opt/sith/
 COPY --from=builder /nix/store /nix/store
 COPY --from=builder /nix/var /nix/var
 COPY --from=builder /root/.opencode /root/.opencode
+COPY --from=builder /root/.npm-global /root/.npm-global
 COPY --from=builder /root/.npmrc /root/.npmrc
 
 # Créer un utilisateur non-root pour l'exécution
