@@ -10,8 +10,8 @@ import type {
 	DockerCommandOptions,
 	MenuItem,
 } from "../types.js";
-import { getOpenCodeConfigPath, getSkillsDir } from "../utils/skills.js";
 import { buildDockerShellCommand } from "../utils/dockerArgs.js";
+import { getSkillsDir } from "../utils/skills.js";
 import { copyNixFiles, installNix } from "./nix.js";
 import { skillsCommand } from "./skills.js";
 

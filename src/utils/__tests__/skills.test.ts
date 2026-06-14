@@ -257,16 +257,18 @@ describe("syncClaudeMd", () => {
 		});
 		mockFs.readFileSync.mockImplementation((p: string) => {
 			if (typeof p === "string" && p.endsWith("skill.json"))
-				return JSON.stringify({ name: "caveman", version: "builtin", autoLoad: true });
+				return JSON.stringify({
+					name: "caveman",
+					version: "builtin",
+					autoLoad: true,
+				});
 			return validConfig;
 		});
 		await installSkill(builtinSkill);
 		const claudeWrite = vi
 			.mocked(mockFs.writeFileSync)
 			.mock.calls.find(([p, , opts]) => p === expectedClaudeMdPath && !opts);
-		expect(claudeWrite?.[1]).toBe(
-			"@/root/.claude/skills/caveman/SKILL.md\n",
-		);
+		expect(claudeWrite?.[1]).toBe("@/root/.claude/skills/caveman/SKILL.md\n");
 	});
 
 	it("excludes skill from CLAUDE.md when autoLoad: false", async () => {
@@ -277,7 +279,11 @@ describe("syncClaudeMd", () => {
 		});
 		mockFs.readFileSync.mockImplementation((p: string) => {
 			if (typeof p === "string" && p.endsWith("skill.json"))
-				return JSON.stringify({ name: "caveman", version: "builtin", autoLoad: false });
+				return JSON.stringify({
+					name: "caveman",
+					version: "builtin",
+					autoLoad: false,
+				});
 			return validConfig;
 		});
 		await installSkill({ ...builtinSkill, autoLoad: false });

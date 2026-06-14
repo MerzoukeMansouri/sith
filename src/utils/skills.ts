@@ -147,7 +147,9 @@ export function setSkillAutoLoad(name: string, autoLoad: boolean): void {
 	if (autoLoad) {
 		const instructionsFile = findInstructionsFile(skillDir);
 		if (instructionsFile) {
-			addInstruction(`${DOCKER_CONFIG.skillsMount}/${name}/${instructionsFile}`);
+			addInstruction(
+				`${DOCKER_CONFIG.skillsMount}/${name}/${instructionsFile}`,
+			);
 		}
 	} else {
 		removeInstructionsUnder(`${DOCKER_CONFIG.skillsMount}/${name}/`);
@@ -167,7 +169,11 @@ export async function installSkill(skill: SkillEntry): Promise<void> {
 		fs.writeFileSync(
 			path.join(targetDir, "skill.json"),
 			JSON.stringify(
-				{ name: skill.name, version: "builtin", autoLoad: skill.autoLoad ?? false },
+				{
+					name: skill.name,
+					version: "builtin",
+					autoLoad: skill.autoLoad ?? false,
+				},
 				null,
 				2,
 			),
@@ -203,7 +209,11 @@ export async function installSkill(skill: SkillEntry): Promise<void> {
 			fs.writeFileSync(
 				skillJson,
 				JSON.stringify(
-					{ name: skill.name, version: "local", autoLoad: skill.autoLoad ?? false },
+					{
+						name: skill.name,
+						version: "local",
+						autoLoad: skill.autoLoad ?? false,
+					},
 					null,
 					2,
 				),

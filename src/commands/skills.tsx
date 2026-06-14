@@ -155,7 +155,9 @@ function SkillsMenu(): React.ReactElement {
 				);
 			})}
 			<Box marginTop={1}>
-				<Text dimColor>↑↓ navigate  Enter install/uninstall  a toggle auto-load  q quit</Text>
+				<Text dimColor>
+					↑↓ navigate Enter install/uninstall a toggle auto-load q quit
+				</Text>
 			</Box>
 		</Box>
 	);
