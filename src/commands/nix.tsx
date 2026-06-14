@@ -170,11 +170,23 @@ export async function runNixShell(): Promise<void> {
 
 	// Run nix-shell
 	try {
-		await execa("nix-shell", [shellNixPath], {
-			stdio: "inherit",
-			env,
-			cwd: process.cwd(),
-		});
+		await execa(
+			"nix-shell",
+			[
+				"--option",
+				"substituters",
+				"https://cache.nixos.org",
+				"--option",
+				"trusted-public-keys",
+				"cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY=",
+				shellNixPath,
+			],
+			{
+				stdio: "inherit",
+				env,
+				cwd: process.cwd(),
+			},
+		);
 	} catch (error) {
 		console.error("❌ Failed to start Nix shell");
 		if (error instanceof Error) {
