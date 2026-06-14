@@ -1,3 +1,10 @@
+## [1.23.1](https://github.com/MerzoukeMansouri/sith/compare/v1.23.0...v1.23.1) (2026-06-14)
+
+
+### Bug Fixes
+
+* make nix shell work on macOS and always copy config files ([310b34d](https://github.com/MerzoukeMansouri/sith/commit/310b34da09ec6a8742efa4a44b41149a5b944474))
+
 # [1.23.0](https://github.com/MerzoukeMansouri/sith/compare/v1.22.0...v1.23.0) (2026-06-14)
 
 
