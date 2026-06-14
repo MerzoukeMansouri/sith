@@ -40,6 +40,7 @@ const expectedConfigPath = path.join(os.homedir(), ".sith", "opencode.json");
 
 const validConfig = JSON.stringify({
 	$schema: "https://opencode.ai/config.json",
+	model: "github-copilot/claude-sonnet-4.6",
 	instructions: [],
 });
 
@@ -202,6 +203,7 @@ describe("installSkill — builtin", () => {
 
 	it("does not add duplicate instruction", async () => {
 		const existingConfig = JSON.stringify({
+			model: "github-copilot/claude-sonnet-4.6",
 			instructions: ["/root/.opencode/skills/caveman/SKILL.md"],
 		});
 		mockFs.readFileSync.mockReturnValue(existingConfig);
@@ -347,6 +349,7 @@ describe("uninstallSkill", () => {
 
 	it("removes instruction from opencode.json", () => {
 		const config = JSON.stringify({
+			model: "github-copilot/claude-sonnet-4.6",
 			instructions: [
 				"/root/.opencode/skills/caveman/SKILL.md",
 				"/root/.opencode/skills/other/SKILL.md",

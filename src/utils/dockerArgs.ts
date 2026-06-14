@@ -1,7 +1,6 @@
 import fs from "node:fs";
 import { DOCKER_CONFIG } from "../config.js";
 import {
-	getClaudeConfigDir,
 	getClaudeMdPath,
 	getOpenCodeConfigPath,
 	getSkillsDir,
@@ -83,7 +82,6 @@ export function buildDockerClaudeCodeCommand(
 	claudeOauthToken?: string,
 ): string[] {
 	syncClaudeMd();
-	const claudeConfigDir = getClaudeConfigDir();
 	const claudeMdPath = getClaudeMdPath();
 
 	const args = [
@@ -99,12 +97,7 @@ export function buildDockerClaudeCodeCommand(
 		args.push("-e", `CLAUDE_CODE_OAUTH_TOKEN=${claudeOauthToken}`);
 	}
 
-	// Mount ~/.claude first so subsequent mounts can shadow entries within it
-	if (fs.existsSync(claudeConfigDir)) {
-		args.push("-v", `${claudeConfigDir}:${DOCKER_CONFIG.claudeConfigMount}`);
-	}
-
-	// Skills dir overrides /root/.claude/skills inside the container
+	// Mount only ~/.sith/ contents — never expose ~/.claude to the container
 	args.push("-v", `${getSkillsDir()}:${DOCKER_CONFIG.claudeSkillsMount}`);
 	// Generated CLAUDE.md (with skill @imports) overrides any CLAUDE.md from ~/.claude
 	args.push(
