@@ -65,6 +65,27 @@ export async function nixCleanupCommand() {
 	}
 }
 
+export async function nixUpdateCommand() {
+	console.log(chalk.cyan("Updating Nix channels..."));
+	try {
+		execSync("nix-channel --update", { stdio: "inherit" });
+		console.log(chalk.green("✓ Channels updated."));
+	} catch {
+		console.log(chalk.yellow("nix-channel failed — Nix may not be installed."));
+		return;
+	}
+
+	console.log(chalk.cyan("Upgrading Nix packages..."));
+	try {
+		execSync("nix-env -u '*'", { stdio: "inherit" });
+		console.log(chalk.green("✓ Packages upgraded."));
+	} catch {
+		console.log(
+			chalk.yellow("nix-env upgrade failed — no user packages or error above."),
+		);
+	}
+}
+
 export async function nixUninstallCommand() {
 	console.log(chalk.yellow("This will fully remove Nix from your system:"));
 	console.log(chalk.dim("  /nix/store, Nix daemon, shell profile entries"));

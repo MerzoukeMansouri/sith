@@ -10,6 +10,22 @@ Standardize and share your OpenCode setup with a fully dockerized environment, d
 
 ---
 
+## Quick Start
+
+```bash
+npm install -g @m14i/sith   # Install CLI
+sith --pull                  # Pull prebuilt Docker image
+sith                         # Launch TUI
+```
+
+No Docker? Use native Nix:
+
+```bash
+sith --nix-install && sith --nix
+```
+
+---
+
 ## Why?
 
 AI coding tools are powerful in isolation. They become fragile at scale:
@@ -26,6 +42,29 @@ Sith solves this by packaging both tools, all config, and your team's context in
 | AI tools hard to run in CI | Prebuilt signed image + token injection via env vars |
 | Claude Code vs OpenCode friction | Both available, same container, same command |
 | "Works on my machine" builds | Nix-pinned dependencies inside Docker |
+
+---
+
+## How?
+
+Three modes. Pick based on your trust model, infra constraints, and whether Docker is available. The Docker path is recommended for teams and CI — native Nix is for when you want no container overhead on a machine you control.
+
+| | `sith --pull` | `sith --build` | `sith --nix` |
+|---|---|---|---|
+| **Setup time** | ~1 min (pull) | ~5–10 min (build) | ~2 min (first run) |
+| **Reproducibility** | Pinned image digest | Dockerfile-pinned | Nix-pinned (`nixos-23.11`) |
+| **Trust model** | GitHub Actions + Cosign | Your machine only | Your machine only |
+| **Signature verification** | ✅ cosign | ❌ | ❌ |
+| **SBOM included** | ✅ | ❌ | ❌ |
+| **CI/CD ready** | ✅ drop-in | ⚠️ needs build step | ❌ |
+| **Requires Docker** | ✅ | ✅ | ❌ |
+| **Requires Nix** | ❌ | ❌ | ✅ |
+| **Disk usage** | ~2–3 GB (image) | ~2–3 GB (image) | ~500 MB (store) |
+| **Works offline** | ✅ after pull | ✅ after build | ⚠️ after store populated |
+| **macOS support** | ✅ (amd64 + arm64) | ✅ | ✅ |
+| **Linux support** | ✅ | ✅ | ✅ |
+| **Windows support** | ✅ Docker Desktop | ✅ Docker Desktop | ❌ |
+| **Ideal for** | Teams, CI, daily use | Air-gapped, custom | Local dev, no Docker |
 
 ---
 
@@ -61,7 +100,7 @@ Supports `linux/amd64` and `linux/arm64`. Images are signed with cosign and incl
 cosign verify \
   --certificate-identity-regexp="https://github.com/MerzoukeMansouri/sith" \
   --certificate-oidc-issuer="https://token.actions.githubusercontent.com" \
-  ghcr.io/merzoukemanouri/sith:latest
+  ghcr.io/merzoukemansouri/sith:latest
 ```
 
 **Build from scratch — full control, no external trust:**
@@ -69,12 +108,6 @@ cosign verify \
 ```bash
 sith --build
 ```
-
-| | `sith --pull` | `sith --build` |
-|--|--------------|----------------|
-| Speed | Fast | Slow |
-| Trust | GitHub Actions + Cosign | Your machine |
-| Use case | Daily use, CI/CD | Air-gapped, custom builds |
 
 ### Use it
 
@@ -102,13 +135,7 @@ sith opencode -p "fix the bug"    # OpenCode starts immediately with your task
 sith claude -p "fix the bug"      # Claude Code starts immediately with your task
 ```
 
-**Skills:**
-
-```bash
-sith skills    # Install / manage skills from catalog (~/.sith/skills/)
-```
-
-### Cleanup & Uninstall
+### Cleanup
 
 ```bash
 sith --docker-cleanup    # Remove sith Docker images (sith:latest + prebuilt GHCR image)
@@ -126,7 +153,7 @@ sith --uninstall         # Remove ~/.sith/ (skills, config, nix files)
     docker run --rm \
       -e CLAUDE_CODE_OAUTH_TOKEN=$CLAUDE_CODE_OAUTH_TOKEN \
       -e GITHUB_TOKEN=$GITHUB_TOKEN \
-      ghcr.io/merzoukemanouri/sith:latest "claude auth status"
+      ghcr.io/merzoukemansouri/sith:latest "claude auth status"
 ```
 
 See [Authentication](./doc/AUTH_CLAUDE.md) for how to generate the tokens.
@@ -149,14 +176,33 @@ sith nix --install    # Install Nix
 sith nix --shell      # Run Nix shell
 ```
 
-**Cleanup:**
+**Maintenance:**
 
 ```bash
+sith --nix-update       # Update Nix channels and upgrade installed packages
 sith --nix-cleanup      # Remove ~/.sith/nix/ + run nix-collect-garbage -d
 sith --nix-uninstall    # Fully remove Nix from system (daemon, /nix/store) — needs sudo
 ```
 
 See [doc/NIX_INSTALLATION.md](./doc/NIX_INSTALLATION.md) for full setup guide.
+
+---
+
+## Skills
+
+Skills are AI instruction sets installed to `~/.sith/skills/` and automatically mounted into the container at runtime. They shape how Claude Code and OpenCode behave — tone, workflow, shortcuts.
+
+```bash
+sith skills    # Browse and install / uninstall skills from catalog
+```
+
+Installed skills are synced to `~/.sith/CLAUDE.md` (Claude Code) and `~/.sith/opencode.json` (OpenCode) automatically.
+
+| Skill | What it does | Auto-loaded |
+|-------|-------------|-------------|
+| `caveman` | Ultra-compressed responses (~75% token reduction) | ✅ |
+
+Skills are loaded from `~/.sith/skills/<name>/` and can be toggled individually. Community skills can be installed from any Git URL.
 
 ---
 
@@ -166,6 +212,31 @@ Two AI providers, two token setups:
 
 - **Claude Code** (Anthropic OAuth) → [doc/AUTH_CLAUDE.md](./doc/AUTH_CLAUDE.md)
 - **OpenCode** (GitHub Copilot) → [doc/AUTH_OPENCODE.md](./doc/AUTH_OPENCODE.md)
+
+---
+
+## Command Reference
+
+| Command / Flag | Description |
+|---|---|
+| `sith` | Launch interactive TUI |
+| `sith shell` | Raw Nix shell inside Docker |
+| `sith opencode -p "<prompt>"` | Launch OpenCode with prompt |
+| `sith claude -p "<prompt>"` | Launch Claude Code with prompt |
+| `sith skills` | Manage skills from catalog |
+| `sith nix --install` | Install Nix package manager |
+| `sith nix --shell` | Run Nix shell |
+| `sith --pull` | Pull prebuilt Docker image from GHCR |
+| `sith --build` | Build Docker image from scratch |
+| `sith --it` | Interactive shell in Docker container |
+| `sith --nix` | Launch native Nix shell (no Docker) |
+| `sith --nix-install` | Install Nix package manager |
+| `sith --nix-update` | Update Nix channels + upgrade packages |
+| `sith --nix-cleanup` | Remove `~/.sith/nix/` + garbage collect store |
+| `sith --nix-uninstall` | Fully remove Nix from system (needs sudo) |
+| `sith --docker-cleanup` | Remove sith Docker images from local machine |
+| `sith --uninstall` | Remove `~/.sith/` config directory |
+| `sith --update` | Check for CLI updates |
 
 ---
 

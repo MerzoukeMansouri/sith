@@ -11,6 +11,7 @@ import {
 	dockerCleanupCommand,
 	nixCleanupCommand,
 	nixUninstallCommand,
+	nixUpdateCommand,
 	uninstallCommand,
 } from "./commands/maintenance.js";
 import { nixCommand, runNixShell } from "./commands/nix.js";
@@ -80,6 +81,10 @@ function createProgram(): Command {
 		.option("--docker-cleanup", "Remove sith Docker images from local machine")
 		.option("--nix-cleanup", "Remove ~/.sith/nix and run nix-collect-garbage")
 		.option(
+			"--nix-update",
+			"Update Nix channels and upgrade installed packages",
+		)
+		.option(
 			"--nix-uninstall",
 			"Fully remove Nix from the system (daemon, /nix/store)",
 		)
@@ -91,6 +96,8 @@ function createProgram(): Command {
 			await dockerCleanupCommand();
 		} else if (options.nixCleanup) {
 			await nixCleanupCommand();
+		} else if (options.nixUpdate) {
+			await nixUpdateCommand();
 		} else if (options.nixUninstall) {
 			await nixUninstallCommand();
 		} else if (options.uninstall) {
