@@ -1,8 +1,8 @@
 import { execa } from "execa";
 import { Box, render, Text, useApp, useInput } from "ink";
 import TextInput from "ink-text-input";
-import React, { useCallback, useState } from "react";
-import { skillsCommand } from "../commands/skills.js";
+import React, { useCallback, useRef, useState } from "react";
+import { SkillsMenu } from "../commands/skills.js";
 import { ASCII_LOGO, DOCKER_CONFIG } from "../config.js";
 import {
 	buildDockerClaudeCodeCommand,
@@ -39,6 +39,22 @@ const TOOLS: Array<{ value: AITool; label: string; description: string }> = [
 	{ value: "claude", label: "Claude Code", description: "Anthropic Claude" },
 ];
 
+function SithHeader(): React.ReactElement {
+	return (
+		<Box flexDirection="column" alignItems="center" paddingY={1}>
+			<Box flexDirection="column">
+				{ASCII_LOGO.map((line, index) => (
+					// biome-ignore lint/suspicious/noArrayIndexKey: static array, order never changes
+					<Text key={index} color="red" bold>
+						{line}
+					</Text>
+				))}
+			</Box>
+			<Text dimColor>Turn your context to the dark side</Text>
+		</Box>
+	);
+}
+
 interface ToolPickerProps {
 	selectedIndex: number;
 }
@@ -51,22 +67,7 @@ function ToolPicker({ selectedIndex }: ToolPickerProps): React.ReactElement {
 			alignItems="center"
 			paddingY={2}
 		>
-			<Box flexDirection="column" marginBottom={2}>
-				{ASCII_LOGO.map((line, index) => (
-					// biome-ignore lint/suspicious/noArrayIndexKey: static array, order never changes
-					<Text key={index} color="red" bold>
-						{line}
-					</Text>
-				))}
-			</Box>
-			<Box
-				flexDirection="column"
-				alignItems="center"
-				marginTop={1}
-				marginBottom={2}
-			>
-				<Text dimColor>Turn your context to the dark side</Text>
-			</Box>
+			<SithHeader />
 			<Box
 				flexDirection="column"
 				borderStyle="single"
@@ -109,18 +110,8 @@ function WelcomeScreen({ tool }: { tool: AITool }): React.ReactElement {
 			flexDirection="column"
 			justifyContent="center"
 			alignItems="center"
-			paddingY={2}
 		>
-			<Box flexDirection="column" marginBottom={2}>
-				{ASCII_LOGO.map((line, index) => (
-					// biome-ignore lint/suspicious/noArrayIndexKey: static array, order never changes
-					<Text key={index} color="red" bold>
-						{line}
-					</Text>
-				))}
-			</Box>
-			<Box flexDirection="column" alignItems="center" marginTop={1}>
-				<Text dimColor>Turn your context to the dark side</Text>
+			<Box flexDirection="column" alignItems="center">
 				<Text color="cyan">
 					Tool: <Text bold>{toolLabel}</Text>
 				</Text>
@@ -160,23 +151,22 @@ export function TerminalUI(): React.ReactElement {
 	const [input, setInput] = useState("");
 	const [messages, setMessages] = useState<Message[]>([]);
 	const [showConfigModal, setShowConfigModal] = useState(false);
-	const [nextMessageId, setNextMessageId] = useState(1);
+	const [showSkillsMenu, setShowSkillsMenu] = useState(false);
+	const nextMessageId = useRef(1);
 	const [selectedTool, setSelectedTool] = useState<AITool | null>(null);
 	const [toolPickerIndex, setToolPickerIndex] = useState(0);
 
 	const addMessage = useCallback(
 		(text: string, type: Message["type"] = "system"): void => {
 			const newMessage: Message = {
-				id: nextMessageId,
+				id: nextMessageId.current++,
 				text,
 				type,
 				timestamp: new Date(),
 			};
-
 			setMessages((previousMessages) => [...previousMessages, newMessage]);
-			setNextMessageId((previousId) => previousId + 1);
 		},
-		[nextMessageId],
+		[],
 	);
 
 	const handleDockerShell = useCallback(async (): Promise<void> => {
@@ -291,8 +281,7 @@ export function TerminalUI(): React.ReactElement {
 					break;
 
 				case "skills":
-					exit();
-					skillsCommand();
+					setShowSkillsMenu(true);
 					break;
 
 				case "config":
@@ -403,16 +392,24 @@ export function TerminalUI(): React.ReactElement {
 		);
 	}
 
+	if (showSkillsMenu) {
+		return (
+			<Box flexDirection="column">
+				<SkillsMenu onClose={() => setShowSkillsMenu(false)} />
+			</Box>
+		);
+	}
+
 	if (selectedTool === null) {
 		return <ToolPicker selectedIndex={toolPickerIndex} />;
 	}
 
-	const shouldShowWelcome = messages.length === 0;
 	const recentMessages = messages.slice(-10);
 
 	return (
 		<Box flexDirection="column" height="100%">
-			{shouldShowWelcome ? (
+			<SithHeader />
+			{messages.length === 0 ? (
 				<WelcomeScreen tool={selectedTool} />
 			) : (
 				<Box flexDirection="column" flexGrow={1} marginBottom={1}>

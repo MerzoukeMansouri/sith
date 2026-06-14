@@ -30,7 +30,7 @@ function statusIcon(row: SkillRowState): string {
 	}
 }
 
-function SkillsMenu(): React.ReactElement {
+function SkillsMenu({ onClose }: { onClose?: () => void }): React.ReactElement {
 	const { exit } = useApp();
 	const [selectedIndex, setSelectedIndex] = useState(0);
 	const [rows, setRows] = useState<SkillRowState[]>(
@@ -116,7 +116,11 @@ function SkillsMenu(): React.ReactElement {
 			return;
 		}
 		if (input === "q" || key.escape) {
-			exit();
+			if (onClose) {
+				onClose();
+			} else {
+				exit();
+			}
 		}
 	});
 
@@ -162,6 +166,8 @@ function SkillsMenu(): React.ReactElement {
 		</Box>
 	);
 }
+
+export { SkillsMenu };
 
 export function skillsCommand(): void {
 	render(<SkillsMenu />);
