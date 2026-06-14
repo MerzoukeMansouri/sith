@@ -2,12 +2,19 @@ import { Box, render, Text, useApp, useInput } from "ink";
 import React, { useState } from "react";
 import { SKILLS_CATALOG } from "../config.js";
 import type { SkillEntry } from "../types.js";
-import { installSkill, isInstalled, uninstallSkill } from "../utils/skills.js";
+import {
+	getSkillAutoLoad,
+	installSkill,
+	isInstalled,
+	setSkillAutoLoad,
+	uninstallSkill,
+} from "../utils/skills.js";
 
 type Status = "idle" | "working" | "done" | "error";
 
 interface SkillRowState {
 	installed: boolean;
+	autoLoad: boolean;
 	status: Status;
 	message: string;
 }
@@ -29,6 +36,7 @@ function SkillsMenu(): React.ReactElement {
 	const [rows, setRows] = useState<SkillRowState[]>(
 		SKILLS_CATALOG.map((s) => ({
 			installed: isInstalled(s.name),
+			autoLoad: getSkillAutoLoad(s.name),
 			status: "idle",
 			message: "",
 		})),
@@ -61,6 +69,7 @@ function SkillsMenu(): React.ReactElement {
 				await installSkill(skill);
 				setRow(index, {
 					installed: true,
+					autoLoad: skill.autoLoad ?? false,
 					status: "done",
 					message: "Installed",
 				});
@@ -93,6 +102,19 @@ function SkillsMenu(): React.ReactElement {
 			}
 			return;
 		}
+		if (input === "a") {
+			const row = rows[selectedIndex];
+			if (row.installed && row.status !== "working") {
+				const newAutoLoad = !row.autoLoad;
+				setSkillAutoLoad(SKILLS_CATALOG[selectedIndex].name, newAutoLoad);
+				setRow(selectedIndex, {
+					autoLoad: newAutoLoad,
+					status: "done",
+					message: newAutoLoad ? "Auto-load on" : "On-demand",
+				});
+			}
+			return;
+		}
 		if (input === "q" || key.escape) {
 			exit();
 		}
@@ -117,6 +139,12 @@ function SkillsMenu(): React.ReactElement {
 							{statusIcon(row)} {skill.name.padEnd(12)}
 						</Text>
 						<Text dimColor={!isSelected}>{skill.description}</Text>
+						{row.installed ? (
+							<Text color={row.autoLoad ? "green" : "yellow"}>
+								{" "}
+								{row.autoLoad ? "[auto]" : "[on-demand]"}
+							</Text>
+						) : null}
 						{row.message ? (
 							<Text color={row.status === "error" ? "red" : "green"}>
 								{" "}
@@ -127,7 +155,7 @@ function SkillsMenu(): React.ReactElement {
 				);
 			})}
 			<Box marginTop={1}>
-				<Text dimColor>↑↓ navigate Enter install/uninstall q quit</Text>
+				<Text dimColor>↑↓ navigate  Enter install/uninstall  a toggle auto-load  q quit</Text>
 			</Box>
 		</Box>
 	);

@@ -3,6 +3,8 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 vi.mock("../skills.js", () => ({
 	getSkillsDir: () => "/home/user/.sith/skills",
 	getOpenCodeConfigPath: () => "/home/user/.sith/opencode.json",
+	getClaudeMdPath: () => "/home/user/.sith/CLAUDE.md",
+	syncClaudeMd: vi.fn(),
 }));
 
 const { buildDockerShellCommand, buildDockerOpencodeCommand } = await import(
@@ -51,6 +53,14 @@ describe("buildDockerShellCommand", () => {
 		const args = buildDockerShellCommand("token");
 		expect(args).toContain("--entrypoint");
 		expect(args[args.indexOf("--entrypoint") + 1]).toBe("nix-shell");
+	});
+
+	it("mounts generated CLAUDE.md", () => {
+		const args = buildDockerShellCommand("token123");
+		const mounts = args.filter((_, i) => args[i - 1] === "-v");
+		expect(mounts.some((m) => m.includes("/home/user/.sith/CLAUDE.md:"))).toBe(
+			true,
+		);
 	});
 });
 

@@ -5,12 +5,14 @@ import {
 	getClaudeMdPath,
 	getOpenCodeConfigPath,
 	getSkillsDir,
+	syncClaudeMd,
 } from "./skills.js";
 
 export function buildDockerShellCommand(
 	githubToken: string,
 	claudeOauthToken?: string,
 ): string[] {
+	syncClaudeMd();
 	const args = [
 		"run",
 		"--rm",
@@ -21,6 +23,8 @@ export function buildDockerShellCommand(
 		`${getSkillsDir()}:${DOCKER_CONFIG.skillsMount}`,
 		"-v",
 		`${getSkillsDir()}:${DOCKER_CONFIG.claudeSkillsMount}`,
+		"-v",
+		`${getClaudeMdPath()}:${DOCKER_CONFIG.claudeConfigMount}/CLAUDE.md`,
 		"-v",
 		`${getOpenCodeConfigPath()}:${DOCKER_CONFIG.opencodeConfigMount}`,
 		"-e",
@@ -78,6 +82,7 @@ export function buildDockerClaudeCodeCommand(
 	prompt?: string,
 	claudeOauthToken?: string,
 ): string[] {
+	syncClaudeMd();
 	const claudeConfigDir = getClaudeConfigDir();
 	const claudeMdPath = getClaudeMdPath();
 

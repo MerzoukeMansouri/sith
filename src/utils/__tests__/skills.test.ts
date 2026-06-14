@@ -21,6 +21,7 @@ vi.mock("../config.js", () => ({
 	DOCKER_CONFIG: {
 		skillsMount: "/root/.opencode/skills",
 		opencodeConfigMount: "/root/.config/opencode/opencode.json",
+		claudeSkillsMount: "/root/.claude/skills",
 	},
 }));
 
@@ -42,12 +43,16 @@ const validConfig = JSON.stringify({
 	instructions: [],
 });
 
+const expectedClaudeMdPath = path.join(os.homedir(), ".sith", "CLAUDE.md");
+
 beforeEach(() => {
 	vi.clearAllMocks();
 	// Default: config file exists as valid file
 	mockFs.existsSync.mockReturnValue(true);
 	mockFs.statSync.mockReturnValue({ isDirectory: () => false });
 	mockFs.readFileSync.mockReturnValue(validConfig);
+	// Default: no skills installed (syncClaudeMd scans this dir)
+	mockFs.readdirSync.mockReturnValue([]);
 });
 
 // ─── getSkillsDir ────────────────────────────────────────────────────────────
@@ -162,6 +167,7 @@ describe("installSkill — builtin", () => {
 		description: "test skill",
 		homepage: "https://example.com",
 		builtinInstructions: "# Caveman\nBe terse.",
+		autoLoad: true,
 	};
 
 	it("writes SKILL.md and skill.json to target dir", async () => {
@@ -210,6 +216,75 @@ describe("installSkill — builtin", () => {
 	it("does not call execa (no download for builtin)", async () => {
 		await installSkill(builtinSkill);
 		expect(mockExeca).not.toHaveBeenCalled();
+	});
+
+	it("stores autoLoad in skill.json", async () => {
+		await installSkill({ ...builtinSkill, autoLoad: false });
+		const targetDir = path.join(expectedSkillsDir, "caveman");
+		const skillJsonCall = vi
+			.mocked(mockFs.writeFileSync)
+			.mock.calls.find(([p]) => p === path.join(targetDir, "skill.json"));
+		expect(JSON.parse(skillJsonCall?.[1] as string).autoLoad).toBe(false);
+	});
+
+	it("skips opencode.json instruction when autoLoad: false", async () => {
+		mockFs.readFileSync.mockReturnValue(validConfig);
+		await installSkill({ ...builtinSkill, autoLoad: false });
+		const configUpdate = vi
+			.mocked(mockFs.writeFileSync)
+			.mock.calls.find(([p, , opts]) => p === expectedConfigPath && !opts);
+		expect(configUpdate).toBeUndefined();
+	});
+});
+
+// ─── syncClaudeMd (via installSkill) ─────────────────────────────────────────
+
+describe("syncClaudeMd", () => {
+	const builtinSkill = {
+		name: "caveman",
+		description: "test skill",
+		homepage: "https://example.com",
+		builtinInstructions: "# Caveman\nBe terse.",
+		autoLoad: true,
+	};
+
+	it("writes @import to CLAUDE.md when autoLoad: true", async () => {
+		mockFs.readdirSync.mockReturnValue(["caveman"]);
+		mockFs.existsSync.mockImplementation((p: string) => {
+			if (p.endsWith("skill.json")) return true;
+			if (p.endsWith("SKILL.md")) return true;
+			return true;
+		});
+		mockFs.readFileSync.mockImplementation((p: string) => {
+			if (typeof p === "string" && p.endsWith("skill.json"))
+				return JSON.stringify({ name: "caveman", version: "builtin", autoLoad: true });
+			return validConfig;
+		});
+		await installSkill(builtinSkill);
+		const claudeWrite = vi
+			.mocked(mockFs.writeFileSync)
+			.mock.calls.find(([p, , opts]) => p === expectedClaudeMdPath && !opts);
+		expect(claudeWrite?.[1]).toBe(
+			"@/root/.claude/skills/caveman/SKILL.md\n",
+		);
+	});
+
+	it("excludes skill from CLAUDE.md when autoLoad: false", async () => {
+		mockFs.readdirSync.mockReturnValue(["caveman"]);
+		mockFs.existsSync.mockImplementation((p: string) => {
+			if (p.endsWith("skill.json")) return true;
+			return true;
+		});
+		mockFs.readFileSync.mockImplementation((p: string) => {
+			if (typeof p === "string" && p.endsWith("skill.json"))
+				return JSON.stringify({ name: "caveman", version: "builtin", autoLoad: false });
+			return validConfig;
+		});
+		await installSkill({ ...builtinSkill, autoLoad: false });
+		const claudeWrite = vi
+			.mocked(mockFs.writeFileSync)
+			.mock.calls.find(([p, , opts]) => p === expectedClaudeMdPath && !opts);
+		expect(claudeWrite?.[1]).toBe("");
 	});
 });
 

@@ -24,4 +24,5 @@ export interface SkillEntry {
 	source?: string;
 	homepage: string;
 	builtinInstructions?: string;
+	autoLoad?: boolean; // default: false (on-demand slash command only)
 }

@@ -6,6 +6,7 @@ export const SKILLS_CATALOG: SkillEntry[] = [
 		name: "caveman",
 		description: "Ultra-compressed communication (~75% token reduction)",
 		homepage: "https://github.com/JuliusBrussee/caveman",
+		autoLoad: true,
 		builtinInstructions: `---
 name: caveman
 description: Ultra-compressed communication mode (ultra — MAX compression, always active).

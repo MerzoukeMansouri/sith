@@ -11,6 +11,7 @@ import type {
 	MenuItem,
 } from "../types.js";
 import { getOpenCodeConfigPath, getSkillsDir } from "../utils/skills.js";
+import { buildDockerShellCommand } from "../utils/dockerArgs.js";
 import { copyNixFiles, installNix } from "./nix.js";
 import { skillsCommand } from "./skills.js";
 
@@ -427,7 +428,6 @@ async function buildDocker(): Promise<void> {
 
 async function runShell(): Promise<void> {
 	const skillsDir = getSkillsDir();
-	const opencodeConfigPath = getOpenCodeConfigPath();
 
 	console.log("🚀 Starting interactive shell...");
 	console.log(`Mounting workspace to ${DOCKER_CONFIG.workspaceMount}`);
@@ -449,27 +449,7 @@ async function runShell(): Promise<void> {
 	}
 
 	const claudeOauthToken = process.env.CLAUDE_CODE_OAUTH_TOKEN || "";
-
-	const dockerArgs = [
-		"run",
-		"--rm",
-		"-it",
-		"-v",
-		`${process.cwd()}:${DOCKER_CONFIG.workspaceMount}`,
-		"-v",
-		`${skillsDir}:${DOCKER_CONFIG.skillsMount}`,
-		"-v",
-		`${opencodeConfigPath}:${DOCKER_CONFIG.opencodeConfigMount}`,
-		"-e",
-		`GITHUB_TOKEN=${githubToken}`,
-		...(claudeOauthToken
-			? ["-e", `CLAUDE_CODE_OAUTH_TOKEN=${claudeOauthToken}`]
-			: []),
-		"--entrypoint",
-		"nix-shell",
-		DOCKER_CONFIG.imageName,
-		DOCKER_CONFIG.shellEntrypoint,
-	];
+	const dockerArgs = buildDockerShellCommand(githubToken, claudeOauthToken);
 
 	await execa("docker", dockerArgs, {
 		stdio: "inherit",

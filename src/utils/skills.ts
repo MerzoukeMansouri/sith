@@ -76,12 +76,22 @@ function addInstruction(containerPath: string): void {
 	}
 }
 
-function syncClaudeMd(): void {
-	const config = readConfig();
-	const lines = config.instructions.map(
-		(p) =>
-			`@${p.replace(DOCKER_CONFIG.skillsMount, DOCKER_CONFIG.claudeSkillsMount)}`,
-	);
+export function syncClaudeMd(): void {
+	const skillsDir = getSkillsDir();
+	const lines: string[] = [];
+	for (const name of fs.readdirSync(skillsDir)) {
+		const skillDir = path.join(skillsDir, name);
+		const skillJsonPath = path.join(skillDir, "skill.json");
+		if (!fs.existsSync(skillJsonPath)) continue;
+		const meta = JSON.parse(fs.readFileSync(skillJsonPath, "utf8"));
+		if (meta.autoLoad !== true) continue;
+		const instructionsFile = findInstructionsFile(skillDir);
+		if (instructionsFile) {
+			lines.push(
+				`@${DOCKER_CONFIG.claudeSkillsMount}/${name}/${instructionsFile}`,
+			);
+		}
+	}
 	fs.writeFileSync(
 		getClaudeMdPath(),
 		lines.join("\n") + (lines.length ? "\n" : ""),
@@ -114,6 +124,31 @@ export function isInstalled(name: string): boolean {
 	return fs.existsSync(path.join(getSkillsDir(), name, "skill.json"));
 }
 
+export function getSkillAutoLoad(name: string): boolean {
+	const skillJsonPath = path.join(getSkillsDir(), name, "skill.json");
+	if (!fs.existsSync(skillJsonPath)) return false;
+	const meta = JSON.parse(fs.readFileSync(skillJsonPath, "utf8"));
+	return meta.autoLoad === true;
+}
+
+export function setSkillAutoLoad(name: string, autoLoad: boolean): void {
+	const skillDir = path.join(getSkillsDir(), name);
+	const skillJsonPath = path.join(skillDir, "skill.json");
+	if (!fs.existsSync(skillJsonPath)) return;
+	const meta = JSON.parse(fs.readFileSync(skillJsonPath, "utf8"));
+	meta.autoLoad = autoLoad;
+	fs.writeFileSync(skillJsonPath, JSON.stringify(meta, null, 2));
+	if (autoLoad) {
+		const instructionsFile = findInstructionsFile(skillDir);
+		if (instructionsFile) {
+			addInstruction(`${DOCKER_CONFIG.skillsMount}/${name}/${instructionsFile}`);
+		}
+	} else {
+		removeInstructionsUnder(`${DOCKER_CONFIG.skillsMount}/${name}/`);
+	}
+	syncClaudeMd();
+}
+
 export async function installSkill(skill: SkillEntry): Promise<void> {
 	const targetDir = path.join(getSkillsDir(), skill.name);
 
@@ -125,9 +160,15 @@ export async function installSkill(skill: SkillEntry): Promise<void> {
 		);
 		fs.writeFileSync(
 			path.join(targetDir, "skill.json"),
-			JSON.stringify({ name: skill.name, version: "builtin" }, null, 2),
+			JSON.stringify(
+				{ name: skill.name, version: "builtin", autoLoad: skill.autoLoad ?? false },
+				null,
+				2,
+			),
 		);
-		addInstruction(`${DOCKER_CONFIG.skillsMount}/${skill.name}/SKILL.md`);
+		if (skill.autoLoad === true) {
+			addInstruction(`${DOCKER_CONFIG.skillsMount}/${skill.name}/SKILL.md`);
+		}
 		syncClaudeMd();
 		return;
 	}
@@ -155,7 +196,11 @@ export async function installSkill(skill: SkillEntry): Promise<void> {
 		try {
 			fs.writeFileSync(
 				skillJson,
-				JSON.stringify({ name: skill.name, version: "local" }, null, 2),
+				JSON.stringify(
+					{ name: skill.name, version: "local", autoLoad: skill.autoLoad ?? false },
+					null,
+					2,
+				),
 				{ flag: "ax" },
 			);
 		} catch {
@@ -163,7 +208,7 @@ export async function installSkill(skill: SkillEntry): Promise<void> {
 		}
 
 		const instructionsFile = findInstructionsFile(targetDir);
-		if (instructionsFile) {
+		if (instructionsFile && skill.autoLoad === true) {
 			addInstruction(
 				`${DOCKER_CONFIG.skillsMount}/${skill.name}/${instructionsFile}`,
 			);
