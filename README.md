@@ -8,6 +8,24 @@
 
 Standardize and share your OpenCode setup with a fully dockerized environment, designed for seamless collaboration and CI integration.
 
+## What you can do
+
+| Command | What it does |
+|---------|-------------|
+| `sith` | Interactive TUI — type a prompt or use slash commands |
+| `sith opencode -p "..."` | Launch OpenCode in Docker with a prompt |
+| `sith claude -p "..."` | Launch Claude Code in Docker with a prompt |
+| `sith shell` | Drop into raw Nix shell (alias: `sith --it`) |
+| `sith docker --pull` | Pull prebuilt image |
+| `sith docker --build` | Build image from scratch |
+| `sith skills` | Manage skills in `~/.sith/skills/` |
+| `sith nix` | Manage native Nix environment |
+| `sith --update` | Check for CLI updates |
+
+**Shell vs Prompt:**
+`sith shell` → Nix shell, you run tools yourself.
+`sith opencode -p "..."` / `sith claude -p "..."` → AI starts immediately with your task, no shell.
+
 ## Usage
 
 ### Installation
@@ -34,7 +52,6 @@ sith
 sith --it          # Launch Docker shell immediately
 sith --pull        # Pull prebuilt image
 sith --build       # Build from scratch
-sith --legacy      # Use legacy menu interface
 ```
 
 ### Distribution Options
@@ -52,7 +69,6 @@ sith --legacy      # Use legacy menu interface
 | `sith --it` | Launch Docker shell immediately |
 | `sith --pull` | Pull prebuilt image from GHCR |
 | `sith --build` | Build Docker image from scratch |
-| `sith --legacy` | Use legacy menu interface |
 | `sith --help` | Show all available commands |
 
 ### Terminal UI Usage

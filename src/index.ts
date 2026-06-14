@@ -70,10 +70,9 @@ function createProgram(): Command {
 		.option("--it", "Launch interactive shell in Docker container")
 		.option("--nix", "Use native Nix shell (no Docker)")
 		.option("--nix-install", "Install Nix package manager locally")
-		.option("--update", "Check for updates")
-		.option("--legacy", "Use legacy menu interface");
+		.option("--update", "Check for updates");
 
-	// Default action - show terminal UI or legacy menu
+	// Default action - show terminal UI
 	program.action(async (options) => {
 		if (options.update) {
 			await checkForUpdates();
@@ -83,8 +82,7 @@ function createProgram(): Command {
 			await nixCommand({ install: true });
 		} else if (options.it) {
 			await launchShell();
-		} else if (options.legacy || options.pull || options.build) {
-			// Use legacy menu for explicit pull/build or --legacy flag
+		} else if (options.pull || options.build) {
 			await dockerCommand(options);
 		} else {
 			// Default: show new terminal UI
