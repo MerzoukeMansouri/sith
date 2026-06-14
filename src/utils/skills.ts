@@ -12,8 +12,10 @@ interface OpenCodeConfig {
 
 const OPENCODE_SCHEMA = "https://opencode.ai/config.json";
 
+const DEFAULT_MODEL = "github-copilot/claude-sonnet-4.6";
+
 function defaultConfig(): OpenCodeConfig {
-	return { $schema: OPENCODE_SCHEMA, instructions: [] };
+	return { $schema: OPENCODE_SCHEMA, model: DEFAULT_MODEL, instructions: [] };
 }
 
 export function getSkillsDir(): string {
@@ -61,6 +63,10 @@ export function getOpenCodeConfigPath(): string {
 function readConfig(): OpenCodeConfig {
 	const parsed = JSON.parse(fs.readFileSync(getOpenCodeConfigPath(), "utf8"));
 	if (!Array.isArray(parsed.instructions)) parsed.instructions = [];
+	if (!parsed.model) {
+		parsed.model = DEFAULT_MODEL;
+		writeConfig(parsed);
+	}
 	return parsed;
 }
 
