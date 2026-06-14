@@ -1,3 +1,10 @@
+# [1.23.0](https://github.com/MerzoukeMansouri/sith/compare/v1.22.0...v1.23.0) (2026-06-14)
+
+
+### Features
+
+* add maintenance commands for cleanup and uninstall ([2a970a8](https://github.com/MerzoukeMansouri/sith/commit/2a970a8a3611c009b87d28c1b30fe3a51cb688fe))
+
 # [1.22.0](https://github.com/MerzoukeMansouri/sith/compare/v1.21.1...v1.22.0) (2026-06-14)
 
 
