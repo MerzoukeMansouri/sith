@@ -15,14 +15,15 @@
 let
   # Load packages from external configuration
   packages = import ./nix-config/packages.nix { inherit pkgs; lib = pkgs.lib; };
+  isLinux = pkgs.stdenv.isLinux;
 in
 
 pkgs.mkShell {
   name = "sith-environment";
-  
+
   # Packages loaded from nix-config/packages.json
   buildInputs = packages;
-  
+
   # Variables d'environnement
   shellHook = ''
     # Source external setup script (not bash, so exports persist)
@@ -34,9 +35,9 @@ pkgs.mkShell {
     # setup.sh sets -e for safety; unset for interactive session
     set +e
   '';
-  
+
   # Variables d'environnement persistantes
-  LOCALE_ARCHIVE = "${pkgs.glibcLocales}/lib/locale/locale-archive";
+  LOCALE_ARCHIVE = pkgs.lib.optionalString isLinux "${pkgs.glibcLocales}/lib/locale/locale-archive";
   LANG = "en_US.UTF-8";
   LC_ALL = "en_US.UTF-8";
   LC_CTYPE = "en_US.UTF-8";

@@ -138,14 +138,12 @@ export async function runNixShell(): Promise<void> {
 		process.exit(1);
 	}
 
-	// Copy files if not already present
+	// Always copy to pick up source changes
 	const homeDir = os.homedir();
 	const localConfigDir = path.join(homeDir, NIX_CONFIG.localConfigDir);
 	const shellNixPath = path.join(localConfigDir, "shell.nix");
 
-	if (!fs.existsSync(shellNixPath)) {
-		await copyNixFiles();
-	}
+	await copyNixFiles();
 
 	console.log("🚀 Starting Nix shell...");
 	console.log(`Configuration: ${shellNixPath}`);
