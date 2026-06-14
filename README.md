@@ -8,178 +8,107 @@
 
 Standardize and share your OpenCode setup with a fully dockerized environment, designed for seamless collaboration and CI integration.
 
-## What you can do
+---
 
-| Command | What it does |
+## Why?
+
+AI coding tools are powerful in isolation. They become fragile at scale:
+
+- **Context drift** — every developer has a different CLAUDE.md, different tool versions, different configs. The AI sees a different project depending on who's running it.
+- **No CI path** — running `opencode` or `claude` in a pipeline requires wiring tokens, installing tools, and hoping the environment matches local.
+- **Multiple tools** — Claude Code and OpenCode serve different use cases (Anthropic auth vs GitHub Copilot). Switching between them shouldn't require manual setup.
+
+Sith solves this by packaging both tools, all config, and your team's context into a single Docker image. One pull, same environment, everywhere.
+
+| Problem | Sith answer |
 |---------|-------------|
-| `sith` | Interactive TUI — type a prompt or use slash commands |
-| `sith opencode -p "..."` | Launch OpenCode in Docker with a prompt |
-| `sith claude -p "..."` | Launch Claude Code in Docker with a prompt |
-| `sith shell` | Drop into raw Nix shell (alias: `sith --it`) |
-| `sith --pull` | Pull prebuilt image |
-| `sith --build` | Build image from scratch |
-| `sith skills` | Manage skills in `~/.sith/skills/` |
-| `sith nix` | Manage native Nix environment |
-| `sith --update` | Check for CLI updates |
+| Inconsistent context across team | Shared `~/.sith/` skills + CLAUDE.md, mounted at runtime |
+| AI tools hard to run in CI | Prebuilt signed image + token injection via env vars |
+| Claude Code vs OpenCode friction | Both available, same container, same command |
+| "Works on my machine" builds | Nix-pinned dependencies inside Docker |
 
-**Shell vs Prompt:**
-`sith shell` → Nix shell, you run tools yourself.
-`sith opencode -p "..."` / `sith claude -p "..."` → AI starts immediately with your task, no shell.
+---
 
-## Usage
+## Docker
 
-### Installation
+The recommended path. One image, works locally and in CI.
 
-**Install globally (recommended):**
+### Install the CLI
+
 ```bash
 npm install -g @m14i/sith
 ```
 
-**Or use npx (slower, pulls image every time):**
+Or without installing:
+
 ```bash
 npx @m14i/sith@latest
 ```
 
-### Quick Start
+### Get the image
+
+**Prebuilt (recommended) — pull a signed image from GHCR:**
 
 ```bash
-# Interactive terminal UI (default)
-sith
-# Type your prompt to start OpenCode with that task
-# Or use slash commands: /shell, /config, /help
-
-# Direct commands
-sith --it          # Launch Docker shell immediately
-sith --pull        # Pull prebuilt image
-sith --build       # Build from scratch
+sith --pull
 ```
 
-### Distribution Options
+Supports `linux/amd64` and `linux/arm64`. Images are signed with cosign and include an SBOM.
 
-| Method | Command | Speed | Trust Model | Use Case |
-|--------|---------|-------|-------------|----------|
-| **Prebuilt (Recommended)** | `sith --pull` | ⚡ Fast | GitHub Actions + Cosign | Production, CI/CD |
-| **Local Build** | `sith --build` | 🐌 Slow | Your machine | Air-gapped, custom builds |
+**Verify the signature (optional):**
 
-### Commands
-
-| Command | Description |
-|---------|-------------|
-| `sith` | Interactive terminal UI (Claude Code style) |
-| `sith --it` | Launch Docker shell immediately |
-| `sith --pull` | Pull prebuilt image from GHCR |
-| `sith --build` | Build Docker image from scratch |
-| `sith --help` | Show all available commands |
-
-### Terminal UI Usage
-
-When you run `sith`, you get an interactive terminal interface:
-
-**Prompt input:**
-- Type any text → Starts OpenCode with that prompt using Claude Sonnet 4.6
-- Example: `Fix authentication bug` → OpenCode launches with this task
-
-**Slash commands:**
-- `/shell` → Start Docker shell only (no OpenCode)
-- `/config` → Open configuration menu (pull/build options)
-- `/help` → Show available commands
-
-**Navigation:**
-- `Ctrl+C` or `Esc` → Exit terminal UI
-
-### Prebuilt Image Details
-
-**Pull and verify:**
 ```bash
-# Pull (supports linux/amd64 and linux/arm64)
-sith --pull
-
-# Or use Docker directly
-docker pull ghcr.io/merzoukemanouri/sith:latest
-
-# Verify signature (optional)
 cosign verify \
   --certificate-identity-regexp="https://github.com/MerzoukeMansouri/sith" \
   --certificate-oidc-issuer="https://token.actions.githubusercontent.com" \
   ghcr.io/merzoukemanouri/sith:latest
 ```
 
-**Benefits:**
-- ✅ Fast - no build time
-- ✅ Multi-platform - amd64 and arm64
-- ✅ Signed - cosign verification
-- ✅ SBOM - supply chain transparency
-- ✅ Auto-updated - tracks releases
+**Build from scratch — full control, no external trust:**
 
-## Authentication
-
-Sith supports two AI providers: **Claude Code** (via Anthropic) and **OpenCode** (via GitHub Copilot).
-
-### Claude Code (claude CLI)
-
-Sith ships with the `claude` CLI. Authenticate it with your Anthropic account using a long-lived OAuth token — no API key required.
-
-**Step 1 — Generate the token (once, on your local machine):**
 ```bash
-claude setup-token
-```
-Follow the browser prompt, then copy the printed token. It is valid for one year and scoped to inference only.
-
-**Step 2 — Export it:**
-```bash
-export CLAUDE_CODE_OAUTH_TOKEN=your_token_here
+sith --build
 ```
 
-**Make it persistent (add to ~/.zshrc or ~/.bashrc):**
+| | `sith --pull` | `sith --build` |
+|--|--------------|----------------|
+| Speed | Fast | Slow |
+| Trust | GitHub Actions + Cosign | Your machine |
+| Use case | Daily use, CI/CD | Air-gapped, custom builds |
+
+### Use it
+
+**Interactive TUI** — type a prompt or use slash commands:
+
 ```bash
-export CLAUDE_CODE_OAUTH_TOKEN=your_token_here
-```
-
-**Verify:**
-```bash
-claude auth status
-# Should show: "loggedIn": true, "authMethod": "claude.ai"
-```
-
-**Requirements:** Claude Pro, Max, Team, or Enterprise subscription.
-
-### GitHub Copilot (opencode CLI)
-
-Sith uses **Claude Sonnet 4.6 via GitHub Copilot** by default for OpenCode. Requires a GitHub token with Copilot access.
-
-**Automatic (recommended):**
-If you have GitHub CLI (`gh`) installed and authenticated, Sith automatically fetches your token:
-```bash
-sith  # Auto-detects token via gh auth token
-```
-
-**Manual token:**
-If you don't have `gh` CLI or prefer manual setup:
-
-1. Ensure you have GitHub Copilot access
-2. Create a token at https://github.com/settings/tokens
-3. Required scopes: `copilot`, `repo`, `read:org`
-4. Export it:
-```bash
-export GITHUB_TOKEN=gho_your_token_here
 sith
 ```
 
-**Make it persistent (add to ~/.zshrc or ~/.bashrc):**
+| In the TUI | What it does |
+|------------|-------------|
+| Type any text + Enter | Starts OpenCode with that prompt |
+| `/shell` | Drop into Docker shell (no AI) |
+| `/claude` | Switch active tool to Claude Code |
+| `/opencode` | Switch active tool to OpenCode |
+| `/config` | Pull / build options |
+| `/help` | Show commands |
+| `Ctrl+C` / `Esc` | Exit |
+
+**Direct commands** — skip the TUI:
+
 ```bash
-export GITHUB_TOKEN=$(gh auth token)
+sith shell                        # Raw Nix shell inside Docker (alias: sith --it)
+sith opencode -p "fix the bug"    # OpenCode starts immediately with your task
+sith claude -p "fix the bug"      # Claude Code starts immediately with your task
 ```
 
-**Inside container:**
-Once OpenCode starts, authenticate with GitHub Copilot:
+**Skills:**
+
 ```bash
-opencode providers login
-# Follow prompts to authenticate with GitHub
+sith skills    # Install / manage skills from catalog (~/.sith/skills/)
 ```
 
 ### CI / GitHub Actions
-
-Add both tokens as repository secrets, then pass them to the container:
 
 ```yaml
 - name: Run sith
@@ -193,98 +122,63 @@ Add both tokens as repository secrets, then pass them to the container:
       ghcr.io/merzoukemanouri/sith:latest "claude auth status"
 ```
 
-Generate `CLAUDE_CODE_OAUTH_TOKEN` once with `claude setup-token` and store it in **Settings → Secrets → Actions** as `CLAUDE_CODE_OAUTH_TOKEN`.
+See [Authentication](./doc/AUTH_CLAUDE.md) for how to generate the tokens.
 
-## Features
+---
 
-- **Claude Code-style UI**: Interactive terminal interface with prompt input and slash commands
-- **OpenCode Integration**: Start coding with a simple text prompt
-- **Model Selection**: Uses Claude Sonnet 4.6 via GitHub Copilot by default
-- **Prebuilt Images**: Pull verified images from GitHub Container Registry
-- **Image Signing**: All images signed with cosign for supply chain security
-- **SBOM Attestation**: Software Bill of Materials included with every image
-- **Dockerized Environment**: Consistent setup across machines
-- **Nix Integration**: Full development environment with all tools
-- **CI-Ready**: Standardize builds across local and CI pipelines
-- **Non-root User**: Images run as non-root user (UID 1000) for better security
+## Direct Nix
 
-## Security
+No Docker. Runs the same Nix environment natively on your machine.
 
-### Image Verification
+```bash
+sith --nix-install    # Install Nix package manager (once)
+sith --nix            # Launch Nix shell directly
+```
 
-All Docker images published to `ghcr.io/merzoukemanouri/sith` are:
-- **Signed with cosign** using keyless signing (OIDC)
-- **Include SBOM** (Software Bill of Materials) for transparency
-- **Built automatically** via GitHub Actions with provenance
+Or via the `nix` subcommand:
 
-See [SECURITY.md](./SECURITY.md) for detailed security practices and considerations.
+```bash
+sith nix --install    # Install Nix
+sith nix --shell      # Run Nix shell
+```
 
-### Trust Model
+See [doc/NIX_INSTALLATION.md](./doc/NIX_INSTALLATION.md) for full setup guide.
 
-**Prebuilt Images:**
-- Built by GitHub Actions on public infrastructure
-- Signed with Sigstore keyless signing
-- Verifiable provenance chain from source to image
-- Trade-off: Trust GitHub's build infrastructure
+---
 
-**Local Builds:**
-- Full control over build environment
-- Can inspect Dockerfile before building
-- No dependency on external registries
-- Trade-off: Slower, manual security updates
+## Authentication
 
-For more details, see the [Docker Distribution Guide](./doc/QUICKSTART.md#docker-distribution).
+Two AI providers, two token setups:
+
+- **Claude Code** (Anthropic OAuth) → [doc/AUTH_CLAUDE.md](./doc/AUTH_CLAUDE.md)
+- **OpenCode** (GitHub Copilot) → [doc/AUTH_OPENCODE.md](./doc/AUTH_OPENCODE.md)
+
+---
 
 ## Development
 
-For contributors working on the CLI:
-
 ```bash
-# Install dependencies
-pnpm install
-
-# Run in development mode (no build)
-pnpm dev
-
-# Build and test
+pnpm install       # Install dependencies
+pnpm dev           # Run in development mode (no build)
 pnpm dev:build     # Build and run CLI
 pnpm dev:shell     # Build and launch shell
-
-# Type checking
-pnpm typecheck
-
-# Clean build artifacts
-pnpm clean
+pnpm typecheck     # Type checking
+pnpm clean         # Clean build artifacts
 ```
+
+---
 
 ## Publishing
 
-Automated releases using semantic-release and conventional commits.
+Automated via semantic-release and conventional commits.
 
-### For Maintainers
+| Prefix | Effect |
+|--------|--------|
+| `feat:` | Minor version bump |
+| `fix:` | Patch version bump |
+| `BREAKING CHANGE:` | Major version bump |
+| `chore:` `docs:` `style:` | No release |
 
-**Commit Format:**
-- `feat:` - New feature (triggers minor version bump)
-- `fix:` - Bug fix (triggers patch version bump)
-- `BREAKING CHANGE:` - Breaking change (triggers major version bump)
-- `chore:`, `docs:`, `style:` - No release
+Push to `main` → GitHub Action bumps version, generates CHANGELOG, publishes to npm.
 
-**Release Process:**
-1. Commit changes following conventional commit format
-2. Push to `main` branch
-3. GitHub Action automatically:
-   - Analyzes commits and determines version bump
-   - Generates CHANGELOG.md
-   - Creates GitHub release
-   - Publishes to npm
-
-**Example:**
-```bash
-git commit -m "feat: add new interactive menu option"
-git push origin main
-# Automatic release triggered!
-```
-
-**Requirements:**
-- `NPM_TOKEN` secret configured in GitHub repository settings
-- Commits must follow conventional commit format
+**Requirements:** `NPM_TOKEN` secret in repository settings.
