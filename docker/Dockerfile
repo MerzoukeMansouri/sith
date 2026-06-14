@@ -67,6 +67,13 @@ COPY --from=builder /root/.opencode /root/.opencode
 COPY --from=builder /root/.npm-global /root/.npm-global
 COPY --from=builder /root/.npmrc /root/.npmrc
 
+# Bake default Claude Code config (theme, permissions, caveman mode)
+COPY docker/claude-defaults/ /root/.claude/
+
+# Entrypoint script: generates .credentials.json from CLAUDE_CODE_OAUTH_TOKEN before nix-shell
+COPY docker/entrypoint.sh /opt/sith/entrypoint.sh
+RUN chmod +x /opt/sith/entrypoint.sh
+
 # Créer un utilisateur non-root pour l'exécution
 RUN mkdir -p /home/sith && \
     echo "sith:x:1000:1000:Sith User:/home/sith:/bin/sh" >> /etc/passwd && \
@@ -86,6 +93,8 @@ ENV OPENCODE_MODEL=github-copilot/claude-sonnet-4.5
 ENV OPENCODE_LOG_LEVEL=INFO
 ENV NODE_ENV=production
 ENV CLAUDE_CODE_OAUTH_TOKEN=""
+ENV IS_DEMO=1
+ENV CLAUDE_CONFIG_DIR=/root/.claude
 ENV PATH="/root/.opencode/bin:/root/.local/bin:/root/.npm-global/bin:${PATH}"
 ENV NPM_CONFIG_PREFIX=/root/.npm-global
 ENV HOME=/root
@@ -106,8 +115,8 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
 # Répertoire de travail pour les projets
 WORKDIR /workspace
 
-# Point d'entrée via nix-shell
-ENTRYPOINT ["nix-shell", "/opt/sith/nix/shell.nix", "--run"]
+# Point d'entrée: génère .credentials.json puis lance nix-shell
+ENTRYPOINT ["/opt/sith/entrypoint.sh"]
 
 # Commande par défaut
 CMD ["opencode --help"]

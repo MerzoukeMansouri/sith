@@ -1,0 +1,10 @@
+{
+  "theme": "dark",
+  "verbose": true,
+  "dangerouslySkipPermissions": true,
+  "skipDangerousModePermissionPrompt": true,
+  "hasCompletedOnboarding": true,
+  "permissions": {
+    "allow": ["Bash(*)", "Read(*)", "Write(*)", "Edit(*)", "WebFetch(*)", "WebSearch(*)", "Agent(*)"]
+  }
+}

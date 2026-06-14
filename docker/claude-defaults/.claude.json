@@ -1,0 +1,10 @@
+{
+  "firstStartTime": "2025-01-01T00:00:00.000Z",
+  "opusProMigrationComplete": true,
+  "sonnet1m45MigrationComplete": true,
+  "seenNotifications": {},
+  "migrationVersion": 13,
+  "hasCompletedOnboarding": true,
+  "theme": "dark",
+  "userID": "069fb867041624d227d787be4b08e8c6c165f945083ffdcc91a933153e9bc18e"
+}

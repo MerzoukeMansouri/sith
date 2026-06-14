@@ -112,7 +112,7 @@ export function buildDockerClaudeCodeCommand(
 
 	if (prompt) {
 		const escapedPrompt = prompt.replace(/'/g, "'\\''");
-		claudeCommand += ` -p '${escapedPrompt}'`;
+		claudeCommand += ` '${escapedPrompt}'`;
 	}
 
 	args.push(claudeCommand);
