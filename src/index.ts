@@ -90,16 +90,6 @@ function createProgram(): Command {
 		}
 	});
 
-	// Docker command - explicit Docker management
-	program
-		.command("docker")
-		.description("Manage Docker environment")
-		.option("--pull", "Pull prebuilt Docker image (recommended)")
-		.option("--build", "Build the Docker image from scratch")
-		.action(async (options) => {
-			await dockerCommand(options);
-		});
-
 	// Shell command - direct interactive shell (bypasses menu)
 	program
 		.command("shell")

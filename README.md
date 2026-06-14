@@ -16,8 +16,8 @@ Standardize and share your OpenCode setup with a fully dockerized environment, d
 | `sith opencode -p "..."` | Launch OpenCode in Docker with a prompt |
 | `sith claude -p "..."` | Launch Claude Code in Docker with a prompt |
 | `sith shell` | Drop into raw Nix shell (alias: `sith --it`) |
-| `sith docker --pull` | Pull prebuilt image |
-| `sith docker --build` | Build image from scratch |
+| `sith --pull` | Pull prebuilt image |
+| `sith --build` | Build image from scratch |
 | `sith skills` | Manage skills in `~/.sith/skills/` |
 | `sith nix` | Manage native Nix environment |
 | `sith --update` | Check for CLI updates |
