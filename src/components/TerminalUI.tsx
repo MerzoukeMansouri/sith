@@ -1,15 +1,13 @@
-import { execa } from "execa";
 import { Box, render, Text, useApp, useInput } from "ink";
 import TextInput from "ink-text-input";
 import React, { useCallback, useRef, useState } from "react";
 import { SkillsMenu } from "../commands/skills.js";
-import { ASCII_LOGO, DOCKER_CONFIG } from "../config.js";
+import { ASCII_LOGO } from "../config.js";
 import {
-	buildDockerClaudeCodeCommand,
-	buildDockerOpencodeCommand,
-	buildDockerShellCommand,
-} from "../utils/dockerArgs.js";
-import { getGitHubToken } from "../utils/githubToken.js";
+	launchClaude,
+	launchOpencode,
+	launchShell,
+} from "../utils/launcher.js";
 import { getMessageColor, getMessagePrefix } from "../utils/messageUtils.js";
 import {
 	getAvailableCommands,
@@ -106,11 +104,7 @@ function ToolPicker({ selectedIndex }: ToolPickerProps): React.ReactElement {
 function WelcomeScreen({ tool }: { tool: AITool }): React.ReactElement {
 	const toolLabel = TOOLS.find((t) => t.value === tool)?.label ?? tool;
 	return (
-		<Box
-			flexDirection="column"
-			justifyContent="center"
-			alignItems="center"
-		>
+		<Box flexDirection="column" justifyContent="center" alignItems="center">
 			<Box flexDirection="column" alignItems="center">
 				<Text color="cyan">
 					Tool: <Text bold>{toolLabel}</Text>
@@ -171,56 +165,13 @@ export function TerminalUI(): React.ReactElement {
 
 	const handleDockerShell = useCallback(async (): Promise<void> => {
 		exit();
-
-		console.log("🚀 Starting Docker shell...");
-		console.log(
-			`Mounting current directory to ${DOCKER_CONFIG.workspaceMount}`,
-		);
-		console.log('Press Ctrl+D or type "exit" to leave');
-		console.log();
-
-		const githubToken = await getGitHubToken();
-		const claudeOauthToken = process.env.CLAUDE_CODE_OAUTH_TOKEN || "";
-		const dockerArgs = buildDockerShellCommand(githubToken, claudeOauthToken);
-
-		await execa("docker", dockerArgs, { stdio: "inherit", reject: false });
-		console.log();
-		console.log("✅ Exited shell");
+		await launchShell();
 	}, [exit]);
 
 	const handleOpenCode = useCallback(
 		async (prompt?: string): Promise<void> => {
 			exit();
-
-			console.log("🚀 Starting OpenCode...");
-			console.log(
-				`Mounting current directory to ${DOCKER_CONFIG.workspaceMount}`,
-			);
-
-			if (prompt) {
-				console.log(`Prompt: ${prompt}`);
-			}
-
-			console.log();
-
-			const githubToken = await getGitHubToken();
-			const claudeOauthToken = process.env.CLAUDE_CODE_OAUTH_TOKEN || "";
-			const dockerArgs = buildDockerOpencodeCommand(
-				githubToken,
-				prompt,
-				claudeOauthToken,
-			);
-
-			try {
-				await execa("docker", dockerArgs, { stdio: "inherit" });
-				console.log();
-				console.log("✅ Exited OpenCode");
-			} catch (error) {
-				const errorMessage =
-					error instanceof Error ? error.message : "Failed to start OpenCode";
-				console.error(`❌ ${errorMessage}`);
-				process.exit(1);
-			}
+			await launchOpencode(prompt);
 		},
 		[exit],
 	);
@@ -228,38 +179,7 @@ export function TerminalUI(): React.ReactElement {
 	const handleClaudeCode = useCallback(
 		async (prompt?: string): Promise<void> => {
 			exit();
-
-			console.log("🤖 Starting Claude Code...");
-			console.log(
-				`Mounting current directory to ${DOCKER_CONFIG.workspaceMount}`,
-			);
-
-			if (prompt) {
-				console.log(`Prompt: ${prompt}`);
-			}
-
-			console.log();
-
-			const githubToken = await getGitHubToken();
-			const claudeOauthToken = process.env.CLAUDE_CODE_OAUTH_TOKEN || "";
-			const dockerArgs = buildDockerClaudeCodeCommand(
-				githubToken,
-				prompt,
-				claudeOauthToken,
-			);
-
-			try {
-				await execa("docker", dockerArgs, { stdio: "inherit" });
-				console.log();
-				console.log("✅ Exited Claude Code");
-			} catch (error) {
-				const errorMessage =
-					error instanceof Error
-						? error.message
-						: "Failed to start Claude Code";
-				console.error(`❌ ${errorMessage}`);
-				process.exit(1);
-			}
+			await launchClaude(prompt);
 		},
 		[exit],
 	);
@@ -308,7 +228,7 @@ export function TerminalUI(): React.ReactElement {
 					break;
 			}
 		},
-		[addMessage, handleDockerShell, exit],
+		[addMessage, handleDockerShell],
 	);
 
 	const handleSubmit = useCallback(

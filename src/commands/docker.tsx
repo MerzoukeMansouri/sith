@@ -10,8 +10,7 @@ import type {
 	DockerCommandOptions,
 	MenuItem,
 } from "../types.js";
-import { buildDockerShellCommand } from "../utils/dockerArgs.js";
-import { getSkillsDir } from "../utils/skills.js";
+import { launchShell } from "../utils/launcher.js";
 import { copyNixFiles, installNix } from "./nix.js";
 import { skillsCommand } from "./skills.js";
 
@@ -124,7 +123,7 @@ function Menu(): React.ReactElement {
 		switch (value) {
 			case "shell":
 				exit();
-				await runShell();
+				await launchShell();
 				return;
 
 			case "skills":
@@ -344,7 +343,7 @@ export async function dockerCommand(
 }
 
 export async function runShellDirect(): Promise<void> {
-	await runShell();
+	await launchShell();
 }
 
 async function pullDocker(): Promise<void> {
@@ -424,35 +423,4 @@ async function buildDocker(): Promise<void> {
 		}
 		process.exit(1);
 	}
-}
-
-async function runShell(): Promise<void> {
-	const skillsDir = getSkillsDir();
-
-	console.log("🚀 Starting interactive shell...");
-	console.log(`Mounting workspace to ${DOCKER_CONFIG.workspaceMount}`);
-	console.log(
-		`Mounting skills from ${skillsDir} to ${DOCKER_CONFIG.skillsMount}`,
-	);
-	console.log('Press Ctrl+D or type "exit" to leave');
-	console.log();
-
-	// Try to get GitHub token from gh CLI if not in env
-	let githubToken = process.env.GITHUB_TOKEN || "";
-	if (!githubToken) {
-		try {
-			const { stdout } = await execa("gh", ["auth", "token"]);
-			githubToken = stdout.trim();
-		} catch {
-			// Ignore if gh CLI not available or not authenticated
-		}
-	}
-
-	const claudeOauthToken = process.env.CLAUDE_CODE_OAUTH_TOKEN || "";
-	const dockerArgs = buildDockerShellCommand(githubToken, claudeOauthToken);
-
-	await execa("docker", dockerArgs, {
-		stdio: "inherit",
-		reject: false,
-	});
 }

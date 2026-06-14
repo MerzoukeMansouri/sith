@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+run_with_autofix() {
+  local label="$1"
+  shift
+  local output
+  if ! output=$("$@" 2>&1); then
+    echo "[$label] failed. Running claude autofix..."
+    claude -p --allowedTools "Edit,Write,Bash" \
+      "Fix the following $label errors. Apply fixes directly to the files. Do not ask for permission. Output only fix summary:
+
+$output"
+    echo "[$label] autofix done. Re-running check..."
+    if ! "$@" 2>&1; then
+      echo "[$label] still failing after autofix. Aborting commit."
+      exit 1
+    fi
+  fi
+}
+
+run_with_autofix "lint" pnpm lint-staged
+run_with_autofix "test" pnpm test

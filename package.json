@@ -19,7 +19,8 @@
     "lint": "biome check src/",
     "typecheck": "tsc --noEmit",
     "clean": "rm -rf dist",
-    "prepublishOnly": "pnpm build"
+    "prepublishOnly": "pnpm build",
+    "prepare": "husky"
   },
   "files": [
     "dist",
@@ -57,6 +58,8 @@
     "@types/update-notifier": "^6.0.8",
     "@vercel/ncc": "^0.38.1",
     "@vitest/coverage-v8": "^4.1.7",
+    "husky": "^9.1.7",
+    "lint-staged": "^17.0.7",
     "semantic-release": "^24.2.0",
     "tsx": "^4.7.2",
     "typescript": "^5.4.5",
@@ -64,6 +67,11 @@
   },
   "engines": {
     "node": ">=18"
+  },
+  "lint-staged": {
+    "src/**/*.{ts,tsx}": [
+      "biome check --write --unsafe"
+    ]
   },
   "pnpm": {
     "overrides": {

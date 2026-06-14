@@ -1,21 +1,16 @@
 #!/usr/bin/env node
 
-import { spawnSync } from "node:child_process";
 import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import chalk from "chalk";
 import { Command } from "commander";
 import updateNotifier from "update-notifier";
-import { dockerCommand, runShellDirect } from "./commands/docker.js";
+import { dockerCommand } from "./commands/docker.js";
 import { nixCommand, runNixShell } from "./commands/nix.js";
 import { skillsCommand } from "./commands/skills.js";
 import { renderTerminalUI } from "./components/TerminalUI.js";
-import {
-	buildDockerClaudeCodeCommand,
-	buildDockerOpencodeCommand,
-} from "./utils/dockerArgs.js";
-import { getGitHubToken } from "./utils/githubToken.js";
+import { launchClaude, launchOpencode, launchShell } from "./utils/launcher.js";
 
 // Import package.json for version and update checks
 const __filename = fileURLToPath(import.meta.url);
@@ -87,7 +82,7 @@ function createProgram(): Command {
 		} else if (options.nixInstall) {
 			await nixCommand({ install: true });
 		} else if (options.it) {
-			await runShellDirect();
+			await launchShell();
 		} else if (options.legacy || options.pull || options.build) {
 			// Use legacy menu for explicit pull/build or --legacy flag
 			await dockerCommand(options);
@@ -112,7 +107,7 @@ function createProgram(): Command {
 		.command("shell")
 		.description("Run interactive shell in Docker container")
 		.action(async () => {
-			await runShellDirect();
+			await launchShell();
 		});
 
 	// Skills command - install/uninstall skills from catalog
@@ -139,14 +134,7 @@ function createProgram(): Command {
 		.description("Launch OpenCode in Docker")
 		.option("-p, --prompt <prompt>", "Prompt to pass to OpenCode")
 		.action(async (options) => {
-			const token = await getGitHubToken();
-			const claudeOauthToken = process.env.CLAUDE_CODE_OAUTH_TOKEN || "";
-			const args = buildDockerOpencodeCommand(
-				token,
-				options.prompt,
-				claudeOauthToken,
-			);
-			spawnSync("docker", args, { stdio: "inherit" });
+			await launchOpencode(options.prompt);
 		});
 
 	// Claude command - launch Claude Code in Docker
@@ -155,14 +143,7 @@ function createProgram(): Command {
 		.description("Launch Claude Code in Docker")
 		.option("-p, --prompt <prompt>", "Prompt to pass to Claude Code")
 		.action(async (options) => {
-			const token = await getGitHubToken();
-			const claudeOauthToken = process.env.CLAUDE_CODE_OAUTH_TOKEN || "";
-			const args = buildDockerClaudeCodeCommand(
-				token,
-				options.prompt,
-				claudeOauthToken,
-			);
-			spawnSync("docker", args, { stdio: "inherit" });
+			await launchClaude(options.prompt);
 		});
 
 	return program;
