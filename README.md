@@ -54,12 +54,16 @@ Three modes. Pick based on your trust model, infra constraints, and whether Dock
 | **Setup time** | ~1 min (pull) | ~5–10 min (build) | ~2 min (first run) |
 | **Reproducibility** | Pinned image digest | Dockerfile-pinned | Nix-pinned (`nixos-23.11`) |
 | **Trust model** | GitHub Actions + Cosign | Your machine only | Your machine only |
-| **Signature verification** | ✅ cosign | ❌ | ❌ |
 | **SBOM included** | ✅ | ❌ | ❌ |
 | **CI/CD ready** | ✅ drop-in | ⚠️ needs build step | ❌ |
 | **Requires Docker** | ✅ | ✅ | ❌ |
 | **Requires Nix** | ❌ | ❌ | ✅ |
 | **Disk usage** | ~2–3 GB (image) | ~2–3 GB (image) | ~500 MB (store) |
+| **Cold start** | ~1–2s (container spin-up) | ~1–2s (container spin-up) | ~200ms (native) |
+| **Runtime overhead** | Low (Linux containers) | Low (Linux containers) | None |
+| **File I/O (macOS)** | ⚠️ Slow (volume mounts) | ⚠️ Slow (volume mounts) | ✅ Native speed |
+| **File I/O (Linux)** | ✅ Native speed | ✅ Native speed | ✅ Native speed |
+| **Memory overhead** | ~50–100MB (Docker daemon) | ~50–100MB (Docker daemon) | None |
 | **Works offline** | ✅ after pull | ✅ after build | ⚠️ after store populated |
 | **macOS support** | ✅ (amd64 + arm64) | ✅ | ✅ |
 | **Linux support** | ✅ | ✅ | ✅ |
