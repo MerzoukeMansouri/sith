@@ -1,3 +1,10 @@
+# [1.22.0](https://github.com/MerzoukeMansouri/sith/compare/v1.21.1...v1.22.0) (2026-06-14)
+
+
+### Features
+
+* add husky and lint-staged for pre-commit hooks ([a96295d](https://github.com/MerzoukeMansouri/sith/commit/a96295d0dd377be2b4d6e630251c97610d413004))
+
 ## [1.21.1](https://github.com/MerzoukeMansouri/sith/compare/v1.21.0...v1.21.1) (2026-06-14)
 
 
