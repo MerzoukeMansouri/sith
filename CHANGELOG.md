@@ -1,3 +1,10 @@
+# [1.21.0](https://github.com/MerzoukeMansouri/sith/compare/v1.20.0...v1.21.0) (2026-06-14)
+
+
+### Features
+
+* add claude code config and auth handling for docker setup ([002c26c](https://github.com/MerzoukeMansouri/sith/commit/002c26c5328b2109c00595b85a87b74c0245a69e))
+
 # [1.20.0](https://github.com/MerzoukeMansouri/sith/compare/v1.19.0...v1.20.0) (2026-06-13)
 
 
