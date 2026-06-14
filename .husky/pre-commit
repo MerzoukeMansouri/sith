@@ -4,18 +4,23 @@ set -e
 run_with_autofix() {
   label="$1"
   shift
-  output=$("$@" 2>&1) || {
+  tmp=$(mktemp)
+  if ! "$@" 2>&1 | tee "$tmp"; then
+    output=$(cat "$tmp")
+    rm -f "$tmp"
     echo "[$label] failed. Running claude autofix..."
     claude -p --allowedTools "Edit,Write,Bash" \
       "Fix the following $label errors. Apply fixes directly to the files. Do not ask for permission. Output only fix summary:
 
 $output"
     echo "[$label] autofix done. Re-running check..."
-    if ! "$@" 2>&1; then
+    if ! "$@" 2>&1 | tee /dev/stderr; then
       echo "[$label] still failing after autofix. Aborting commit."
       exit 1
     fi
-  }
+    return
+  fi
+  rm -f "$tmp"
 }
 
 run_with_autofix "lint" pnpm lint-staged
