@@ -28,9 +28,11 @@ export function getClaudeConfigDir(): string {
 
 export function getClaudeMdPath(): string {
 	const claudeMdPath = path.join(os.homedir(), ".sith", "CLAUDE.md");
-	if (!fs.existsSync(claudeMdPath)) {
-		fs.mkdirSync(path.dirname(claudeMdPath), { recursive: true });
-		fs.writeFileSync(claudeMdPath, "");
+	fs.mkdirSync(path.dirname(claudeMdPath), { recursive: true });
+	try {
+		fs.writeFileSync(claudeMdPath, "", { flag: "ax" });
+	} catch {
+		// already exists
 	}
 	return claudeMdPath;
 }
@@ -38,12 +40,20 @@ export function getClaudeMdPath(): string {
 export function getOpenCodeConfigPath(): string {
 	const configPath = path.join(os.homedir(), ".sith", "opencode.json");
 	// Docker bind-mount creates a directory if the source doesn't exist; ensure it's a file.
-	if (fs.existsSync(configPath) && fs.statSync(configPath).isDirectory()) {
-		fs.rmSync(configPath, { recursive: true, force: true });
+	try {
+		if (fs.statSync(configPath).isDirectory()) {
+			fs.rmSync(configPath, { recursive: true, force: true });
+		}
+	} catch {
+		// doesn't exist yet
 	}
-	if (!fs.existsSync(configPath)) {
-		fs.mkdirSync(path.dirname(configPath), { recursive: true });
-		fs.writeFileSync(configPath, JSON.stringify(defaultConfig(), null, 2));
+	fs.mkdirSync(path.dirname(configPath), { recursive: true });
+	try {
+		fs.writeFileSync(configPath, JSON.stringify(defaultConfig(), null, 2), {
+			flag: "ax",
+		});
+	} catch {
+		// already exists
 	}
 	return configPath;
 }
@@ -142,11 +152,14 @@ export async function installSkill(skill: SkillEntry): Promise<void> {
 		fs.cpSync(extracted, targetDir, { recursive: true });
 
 		const skillJson = path.join(targetDir, "skill.json");
-		if (!fs.existsSync(skillJson)) {
+		try {
 			fs.writeFileSync(
 				skillJson,
 				JSON.stringify({ name: skill.name, version: "local" }, null, 2),
+				{ flag: "ax" },
 			);
+		} catch {
+			// already exists (skill.json bundled in archive)
 		}
 
 		const instructionsFile = findInstructionsFile(targetDir);

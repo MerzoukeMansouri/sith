@@ -20,6 +20,8 @@ export function buildDockerShellCommand(
 		"-v",
 		`${getSkillsDir()}:${DOCKER_CONFIG.skillsMount}`,
 		"-v",
+		`${getSkillsDir()}:${DOCKER_CONFIG.claudeSkillsMount}`,
+		"-v",
 		`${getOpenCodeConfigPath()}:${DOCKER_CONFIG.opencodeConfigMount}`,
 		"-e",
 		`GITHUB_TOKEN=${githubToken}`,
