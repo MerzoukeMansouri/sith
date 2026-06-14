@@ -1,3 +1,10 @@
+## [1.21.1](https://github.com/MerzoukeMansouri/sith/compare/v1.21.0...v1.21.1) (2026-06-14)
+
+
+### Bug Fixes
+
+* add default model to opencode config ([b630846](https://github.com/MerzoukeMansouri/sith/commit/b630846126e8e21c1899de004994470f5495c255))
+
 # [1.21.0](https://github.com/MerzoukeMansouri/sith/compare/v1.20.0...v1.21.0) (2026-06-14)
 
 
