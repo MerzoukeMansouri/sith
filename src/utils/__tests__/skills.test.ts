@@ -72,6 +72,7 @@ describe("getOpenCodeConfigPath", () => {
 		expect(mockFs.writeFileSync).toHaveBeenCalledWith(
 			expectedConfigPath,
 			expect.stringContaining('"instructions"'),
+			{ flag: "ax" },
 		);
 	});
 
@@ -90,7 +91,11 @@ describe("getOpenCodeConfigPath", () => {
 		const result = getOpenCodeConfigPath();
 		expect(result).toBe(expectedConfigPath);
 		expect(mockFs.rmSync).not.toHaveBeenCalled();
-		expect(mockFs.writeFileSync).not.toHaveBeenCalled();
+		// { flag: "ax" } = atomic create — no-op if file exists (EEXIST caught)
+		const overwrite = vi
+			.mocked(mockFs.writeFileSync)
+			.mock.calls.find(([p, , opts]) => p === expectedConfigPath && !opts);
+		expect(overwrite).toBeUndefined();
 	});
 });
 
@@ -178,9 +183,10 @@ describe("installSkill — builtin", () => {
 	it("adds container instruction path to opencode.json", async () => {
 		mockFs.readFileSync.mockReturnValue(validConfig);
 		await installSkill(builtinSkill);
+		// Find the writeConfig call — no { flag } option, distinguishes from atomic init
 		const written = vi
 			.mocked(mockFs.writeFileSync)
-			.mock.calls.find(([p]) => p === expectedConfigPath);
+			.mock.calls.find(([p, , opts]) => p === expectedConfigPath && !opts);
 		expect(written).toBeDefined();
 		const content = JSON.parse(written?.[1] as string);
 		expect(content.instructions).toContain(
@@ -194,16 +200,11 @@ describe("installSkill — builtin", () => {
 		});
 		mockFs.readFileSync.mockReturnValue(existingConfig);
 		await installSkill(builtinSkill);
-		const written = vi
+		// No writeConfig call should happen when instruction already exists
+		const configUpdate = vi
 			.mocked(mockFs.writeFileSync)
-			.mock.calls.find(([p]) => p === expectedConfigPath);
-		if (written) {
-			const content = JSON.parse(written[1] as string);
-			expect(
-				content.instructions.filter((i: string) => i.includes("caveman"))
-					.length,
-			).toBe(1);
-		}
+			.mock.calls.find(([p, , opts]) => p === expectedConfigPath && !opts);
+		expect(configUpdate).toBeUndefined();
 	});
 
 	it("does not call execa (no download for builtin)", async () => {
@@ -272,9 +273,10 @@ describe("uninstallSkill", () => {
 		});
 		mockFs.readFileSync.mockReturnValue(config);
 		uninstallSkill("caveman");
+		// Find writeConfig call — no { flag } option
 		const written = vi
 			.mocked(mockFs.writeFileSync)
-			.mock.calls.find(([p]) => p === expectedConfigPath);
+			.mock.calls.find(([p, , opts]) => p === expectedConfigPath && !opts);
 		expect(written).toBeDefined();
 		const content = JSON.parse(written?.[1] as string);
 		expect(content.instructions).not.toContain(
