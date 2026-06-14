@@ -7,6 +7,12 @@ import chalk from "chalk";
 import { Command } from "commander";
 import updateNotifier from "update-notifier";
 import { dockerCommand } from "./commands/docker.js";
+import {
+	dockerCleanupCommand,
+	nixCleanupCommand,
+	nixUninstallCommand,
+	uninstallCommand,
+} from "./commands/maintenance.js";
 import { nixCommand, runNixShell } from "./commands/nix.js";
 import { skillsCommand } from "./commands/skills.js";
 import { renderTerminalUI } from "./components/TerminalUI.js";
@@ -70,11 +76,26 @@ function createProgram(): Command {
 		.option("--it", "Launch interactive shell in Docker container")
 		.option("--nix", "Use native Nix shell (no Docker)")
 		.option("--nix-install", "Install Nix package manager locally")
-		.option("--update", "Check for updates");
+		.option("--update", "Check for updates")
+		.option("--docker-cleanup", "Remove sith Docker images from local machine")
+		.option("--nix-cleanup", "Remove ~/.sith/nix and run nix-collect-garbage")
+		.option(
+			"--nix-uninstall",
+			"Fully remove Nix from the system (daemon, /nix/store)",
+		)
+		.option("--uninstall", "Remove ~/.sith config directory");
 
 	// Default action - show terminal UI
 	program.action(async (options) => {
-		if (options.update) {
+		if (options.dockerCleanup) {
+			await dockerCleanupCommand();
+		} else if (options.nixCleanup) {
+			await nixCleanupCommand();
+		} else if (options.nixUninstall) {
+			await nixUninstallCommand();
+		} else if (options.uninstall) {
+			await uninstallCommand();
+		} else if (options.update) {
 			await checkForUpdates();
 		} else if (options.nix) {
 			await runNixShell();

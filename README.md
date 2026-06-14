@@ -108,6 +108,13 @@ sith claude -p "fix the bug"      # Claude Code starts immediately with your tas
 sith skills    # Install / manage skills from catalog (~/.sith/skills/)
 ```
 
+### Cleanup & Uninstall
+
+```bash
+sith --docker-cleanup    # Remove sith Docker images (sith:latest + prebuilt GHCR image)
+sith --uninstall         # Remove ~/.sith/ (skills, config, nix files)
+```
+
 ### CI / GitHub Actions
 
 ```yaml
@@ -140,6 +147,13 @@ Or via the `nix` subcommand:
 ```bash
 sith nix --install    # Install Nix
 sith nix --shell      # Run Nix shell
+```
+
+**Cleanup:**
+
+```bash
+sith --nix-cleanup      # Remove ~/.sith/nix/ + run nix-collect-garbage -d
+sith --nix-uninstall    # Fully remove Nix from system (daemon, /nix/store) — needs sudo
 ```
 
 See [doc/NIX_INSTALLATION.md](./doc/NIX_INSTALLATION.md) for full setup guide.
