@@ -1,6 +1,7 @@
 import { Box, render, Text, useApp, useInput } from "ink";
 import TextInput from "ink-text-input";
 import React, { useCallback, useRef, useState } from "react";
+import { ReposMenu } from "../commands/repos.js";
 import { SkillsMenu } from "../commands/skills.js";
 import { ASCII_LOGO } from "../config.js";
 import {
@@ -119,6 +120,7 @@ function WelcomeScreen({ tool }: { tool: AITool }): React.ReactElement {
 				<Text dimColor> /claude - Switch to Claude Code</Text>
 				<Text dimColor> /shell - Start Docker shell</Text>
 				<Text dimColor> /skills - Install/uninstall skills</Text>
+				<Text dimColor> /repos  - Manage workspace repositories</Text>
 				<Text dimColor> /config - Configuration</Text>
 				<Text dimColor> /help - Show help</Text>
 			</Box>
@@ -146,6 +148,7 @@ export function TerminalUI(): React.ReactElement {
 	const [messages, setMessages] = useState<Message[]>([]);
 	const [showConfigModal, setShowConfigModal] = useState(false);
 	const [showSkillsMenu, setShowSkillsMenu] = useState(false);
+	const [showReposMenu, setShowReposMenu] = useState(false);
 	const nextMessageId = useRef(1);
 	const [selectedTool, setSelectedTool] = useState<AITool | null>(null);
 	const [toolPickerIndex, setToolPickerIndex] = useState(0);
@@ -202,6 +205,10 @@ export function TerminalUI(): React.ReactElement {
 
 				case "skills":
 					setShowSkillsMenu(true);
+					break;
+
+				case "repos":
+					setShowReposMenu(true);
 					break;
 
 				case "config":
@@ -316,6 +323,14 @@ export function TerminalUI(): React.ReactElement {
 		return (
 			<Box flexDirection="column">
 				<SkillsMenu onClose={() => setShowSkillsMenu(false)} />
+			</Box>
+		);
+	}
+
+	if (showReposMenu) {
+		return (
+			<Box flexDirection="column">
+				<ReposMenu onClose={() => setShowReposMenu(false)} />
 			</Box>
 		);
 	}

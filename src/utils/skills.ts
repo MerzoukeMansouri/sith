@@ -3,7 +3,7 @@ import os from "node:os";
 import path from "node:path";
 import { execa } from "execa";
 import { DOCKER_CONFIG } from "../config.js";
-import type { SkillEntry } from "../types.js";
+import type { CatalogSkillEntry, SkillEntry } from "../types.js";
 
 interface OpenCodeConfig {
 	instructions: string[];
@@ -116,6 +116,7 @@ export function findInstructionsFile(skillDir: string): string | null {
 	const skillName = path.basename(skillDir);
 	const candidates = [
 		"SKILL.md",
+		"CLAUDE.md",
 		"CAVEMAN.md",
 		"instructions.md",
 		path.join("skills", skillName, "SKILL.md"),
@@ -128,6 +129,17 @@ export function findInstructionsFile(skillDir: string): string | null {
 
 export function isInstalled(name: string): boolean {
 	return fs.existsSync(path.join(getSkillsDir(), name, "skill.json"));
+}
+
+export function getInstalledVersion(name: string): string | null {
+	const skillJsonPath = path.join(getSkillsDir(), name, "skill.json");
+	if (!fs.existsSync(skillJsonPath)) return null;
+	try {
+		const meta = JSON.parse(fs.readFileSync(skillJsonPath, "utf8"));
+		return (meta.version as string) ?? null;
+	} catch {
+		return null;
+	}
 }
 
 export function getSkillAutoLoad(name: string): boolean {
@@ -157,6 +169,10 @@ export function setSkillAutoLoad(name: string, autoLoad: boolean): void {
 	syncClaudeMd();
 }
 
+function resolveVersion(skill: SkillEntry): string {
+	return (skill as CatalogSkillEntry).version ?? (skill.builtinInstructions ? "builtin" : "local");
+}
+
 export async function installSkill(skill: SkillEntry): Promise<void> {
 	const targetDir = path.join(getSkillsDir(), skill.name);
 
@@ -171,7 +187,7 @@ export async function installSkill(skill: SkillEntry): Promise<void> {
 			JSON.stringify(
 				{
 					name: skill.name,
-					version: "builtin",
+					version: resolveVersion(skill),
 					autoLoad: skill.autoLoad ?? false,
 				},
 				null,
@@ -191,7 +207,14 @@ export async function installSkill(skill: SkillEntry): Promise<void> {
 	const tmpExtract = path.join(os.tmpdir(), `sith-skill-${skill.name}-extract`);
 
 	try {
-		await execa("curl", ["-fsSL", skill.source, "-o", tmpZip]);
+		await execa("curl", [
+			"-sSL",
+			"--retry", "3",
+			"--retry-delay", "2",
+			"--max-time", "60",
+			"-o", tmpZip,
+			skill.source,
+		]);
 
 		fs.mkdirSync(tmpExtract, { recursive: true });
 		await execa("unzip", ["-q", "-o", tmpZip, "-d", tmpExtract]);
@@ -211,7 +234,7 @@ export async function installSkill(skill: SkillEntry): Promise<void> {
 				JSON.stringify(
 					{
 						name: skill.name,
-						version: "local",
+						version: resolveVersion(skill),
 						autoLoad: skill.autoLoad ?? false,
 					},
 					null,

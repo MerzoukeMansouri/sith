@@ -3,6 +3,7 @@ export type SlashCommandType =
 	| "config"
 	| "help"
 	| "skills"
+	| "repos"
 	| "opencode"
 	| "claude";
 
@@ -29,6 +30,9 @@ export function parseSlashCommand(input: string): SlashCommand | null {
 			return { type: "help", raw: trimmed };
 		case "skills":
 			return { type: "skills", raw: trimmed };
+		case "repos":
+		case "repositories":
+			return { type: "repos", raw: trimmed };
 		case "opencode":
 			return { type: "opencode", raw: trimmed };
 		case "claude":
@@ -47,6 +51,7 @@ export function getAvailableCommands(): Array<{
 		{ command: "/claude", description: "Switch to Claude Code" },
 		{ command: "/shell", description: "Start Docker shell" },
 		{ command: "/skills", description: "Install/uninstall skills" },
+		{ command: "/repos", description: "Manage workspace repositories" },
 		{ command: "/config", description: "Open configuration menu" },
 		{ command: "/help", description: "Show available commands" },
 	];

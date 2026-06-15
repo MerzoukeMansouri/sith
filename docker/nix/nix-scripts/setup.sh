@@ -31,6 +31,10 @@ source "${SCRIPT_DIR}/05-opencode-cli.sh"
 # shellcheck source=./06-skills-setup.sh
 source "${SCRIPT_DIR}/06-skills-setup.sh"
 
-# 7. Ready message
+# 7. Workspace repositories (clone/pull)
+# shellcheck source=./07-workspace-repos.sh
+source "${SCRIPT_DIR}/07-workspace-repos.sh"
+
+# 8. Ready message
 # shellcheck source=./07-ready.sh
 source "${SCRIPT_DIR}/07-ready.sh"

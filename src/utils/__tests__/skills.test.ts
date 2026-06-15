@@ -130,6 +130,11 @@ describe("findInstructionsFile", () => {
 		expect(findInstructionsFile("/skills/caveman")).toBe("SKILL.md");
 	});
 
+	it("falls through to CLAUDE.md", () => {
+		mockFs.existsSync.mockImplementation((p: string) => p.endsWith("CLAUDE.md"));
+		expect(findInstructionsFile("/skills/rtk")).toBe("CLAUDE.md");
+	});
+
 	it("falls through to CAVEMAN.md", () => {
 		mockFs.existsSync.mockImplementation((p: string) =>
 			p.endsWith("CAVEMAN.md"),

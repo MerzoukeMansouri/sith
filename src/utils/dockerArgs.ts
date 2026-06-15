@@ -6,12 +6,14 @@ import {
 	getSkillsDir,
 	syncClaudeMd,
 } from "./skills.js";
+import { getWorkspaceConfigPath, readWorkspaceConfig } from "./workspace.js";
 
 export function buildDockerShellCommand(
 	githubToken: string,
 	claudeOauthToken?: string,
 ): string[] {
 	syncClaudeMd();
+	const wsCfg = readWorkspaceConfig();
 	const args = [
 		"run",
 		"--rm",
@@ -29,6 +31,14 @@ export function buildDockerShellCommand(
 		"-e",
 		`GITHUB_TOKEN=${githubToken}`,
 	];
+	if (wsCfg.repos.length > 0) {
+		args.push(
+			"-v",
+			`${DOCKER_CONFIG.workspaceVolumeName}:${DOCKER_CONFIG.workspaceReposMount}`,
+			"-v",
+			`${getWorkspaceConfigPath()}:${DOCKER_CONFIG.workspaceConfigMount}:ro`,
+		);
+	}
 	if (claudeOauthToken) {
 		args.push("-e", `CLAUDE_CODE_OAUTH_TOKEN=${claudeOauthToken}`);
 	}
@@ -46,6 +56,7 @@ export function buildDockerOpencodeCommand(
 	prompt?: string,
 	claudeOauthToken?: string,
 ): string[] {
+	const wsCfg = readWorkspaceConfig();
 	const args = [
 		"run",
 		"--rm",
@@ -59,6 +70,14 @@ export function buildDockerOpencodeCommand(
 		"-e",
 		`GITHUB_TOKEN=${githubToken}`,
 	];
+	if (wsCfg.repos.length > 0) {
+		args.push(
+			"-v",
+			`${DOCKER_CONFIG.workspaceVolumeName}:${DOCKER_CONFIG.workspaceReposMount}`,
+			"-v",
+			`${getWorkspaceConfigPath()}:${DOCKER_CONFIG.workspaceConfigMount}:ro`,
+		);
+	}
 	if (claudeOauthToken) {
 		args.push("-e", `CLAUDE_CODE_OAUTH_TOKEN=${claudeOauthToken}`);
 	}
@@ -83,6 +102,7 @@ export function buildDockerClaudeCodeCommand(
 ): string[] {
 	syncClaudeMd();
 	const claudeMdPath = getClaudeMdPath();
+	const wsCfg = readWorkspaceConfig();
 
 	const args = [
 		"run",
@@ -93,6 +113,14 @@ export function buildDockerClaudeCodeCommand(
 		"-e",
 		`GITHUB_TOKEN=${githubToken}`,
 	];
+	if (wsCfg.repos.length > 0) {
+		args.push(
+			"-v",
+			`${DOCKER_CONFIG.workspaceVolumeName}:${DOCKER_CONFIG.workspaceReposMount}`,
+			"-v",
+			`${getWorkspaceConfigPath()}:${DOCKER_CONFIG.workspaceConfigMount}:ro`,
+		);
+	}
 	if (claudeOauthToken) {
 		args.push("-e", `CLAUDE_CODE_OAUTH_TOKEN=${claudeOauthToken}`);
 	}

@@ -26,3 +26,34 @@ export interface SkillEntry {
 	builtinInstructions?: string;
 	autoLoad?: boolean; // default: false (on-demand slash command only)
 }
+
+export type SkillScope = "required" | "optional" | "forbidden";
+
+export interface CatalogSkillEntry extends SkillEntry {
+	scope: SkillScope;
+	version: string;
+}
+
+export interface TeamCatalog {
+	team: string;
+	skills: CatalogSkillEntry[];
+}
+
+export interface OrgCatalog {
+	global: CatalogSkillEntry[];
+	forbidden: string[];
+}
+
+export interface SithUserConfig {
+	team?: string;
+}
+
+export interface WorkspaceRepo {
+	url: string;
+	branch?: string;
+	name?: string; // local dir alias, inferred from URL basename if absent
+}
+
+export interface WorkspaceConfig {
+	repos: WorkspaceRepo[];
+}

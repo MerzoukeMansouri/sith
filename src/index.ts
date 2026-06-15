@@ -15,7 +15,13 @@ import {
 	uninstallCommand,
 } from "./commands/maintenance.js";
 import { nixCommand, runNixShell } from "./commands/nix.js";
+import { reposCommand } from "./commands/repos.js";
 import { skillsCommand } from "./commands/skills.js";
+import {
+	workspaceAddCommand,
+	workspaceListCommand,
+	workspaceRemoveCommand,
+} from "./commands/workspace.js";
 import { renderTerminalUI } from "./components/TerminalUI.js";
 import { launchClaude, launchOpencode, launchShell } from "./utils/launcher.js";
 
@@ -132,6 +138,42 @@ function createProgram(): Command {
 		.description("Manage skills (~/.sith/skills/)")
 		.action(() => {
 			skillsCommand();
+		});
+
+	// Repos command - TUI for workspace repositories
+	program
+		.command("repos")
+		.description("Manage workspace repositories (~/.sith/workspace.json)")
+		.action(() => {
+			reposCommand();
+		});
+
+	// Workspace command - manage git repos cloned inside Docker at startup
+	const workspace = program
+		.command("workspace")
+		.description("Manage git repositories cloned inside Docker at startup");
+
+	workspace
+		.command("add <url>")
+		.description("Add a repository to the workspace")
+		.option("-b, --branch <branch>", "Branch to checkout")
+		.option("-n, --name <name>", "Local directory alias")
+		.action((url: string, opts: { branch?: string; name?: string }) => {
+			workspaceAddCommand(url, opts);
+		});
+
+	workspace
+		.command("list")
+		.description("List configured workspace repositories")
+		.action(() => {
+			workspaceListCommand();
+		});
+
+	workspace
+		.command("remove <name>")
+		.description("Remove a repository from the workspace")
+		.action((name: string) => {
+			workspaceRemoveCommand(name);
 		});
 
 	// Nix command - native Nix environment

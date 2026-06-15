@@ -16,7 +16,8 @@
     "vcs": {
       "description": "Version control systems",
       "packages": [
-        "git"
+        "git",
+        "gh"
       ]
     },
     "network": {

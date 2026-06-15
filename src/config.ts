@@ -1,5 +1,8 @@
 import type { SkillEntry } from "./types.js";
 
+export const CATALOG_BASE_URL =
+	"https://raw.githubusercontent.com/adeo-side/adeo-skills-catalog/main";
+
 // Predefined skill catalog — skills are installed to ~/.sith/skills/<name>/
 export const SKILLS_CATALOG: SkillEntry[] = [
 	{
@@ -47,6 +50,13 @@ Drop for: security warnings, irreversible ops, steps where order risks misread. 
 
 Code/commits/PRs: write normal. "stop caveman" or "normal mode": revert.`,
 	},
+	{
+		name: "rtk",
+		description: "Token-reduction proxy (~80% savings on dev commands)",
+		homepage: "https://github.com/rtk-ai/rtk",
+		source: "https://github.com/rtk-ai/rtk/archive/refs/tags/v0.42.4.zip",
+		autoLoad: false,
+	},
 ];
 
 // Docker configuration
@@ -61,6 +71,9 @@ export const DOCKER_CONFIG = {
 	shellEntrypoint: "/opt/sith/nix/shell.nix",
 	claudeConfigMount: "/root/.claude",
 	claudeSkillsMount: "/root/.claude/skills",
+	workspaceConfigMount: "/opt/sith/workspace.json",
+	workspaceReposMount: "/workspace/repos",
+	workspaceVolumeName: "sith-workspace-repos",
 } as const;
 
 // Nix configuration
