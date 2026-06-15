@@ -1,3 +1,10 @@
+# [1.24.0](https://github.com/MerzoukeMansouri/sith/compare/v1.23.1...v1.24.0) (2026-06-15)
+
+
+### Features
+
+* add workspace repository management with CLI and auto-clone ([9f51cfa](https://github.com/MerzoukeMansouri/sith/commit/9f51cfa2682b05ee2e2e0f660d8425f6168ee1e8))
+
 ## [1.23.1](https://github.com/MerzoukeMansouri/sith/compare/v1.23.0...v1.23.1) (2026-06-14)
 
 
