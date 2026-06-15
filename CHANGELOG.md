@@ -1,3 +1,10 @@
+# [1.25.0](https://github.com/MerzoukeMansouri/sith/compare/v1.24.0...v1.25.0) (2026-06-15)
+
+
+### Features
+
+* add support for mounting local repos in workspace ([c5372b6](https://github.com/MerzoukeMansouri/sith/commit/c5372b68bd372cd26cb056a6264e9f6efa0b5139))
+
 # [1.24.0](https://github.com/MerzoukeMansouri/sith/compare/v1.23.1...v1.24.0) (2026-06-15)
 
 
