@@ -1,12 +1,37 @@
 import fs from "node:fs";
 import { DOCKER_CONFIG } from "../config.js";
+import type { WorkspaceRepo } from "../types.js";
 import {
 	getClaudeMdPath,
 	getOpenCodeConfigPath,
 	getSkillsDir,
 	syncClaudeMd,
 } from "./skills.js";
-import { getWorkspaceConfigPath, readWorkspaceConfig } from "./workspace.js";
+import {
+	getWorkspaceConfigPath,
+	readWorkspaceConfig,
+	resolveRepoName,
+} from "./workspace.js";
+
+function applyWorkspaceMounts(
+	args: string[],
+	repos: WorkspaceRepo[],
+	configPath: string,
+): void {
+	const cloneRepos = repos.filter((r) => (r.mode ?? "clone") === "clone");
+	const mountRepos = repos.filter((r) => r.mode === "mount" && r.localPath);
+
+	if (cloneRepos.length > 0) {
+		args.push(
+			"-v", `${DOCKER_CONFIG.workspaceVolumeName}:${DOCKER_CONFIG.workspaceReposMount}`,
+			"-v", `${configPath}:${DOCKER_CONFIG.workspaceConfigMount}:ro`,
+		);
+	}
+	for (const repo of mountRepos) {
+		const name = resolveRepoName(repo);
+		args.push("-v", `${repo.localPath}:${DOCKER_CONFIG.workspaceReposMount}/${name}`);
+	}
+}
 
 export function buildDockerShellCommand(
 	githubToken: string,
@@ -32,12 +57,7 @@ export function buildDockerShellCommand(
 		`GITHUB_TOKEN=${githubToken}`,
 	];
 	if (wsCfg.repos.length > 0) {
-		args.push(
-			"-v",
-			`${DOCKER_CONFIG.workspaceVolumeName}:${DOCKER_CONFIG.workspaceReposMount}`,
-			"-v",
-			`${getWorkspaceConfigPath()}:${DOCKER_CONFIG.workspaceConfigMount}:ro`,
-		);
+		applyWorkspaceMounts(args, wsCfg.repos, getWorkspaceConfigPath());
 	}
 	if (claudeOauthToken) {
 		args.push("-e", `CLAUDE_CODE_OAUTH_TOKEN=${claudeOauthToken}`);
@@ -71,12 +91,7 @@ export function buildDockerOpencodeCommand(
 		`GITHUB_TOKEN=${githubToken}`,
 	];
 	if (wsCfg.repos.length > 0) {
-		args.push(
-			"-v",
-			`${DOCKER_CONFIG.workspaceVolumeName}:${DOCKER_CONFIG.workspaceReposMount}`,
-			"-v",
-			`${getWorkspaceConfigPath()}:${DOCKER_CONFIG.workspaceConfigMount}:ro`,
-		);
+		applyWorkspaceMounts(args, wsCfg.repos, getWorkspaceConfigPath());
 	}
 	if (claudeOauthToken) {
 		args.push("-e", `CLAUDE_CODE_OAUTH_TOKEN=${claudeOauthToken}`);
@@ -114,12 +129,7 @@ export function buildDockerClaudeCodeCommand(
 		`GITHUB_TOKEN=${githubToken}`,
 	];
 	if (wsCfg.repos.length > 0) {
-		args.push(
-			"-v",
-			`${DOCKER_CONFIG.workspaceVolumeName}:${DOCKER_CONFIG.workspaceReposMount}`,
-			"-v",
-			`${getWorkspaceConfigPath()}:${DOCKER_CONFIG.workspaceConfigMount}:ro`,
-		);
+		applyWorkspaceMounts(args, wsCfg.repos, getWorkspaceConfigPath());
 	}
 	if (claudeOauthToken) {
 		args.push("-e", `CLAUDE_CODE_OAUTH_TOKEN=${claudeOauthToken}`);

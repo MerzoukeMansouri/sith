@@ -51,7 +51,7 @@ export function addRepo(entry: WorkspaceRepo): void {
 	if (config.repos.some((r) => resolveRepoName(r) === name)) {
 		throw new Error(`Repo "${name}" already in workspace`);
 	}
-	config.repos.push(entry);
+	config.repos.push({ mode: "clone", ...entry });
 	writeWorkspaceConfig(config);
 }
 
@@ -67,4 +67,13 @@ export function removeRepo(name: string): void {
 
 export function listRepos(): WorkspaceRepo[] {
 	return readWorkspaceConfig().repos;
+}
+
+export function updateRepo(name: string, patch: Partial<WorkspaceRepo>): void {
+	const config = readWorkspaceConfig();
+	const idx = config.repos.findIndex((r) => resolveRepoName(r) === name);
+	if (idx === -1) throw new Error(`Repo "${name}" not found in workspace`);
+	config.repos[idx] = { ...config.repos[idx], ...patch };
+	if (patch.localPath === undefined) delete config.repos[idx].localPath;
+	writeWorkspaceConfig(config);
 }

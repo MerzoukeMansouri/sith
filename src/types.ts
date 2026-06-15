@@ -52,6 +52,8 @@ export interface WorkspaceRepo {
 	url: string;
 	branch?: string;
 	name?: string; // local dir alias, inferred from URL basename if absent
+	mode?: "clone" | "mount"; // default: "clone"
+	localPath?: string; // required when mode === "mount"
 }
 
 export interface WorkspaceConfig {

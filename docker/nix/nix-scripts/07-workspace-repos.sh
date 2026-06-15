@@ -15,12 +15,18 @@ echo ""
 echo "┌─ Workspace Repositories ──────────────────────────────────┐"
 
 for i in $(seq 0 $((REPO_COUNT - 1))); do
+  MODE=$(jq -r ".repos[$i].mode // \"clone\"" "$WORKSPACE_CONFIG")
   URL=$(jq -r ".repos[$i].url" "$WORKSPACE_CONFIG")
   BRANCH=$(jq -r ".repos[$i].branch // empty" "$WORKSPACE_CONFIG")
   NAME=$(jq -r ".repos[$i].name // empty" "$WORKSPACE_CONFIG")
 
   if [ -z "$NAME" ]; then
     NAME=$(basename "$URL" .git)
+  fi
+
+  if [ "$MODE" = "mount" ]; then
+    printf "│  %-40s  mounted\n" "$NAME"
+    continue
   fi
 
   DEST="$REPOS_DIR/$NAME"
