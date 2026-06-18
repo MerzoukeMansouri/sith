@@ -33,7 +33,9 @@ for i in $(seq 0 $((REPO_COUNT - 1))); do
 
   if [ -d "$DEST/.git" ]; then
     printf "│  %-40s  pulling...\n" "$NAME"
-    git -C "$DEST" pull --ff-only --quiet 2>&1 | tail -1 || true
+    git -C "$DEST" \
+      -c "credential.helper=!f(){ echo username=x-token; echo password=$GITHUB_TOKEN; };f" \
+      pull --ff-only --quiet 2>&1 | tail -1 || true
   else
     printf "│  %-40s  cloning...\n" "$NAME"
     CLONE_ARGS=("$URL" "$DEST" "--depth=1" "--quiet")
