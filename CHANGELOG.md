@@ -1,3 +1,10 @@
+## [1.25.1](https://github.com/MerzoukeMansouri/sith/compare/v1.25.0...v1.25.1) (2026-06-18)
+
+
+### Bug Fixes
+
+* replace exit with return in workspace-repos script ([dfd763e](https://github.com/MerzoukeMansouri/sith/commit/dfd763e488c10173d3c133a46bd4d1a820b4c974))
+
 # [1.25.0](https://github.com/MerzoukeMansouri/sith/compare/v1.24.0...v1.25.0) (2026-06-15)
 
 
