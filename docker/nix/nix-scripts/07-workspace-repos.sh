@@ -4,10 +4,10 @@
 WORKSPACE_CONFIG="/opt/sith/workspace.json"
 REPOS_DIR="/workspace/repos"
 
-[ -f "$WORKSPACE_CONFIG" ] || exit 0
+[ -f "$WORKSPACE_CONFIG" ] || return 0
 
 REPO_COUNT=$(jq '.repos | length' "$WORKSPACE_CONFIG" 2>/dev/null || echo 0)
-[ "$REPO_COUNT" -eq 0 ] && exit 0
+[ "$REPO_COUNT" -eq 0 ] && return 0
 
 mkdir -p "$REPOS_DIR"
 
