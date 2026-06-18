@@ -1,3 +1,10 @@
+## [1.25.2](https://github.com/MerzoukeMansouri/sith/compare/v1.25.1...v1.25.2) (2026-06-18)
+
+
+### Bug Fixes
+
+* add github token credential helper for git pull ([002d659](https://github.com/MerzoukeMansouri/sith/commit/002d65945ec3fd5c8564ee7244e0046fbd4ebbac))
+
 ## [1.25.1](https://github.com/MerzoukeMansouri/sith/compare/v1.25.0...v1.25.1) (2026-06-18)
 
 
